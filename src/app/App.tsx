@@ -5,6 +5,7 @@ import { GeneralQuizImportView } from './components/GeneralQuizImportView';
 import { GeneralQuizPlayerView } from './components/GeneralQuizPlayerView';
 import { RankingView } from './components/RankingView';
 import { SettingsModal, ThemeMode } from './components/SettingsModal';
+import { AttendanceModal } from './components/AttendanceModal';
 import { userService } from '../services/userService';
 import type { WordEntry } from '../types/word';
 import type { UserProfile } from '../types/user';
@@ -18,7 +19,7 @@ export const App: React.FC = () => {
   const [customWords, setCustomWords] = useState<WordEntry[] | undefined>(undefined);
   const [customTitle, setCustomTitle] = useState<string | undefined>(undefined);
   const [customSourceType, setCustomSourceType] = useState<
-    'builtin' | 'maritime' | 'japanese_exam' | 'japanese_life' | 'photo' | 'pdf'
+    'builtin' | 'maritime' | 'japanese_exam' | 'japanese_life' | 'wrong_notes' | 'photo' | 'pdf'
   >('builtin');
 
   // 테마 상태 ('dark' | 'light' | 'system')
@@ -38,6 +39,9 @@ export const App: React.FC = () => {
 
   // 설정 모달 열림 상태
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // 출석체크 모달 열림 상태
+  const [isAttendanceOpen, setIsAttendanceOpen] = useState(false);
 
   // 사용자 세션 프로필 상태
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
@@ -81,7 +85,7 @@ export const App: React.FC = () => {
     const handlePopState = (event: PopStateEvent) => {
       const state = event.state as {
         tab?: ActiveTab;
-        quizSource?: 'builtin' | 'maritime' | 'japanese_exam' | 'japanese_life';
+        quizSource?: 'builtin' | 'maritime' | 'japanese_exam' | 'japanese_life' | 'wrong_notes';
       } | null;
       if (state && state.tab) {
         if (state.quizSource) {
@@ -104,7 +108,7 @@ export const App: React.FC = () => {
   const navigateToTab = (
     tab: ActiveTab,
     pushHistory = true,
-    quizSource?: 'builtin' | 'maritime' | 'japanese_exam' | 'japanese_life'
+    quizSource?: 'builtin' | 'maritime' | 'japanese_exam' | 'japanese_life' | 'wrong_notes'
   ) => {
     if (quizSource) {
       setCustomSourceType(quizSource);
@@ -289,6 +293,9 @@ export const App: React.FC = () => {
                   <span style={{ fontSize: '10px', background: 'rgba(255,255,255,0.2)', padding: '1px 5px', borderRadius: '4px' }}>
                     #{currentUser?.deviceCode?.split('-').pop() || 'ID'}
                   </span>
+                  <span style={{ fontSize: '10px', background: 'rgba(245, 158, 11, 0.3)', color: '#fef3c7', padding: '1px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                    🔥 {currentUser?.attendanceStreak || 0}일 연속
+                  </span>
                 </div>
                 <div style={{ fontSize: '18px', fontWeight: '900', color: '#fde047' }}>
                   {currentUser?.totalScore || 0}점
@@ -338,7 +345,33 @@ export const App: React.FC = () => {
                 <span className="menu-sub">시험용(JLPT N5~N3) · 완전 생활일본어(여행·실전) 2탭</span>
               </button>
 
-              {/* 4번째: 내가 만드는 문제집 */}
+              {/* 4번째: 출석체크 캘린더 & 연속 출석 */}
+              <button
+                className="menu-card"
+                style={{ borderLeft: '4px solid #f59e0b' }}
+                onClick={() => setIsAttendanceOpen(true)}
+              >
+                <div className="menu-header-line">
+                  <span className="menu-icon">📅</span>
+                  <span className="menu-title">출석체크 캘린더 (연속 {currentUser?.attendanceStreak || 0}일 🔥)</span>
+                </div>
+                <span className="menu-sub">매일 출석 도장 찍고 연속 출석 랭킹 도전!</span>
+              </button>
+
+              {/* 5번째: 틀린 문제 모음집 (오답노트) */}
+              <button
+                className="menu-card"
+                style={{ borderLeft: '4px solid #f97316' }}
+                onClick={() => navigateToTab('quiz', true, 'wrong_notes')}
+              >
+                <div className="menu-header-line">
+                  <span className="menu-icon">📝</span>
+                  <span className="menu-title">틀린 문제 모음집 (오답노트)</span>
+                </div>
+                <span className="menu-sub">틀렸던 단어만 모아서 집중 복습 및 4지선다 다시 풀기</span>
+              </button>
+
+              {/* 6번째: 내가 만드는 문제집 */}
               <button
                 className="menu-card"
                 style={{ borderLeft: '4px solid #8b5cf6' }}
@@ -351,7 +384,7 @@ export const App: React.FC = () => {
                 <span className="menu-sub">사진·스캔·PDF로 4/5지선다 제작 및 풀이</span>
               </button>
 
-              {/* 5번째: 내가 만드는 영단어 문제집 */}
+              {/* 7번째: 내가 만드는 영단어 문제집 */}
               <button
                 className="menu-card"
                 style={{ borderLeft: '4px solid #06b6d4' }}
@@ -426,6 +459,20 @@ export const App: React.FC = () => {
         onShuffleOrderChange={handleShuffleOrderChange}
         onOpenRanking={() => {
           setIsSettingsOpen(false);
+          navigateToTab('ranking');
+        }}
+      />
+
+      {/* 출석체크 캘린더 모달 */}
+      <AttendanceModal
+        isOpen={isAttendanceOpen}
+        onClose={() => {
+          setIsAttendanceOpen(false);
+          const p = userService.getProfile();
+          if (p) setCurrentUser({ ...p });
+        }}
+        onOpenRanking={() => {
+          setIsAttendanceOpen(false);
           navigateToTab('ranking');
         }}
       />

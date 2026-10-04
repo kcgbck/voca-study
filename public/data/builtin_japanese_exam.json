@@ -1,54 +1,1356 @@
 {
-  "databaseVersion": 1,
-  "name": "일본어 시험용 (JLPT N5~N3 기출 핵심 한자 및 어휘)",
+  "databaseVersion": 2,
+  "name": "일본어 자격증 및 기초 (기초 / N5 / N4 / N3 등급별 어휘집)",
   "category": "japanese_exam",
-  "description": "JLPT N5~N3 기출 빈출 핵심 한자 및 어휘 162어 실전 문제 수록",
-  "wordCount": 161,
+  "description": "일본어 기초 및 JLPT N5~N3 등급별 빈출 핵심 어휘 수록 (히라가나/뜻 맞추기 완비)",
+  "wordCount": 277,
   "words": [
     {
       "id": 1,
+      "word": "こんにちは",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "안녕하세요 (낮 인사)"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 2,
+      "word": "おはよう",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "좋은 아침 (아침 인사)",
+        "안녕"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 3,
+      "word": "こんばんは",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "안녕하세요 (저녁 인사)"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 4,
+      "word": "さようなら",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "안녕히 가세요",
+        "작별 인사"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 5,
+      "word": "ありがとう",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "고마워요",
+        "감사합니다"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 6,
+      "word": "どうも",
+      "partOfSpeech": "부사",
+      "meaning": [
+        "고마워요",
+        "왠지",
+        "정말"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 7,
+      "word": "すみません",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "죄송합니다",
+        "실례합니다",
+        "저기요"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 8,
+      "word": "ごめんなさい",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "미안합니다",
+        "죄송해요"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 9,
+      "word": "はい",
+      "partOfSpeech": "감탄사",
+      "meaning": [
+        "네",
+        "예"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 10,
+      "word": "いいえ",
+      "partOfSpeech": "감탄사",
+      "meaning": [
+        "아니요",
+        "아닙니다"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 11,
+      "word": "はじめまして",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "처음 뵙겠습니다"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 12,
+      "word": "どうぞ",
+      "partOfSpeech": "부사",
+      "meaning": [
+        "부디",
+        "어서",
+        "여기요"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 13,
+      "word": "いただきます",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "잘 먹겠습니다"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 14,
+      "word": "ごちそうさま",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "잘 먹었습니다"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 15,
+      "word": "おねがいします",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "부탁합니다"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 16,
+      "word": "じゃあね",
+      "partOfSpeech": "표현",
+      "meaning": [
+        "그럼 또 봐",
+        "안녕"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 17,
+      "word": "一 (いち)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 1",
+        "하나"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 18,
+      "word": "二 (に)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 2",
+        "둘"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 19,
+      "word": "三 (さん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 3",
+        "셋"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 20,
+      "word": "四 (よん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 4",
+        "넷"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 21,
+      "word": "五 (ご)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 5",
+        "다섯"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 22,
+      "word": "六 (ろく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 6",
+        "여섯"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 23,
+      "word": "七 (なな)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 7",
+        "일곱"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 24,
+      "word": "八 (はち)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 8",
+        "여덟"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 25,
+      "word": "九 (きゅう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 9",
+        "아홉"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 26,
+      "word": "十 (じゅう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 10",
+        "열"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 27,
+      "word": "百 (ひゃく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 100",
+        "백"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 28,
+      "word": "千 (せん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 1000",
+        "천"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 29,
+      "word": "万 (まん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숫자 10000",
+        "만"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 30,
+      "word": "私 (わたし)",
+      "partOfSpeech": "대명사",
+      "meaning": [
+        "나",
+        "저"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 31,
+      "word": "あなた",
+      "partOfSpeech": "대명사",
+      "meaning": [
+        "당신",
+        "너"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 32,
+      "word": "彼 (かれ)",
+      "partOfSpeech": "대명사",
+      "meaning": [
+        "그",
+        "남자친구"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 33,
+      "word": "彼女 (かのじょ)",
+      "partOfSpeech": "대명사",
+      "meaning": [
+        "그녀",
+        "여자친구"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 34,
+      "word": "人 (ひと)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "사람"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 35,
+      "word": "友達 (ともだち)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "친구"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 36,
+      "word": "家族 (かぞく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "가족"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 37,
+      "word": "名前 (なまえ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "이름"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 38,
+      "word": "水 (みず)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "물"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 39,
+      "word": "お茶 (おちゃ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "차",
+        "녹차"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 40,
+      "word": "ご飯 (ごはん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "밥",
+        "식사"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 41,
+      "word": "パン",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "빵"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 42,
+      "word": "肉 (にく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "고기"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 43,
+      "word": "魚 (さかな)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "생선",
+        "물고기"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 44,
+      "word": "本 (ほん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "책"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 45,
+      "word": "机 (つくえ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "책상"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 46,
+      "word": "椅子 (いす)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "의자"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 47,
+      "word": "犬 (いぬ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "개",
+        "강아지"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 48,
+      "word": "猫 (ねこ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "고양이"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 49,
+      "word": "車 (くるま)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "자동차",
+        "차"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 50,
+      "word": "電車 (でんしゃ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "전철",
+        "기차"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 51,
+      "word": "家 (いえ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "집"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 52,
+      "word": "部屋 (へや)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "방"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 53,
+      "word": "山 (やま)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "산"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 54,
+      "word": "川 (かわ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "강"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 55,
+      "word": "空 (そら)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "하늘"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 56,
+      "word": "雨 (あめ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "비"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 57,
+      "word": "雪 (ゆき)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "눈 (날씨)"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 58,
+      "word": "花 (はな)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "꽃"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 59,
+      "word": "手 (て)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "손"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 60,
+      "word": "目 (め)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "눈 (신체)"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 61,
+      "word": "口 (くち)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "입"
+      ],
+      "difficulty": "low",
+      "topic": "basic"
+    },
+    {
+      "id": 62,
+      "word": "学生 (がくせい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "학생"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 63,
+      "word": "先生 (せんせい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "선생님",
+        "교사"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 64,
+      "word": "学校 (がっこう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "학교"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 65,
+      "word": "教室 (きょうしつ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "교실"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 66,
+      "word": "会社 (かいしゃ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "회사"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 67,
+      "word": "病院 (びょういん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "병원"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 68,
+      "word": "駅 (えき)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "기차역",
+        "역"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 69,
+      "word": "銀行 (ぎんこう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "은행"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 70,
+      "word": "店 (みせ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "가게",
+        "매장"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 71,
+      "word": "時間 (じかん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "시간"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 72,
+      "word": "時計 (とけい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "시계"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 73,
+      "word": "今日 (きょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "오늘"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 74,
+      "word": "明日 (あした)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "내일"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 75,
+      "word": "昨日 (きのう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "어제"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 76,
+      "word": "今 (いま)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "지금",
+        "현재"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 77,
+      "word": "朝 (あさ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "아침"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 78,
+      "word": "昼 (ひる)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "낮",
+        "점심"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 79,
+      "word": "夜 (よる)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "밤",
+        "저녁"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 80,
+      "word": "毎日 (まいにち)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "매일",
+        "날마다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 81,
+      "word": "勉強 (べんきょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "공부",
+        "학습"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 82,
+      "word": "仕事 (しごと)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "일",
+        "직업"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 83,
+      "word": "電話 (でんわ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "전화"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 84,
+      "word": "写真 (しゃしん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "사진"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 85,
+      "word": "手紙 (てがみ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "편지"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 86,
+      "word": "映画 (えいが)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "영화"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 87,
+      "word": "音楽 (おんがく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "음악"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 88,
+      "word": "旅行 (りょこう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "여행"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 89,
+      "word": "食べる (たべる)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "먹다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 90,
+      "word": "飲む (のむ)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "마시다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 91,
+      "word": "見る (みる)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "보다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 92,
+      "word": "聞く (きく)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "듣다",
+        "묻다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 93,
+      "word": "話す (はなす)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "말하다",
+        "이야기하다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 94,
+      "word": "読む (よむ)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "읽다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 95,
+      "word": "書く (かく)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "쓰다",
+        "적다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 96,
+      "word": "買う (かう)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "사다",
+        "구매하다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 97,
+      "word": "行く (いく)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "가다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 98,
+      "word": "来る (くる)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "오다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 99,
+      "word": "帰る (かえる)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "돌아가다",
+        "귀가하다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 100,
+      "word": "会う (あう)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "만나다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 101,
+      "word": "待つ (まつ)",
+      "partOfSpeech": "동사",
+      "meaning": [
+        "기다리다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 102,
+      "word": "大きい (おおきい)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "크다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 103,
+      "word": "小さい (ちいさい)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "작다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 104,
+      "word": "高い (たかい)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "높다",
+        "비싸다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 105,
+      "word": "安い (やすい)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "싸다",
+        "저렴하다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 106,
+      "word": "新しい (あたらしい)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "새롭다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 107,
+      "word": "古い (ふるい)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "오래되다",
+        "낡다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 108,
+      "word": "良い (いい)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "좋다",
+        "착하다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 109,
+      "word": "近い (ちかい)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "가깝다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 110,
+      "word": "遠い (とおい)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "멀다"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 111,
+      "word": "暑い (あつい)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "덥다 (날씨)"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 112,
+      "word": "寒い (さむい)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "춥다 (날씨)"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 113,
+      "word": "親切 (しんせつ)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "친절함"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 114,
+      "word": "必要 (ひつよう)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "필요함"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 115,
+      "word": "危険 (きけん)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "위험함"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 116,
+      "word": "計画 (けいかく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "계획"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 117,
+      "word": "社会 (しゃかい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "사회"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 118,
+      "word": "文化 (ぶんか)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "문화"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 119,
+      "word": "季節 (きせつ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "계절"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 120,
+      "word": "台風 (たいふう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "태풍"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 121,
+      "word": "事故 (じこ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "사고"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 122,
+      "word": "警察 (けいさつ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "경찰"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 123,
+      "word": "運動 (うんどう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "운동"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 124,
+      "word": "授業 (じゅぎょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "수업"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 125,
+      "word": "試験 (しけん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "시험"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 126,
+      "word": "宿題 (しゅくだい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "숙제"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 127,
+      "word": "留学 (りゅうがく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "유학"
+      ],
+      "difficulty": "low",
+      "topic": "jlpt_n5"
+    },
+    {
+      "id": 128,
       "word": "約束 (やくそく)",
       "partOfSpeech": "명사",
       "meaning": [
         "약속"
       ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
     },
     {
-      "id": 2,
-      "word": "曖昧 (あいまい)",
-      "partOfSpeech": "형용사",
-      "meaning": [
-        "애매함",
-        "모호함"
-      ],
-      "difficulty": "high",
-      "topic": "jlpt_n2"
-    },
-    {
-      "id": 3,
+      "id": 129,
       "word": "準備 (じゅんび)",
       "partOfSpeech": "명사",
       "meaning": [
         "준비"
       ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 4,
-      "word": "感謝 (かんしゃ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "감사",
-        "고마움"
-      ],
       "difficulty": "medium",
-      "topic": "jlpt_n3"
+      "topic": "jlpt_n4"
     },
     {
-      "id": 5,
+      "id": 130,
       "word": "経験 (けいけん)",
       "partOfSpeech": "명사",
       "meaning": [
@@ -58,27 +1360,17 @@
       "topic": "jlpt_n4"
     },
     {
-      "id": 6,
-      "word": "成功 (せいこう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "성공"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 7,
+      "id": 131,
       "word": "失敗 (しっぱい)",
       "partOfSpeech": "명사",
       "meaning": [
         "실패"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 8,
+      "id": 132,
       "word": "複雑 (ふくざつ)",
       "partOfSpeech": "형용사",
       "meaning": [
@@ -88,47 +1380,17 @@
       "topic": "jlpt_n4"
     },
     {
-      "id": 9,
-      "word": "単純 (たんじゅん)",
-      "partOfSpeech": "형용사",
-      "meaning": [
-        "단순함"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 10,
+      "id": 133,
       "word": "案内 (あんない)",
       "partOfSpeech": "명사",
       "meaning": [
         "안내"
       ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 11,
-      "word": "努力 (どりょく)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "노력"
-      ],
       "difficulty": "medium",
-      "topic": "jlpt_n3"
+      "topic": "jlpt_n4"
     },
     {
-      "id": 12,
-      "word": "推薦 (すいせん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "추천"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 13,
+      "id": 134,
       "word": "丁寧 (ていねい)",
       "partOfSpeech": "형용사",
       "meaning": [
@@ -139,17 +1401,7 @@
       "topic": "jlpt_n4"
     },
     {
-      "id": 14,
-      "word": "尊敬 (そんけい)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "존경"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 15,
+      "id": 135,
       "word": "遠慮 (えんりょ)",
       "partOfSpeech": "명사",
       "meaning": [
@@ -160,149 +1412,39 @@
       "topic": "jlpt_n4"
     },
     {
-      "id": 16,
-      "word": "満足 (まんぞく)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "만족"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 17,
-      "word": "緊張 (きんちょう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "긴장"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 18,
+      "id": 136,
       "word": "相談 (そうだん)",
       "partOfSpeech": "명사",
       "meaning": [
         "상담",
         "상의"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 19,
-      "word": "決定 (けってい)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "결정"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 20,
-      "word": "解決 (かいけつ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "해결"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 21,
-      "word": "発表 (はっぴょう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "발표"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 22,
-      "word": "参加 (さんか)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "참가"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 23,
+      "id": 137,
       "word": "連絡 (れんらく)",
       "partOfSpeech": "명사",
       "meaning": [
         "연락"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 24,
-      "word": "確認 (かくにん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "확인"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 25,
+      "id": 138,
       "word": "注意 (ちゅうい)",
       "partOfSpeech": "명사",
       "meaning": [
         "주의",
         "조심"
       ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 26,
-      "word": "想像 (そうぞう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "상상"
-      ],
       "difficulty": "medium",
-      "topic": "jlpt_n3"
+      "topic": "jlpt_n4"
     },
     {
-      "id": 27,
-      "word": "期待 (きたい)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "기대"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 28,
-      "word": "整理 (せいり)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "정리"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 29,
-      "word": "責任 (せきにん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "책임"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 30,
+      "id": 139,
       "word": "自由 (じゆう)",
       "partOfSpeech": "명사",
       "meaning": [
@@ -312,1325 +1454,1397 @@
       "topic": "jlpt_n4"
     },
     {
-      "id": 31,
-      "word": "危険 (きけん)",
-      "partOfSpeech": "형용사",
-      "meaning": [
-        "위험"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 32,
+      "id": 140,
       "word": "安全 (あんぜん)",
       "partOfSpeech": "형용사",
       "meaning": [
         "안전"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 33,
-      "word": "計画 (けいかく)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "계획"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 34,
+      "id": 141,
       "word": "理由 (りゆう)",
       "partOfSpeech": "명사",
       "meaning": [
         "이유"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 35,
-      "word": "原因 (げんいん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "원인"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 36,
-      "word": "結果 (けっか)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "결과"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 37,
-      "word": "目的 (もくてき)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "목적"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 38,
-      "word": "目標 (もくひょう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "목표"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 39,
-      "word": "変化 (へんか)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "변화"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 40,
-      "word": "影響 (えいきょう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "영향"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 41,
-      "word": "効果 (こうか)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "효과"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 42,
+      "id": 142,
       "word": "興味 (きょうみ)",
       "partOfSpeech": "명사",
       "meaning": [
         "흥미",
         "관심"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 43,
-      "word": "趣味 (しゅみ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "취미"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 44,
+      "id": 143,
       "word": "習慣 (しゅうかん)",
       "partOfSpeech": "명사",
       "meaning": [
         "습관"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 45,
-      "word": "伝統 (でんとう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "전통"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 46,
+      "id": 144,
       "word": "技術 (ぎじゅつ)",
       "partOfSpeech": "명사",
       "meaning": [
         "기술"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 47,
+      "id": 145,
       "word": "情報 (じょうほう)",
       "partOfSpeech": "명사",
       "meaning": [
         "정보"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 48,
-      "word": "知識 (ちしき)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "지식"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 49,
+      "id": 146,
       "word": "意見 (いけん)",
       "partOfSpeech": "명사",
       "meaning": [
         "의견"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 50,
-      "word": "考え (かんがえ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "생각",
-        "사고"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 51,
-      "word": "感情 (かんじょう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "감정"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 52,
-      "word": "表情 (ひょうじょう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "표정"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 53,
-      "word": "態度 (たいど)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "태도"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 54,
-      "word": "行動 (こうどう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "행동"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 55,
-      "word": "表現 (ひょうげん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "표현"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 56,
-      "word": "調査 (ちょうさ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "조사"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 57,
+      "id": 147,
       "word": "研究 (けんきゅう)",
       "partOfSpeech": "명사",
       "meaning": [
         "연구"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 58,
-      "word": "発見 (はっけん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "발견"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 59,
-      "word": "発明 (はつめい)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "발명"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 60,
-      "word": "発達 (はったつ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "발달"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 61,
+      "id": 148,
       "word": "経済 (けいざい)",
       "partOfSpeech": "명사",
       "meaning": [
         "경제"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 62,
+      "id": 149,
       "word": "政治 (せいじ)",
       "partOfSpeech": "명사",
       "meaning": [
         "정치"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 63,
-      "word": "社会 (しゃかい)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "사회"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 64,
-      "word": "文化 (ぶんか)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "문화"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 65,
+      "id": 150,
       "word": "法律 (ほうりつ)",
       "partOfSpeech": "명사",
       "meaning": [
         "법률"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 66,
+      "id": 151,
       "word": "規則 (きそく)",
       "partOfSpeech": "명사",
       "meaning": [
         "규칙"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 67,
-      "word": "条件 (じょうけん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "조건"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 68,
+      "id": 152,
       "word": "機会 (きかい)",
       "partOfSpeech": "명사",
       "meaning": [
         "기회"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 69,
+      "id": 153,
       "word": "関係 (かんけい)",
       "partOfSpeech": "명사",
       "meaning": [
         "관계"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 70,
-      "word": "状況 (じょうきょう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "상황"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 71,
-      "word": "環境 (かんきょう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "환경"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 72,
+      "id": 154,
       "word": "自然 (しぜん)",
       "partOfSpeech": "명사",
       "meaning": [
         "자연"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 73,
-      "word": "季節 (きせつ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "계절"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 74,
-      "word": "気候 (きこう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "기후"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 75,
+      "id": 155,
       "word": "地震 (じしん)",
       "partOfSpeech": "명사",
       "meaning": [
         "지진"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 76,
-      "word": "台風 (たいふう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "태풍"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 77,
+      "id": 156,
       "word": "交通 (こうつう)",
       "partOfSpeech": "명사",
       "meaning": [
         "교통"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 78,
-      "word": "事故 (じこ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "사고"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 79,
-      "word": "事件 (じけん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "사건"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 80,
-      "word": "犯罪 (はんざい)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "범죄"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 81,
-      "word": "警察 (けいさつ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "경찰"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 82,
-      "word": "裁判 (さいばん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "재판"
-      ],
-      "difficulty": "high",
-      "topic": "jlpt_n2"
-    },
-    {
-      "id": 83,
-      "word": "病院 (びょういん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "병원"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 84,
-      "word": "治療 (ちりょう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "치료"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 85,
-      "word": "手術 (しゅじゅつ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "수술"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 86,
+      "id": 157,
       "word": "健康 (けんこう)",
       "partOfSpeech": "명사",
       "meaning": [
         "건강"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 87,
-      "word": "体調 (たいちょう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "몸 상태",
-        "컨디션"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 88,
-      "word": "栄養 (えいよう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "영양"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 89,
-      "word": "運動 (うんどう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "운동"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 90,
-      "word": "睡眠 (すいみん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "수면"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 91,
-      "word": "休憩 (きゅうけい)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "휴식",
-        "쉬는 시간"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 92,
+      "id": 158,
       "word": "休日 (きゅうじつ)",
       "partOfSpeech": "명사",
       "meaning": [
         "휴일"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 93,
-      "word": "休暇 (きゅうか)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "휴가"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 94,
+      "id": 159,
       "word": "出張 (しゅっちょう)",
       "partOfSpeech": "명사",
       "meaning": [
         "출장"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 95,
+      "id": 160,
       "word": "残業 (ざんぎょう)",
       "partOfSpeech": "명사",
       "meaning": [
         "야근",
         "잔업"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 96,
+      "id": 161,
       "word": "給料 (きゅうりょう)",
       "partOfSpeech": "명사",
       "meaning": [
         "월급",
         "급여"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 97,
-      "word": "面接 (めんせつ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "면접"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 98,
-      "word": "履歴書 (りれきしょ)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "이력서"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 99,
+      "id": 162,
       "word": "合格 (ごうかく)",
       "partOfSpeech": "명사",
       "meaning": [
         "합격"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 100,
-      "word": "不合格 (ふごうかく)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "불합격"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 101,
-      "word": "授業 (じゅぎょう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "수업"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 102,
-      "word": "試験 (しけん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "시험"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 103,
+      "id": 163,
       "word": "成績 (せいせき)",
       "partOfSpeech": "명사",
       "meaning": [
         "성적"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 104,
+      "id": 164,
       "word": "復習 (ふくしゅう)",
       "partOfSpeech": "명사",
       "meaning": [
         "복습"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 105,
+      "id": 165,
       "word": "予習 (よしゅう)",
       "partOfSpeech": "명사",
       "meaning": [
         "예습"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 106,
-      "word": "宿題 (しゅくだい)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "숙제"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 107,
+      "id": 166,
       "word": "卒業 (そつぎょう)",
       "partOfSpeech": "명사",
       "meaning": [
         "졸업"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 108,
+      "id": 167,
       "word": "入学 (にゅうがく)",
       "partOfSpeech": "명사",
       "meaning": [
         "입학"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 109,
-      "word": "留学 (りゅうがく)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "유학"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 110,
+      "id": 168,
       "word": "専門 (せんもん)",
       "partOfSpeech": "명사",
       "meaning": [
         "전문"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 111,
-      "word": "専攻 (せんこう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "전공"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 112,
+      "id": 169,
       "word": "論文 (ろんぶん)",
       "partOfSpeech": "명사",
       "meaning": [
         "논문"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 113,
+      "id": 170,
       "word": "講義 (こうぎ)",
       "partOfSpeech": "명사",
       "meaning": [
         "강의"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 114,
-      "word": "講演 (こうえん)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "강연"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 115,
+      "id": 171,
       "word": "会議 (かいぎ)",
       "partOfSpeech": "명사",
       "meaning": [
         "회의"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 116,
+      "id": 172,
       "word": "資料 (しりょう)",
       "partOfSpeech": "명사",
       "meaning": [
         "자료"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 117,
+      "id": 173,
       "word": "書類 (しょるい)",
       "partOfSpeech": "명사",
       "meaning": [
         "서류"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 118,
-      "word": "契約 (けいやく)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "계약"
-      ],
-      "difficulty": "medium",
-      "topic": "jlpt_n3"
-    },
-    {
-      "id": 119,
+      "id": 174,
       "word": "貿易 (ぼうえき)",
       "partOfSpeech": "명사",
       "meaning": [
         "무역"
       ],
-      "difficulty": "low",
+      "difficulty": "medium",
       "topic": "jlpt_n4"
     },
     {
-      "id": 120,
+      "id": 175,
+      "word": "競争 (きょうそう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "경쟁"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 176,
+      "word": "賛成 (さんせい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "찬성"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 177,
+      "word": "比較 (ひかく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "비교"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 178,
+      "word": "重要 (じゅうよう)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "중요함"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 179,
+      "word": "出発 (しゅっぱつ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "출발"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 180,
+      "word": "到着 (とうちゃく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "도착"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 181,
+      "word": "予約 (よやく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "예약"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 182,
+      "word": "説明 (せつめい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "설명"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 183,
+      "word": "質問 (しつもん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "질문"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 184,
+      "word": "趣味 (しゅみ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "취미"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 185,
+      "word": "生活 (せいかつ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "생활"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 186,
+      "word": "空港 (くうこう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "공항"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 187,
+      "word": "住所 (じゅうしょ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "주소"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 188,
+      "word": "乗り換え (のりかえ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "환승",
+        "갈아타기"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 189,
+      "word": "利用 (りよう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "이용",
+        "활용"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 190,
+      "word": "紹介 (しょうかい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "소개"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 191,
+      "word": "用意 (ようい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "준비",
+        "마련"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 192,
+      "word": "招待 (しょうたい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "초대"
+      ],
+      "difficulty": "medium",
+      "topic": "jlpt_n4"
+    },
+    {
+      "id": 193,
+      "word": "感謝 (かんしゃ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "감사",
+        "고마움"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 194,
+      "word": "成功 (せいこう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "성공"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 195,
+      "word": "単純 (たんじゅん)",
+      "partOfSpeech": "형용사",
+      "meaning": [
+        "단순함"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 196,
+      "word": "努力 (どりょく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "노력"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 197,
+      "word": "推薦 (すいせん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "추천"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 198,
+      "word": "尊敬 (そんけい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "존경"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 199,
+      "word": "満足 (まんぞく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "만족"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 200,
+      "word": "緊張 (きんちょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "긴장"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 201,
+      "word": "決定 (けってい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "결정"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 202,
+      "word": "解決 (かいけつ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "해결"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 203,
+      "word": "発表 (はっぴょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "발표"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 204,
+      "word": "参加 (さんか)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "참가"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 205,
+      "word": "確認 (かくにん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "확인"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 206,
+      "word": "想像 (そうぞう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "상상"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 207,
+      "word": "期待 (きたい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "기대"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 208,
+      "word": "整理 (せいり)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "정리"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 209,
+      "word": "責任 (せきにん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "책임"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 210,
+      "word": "原因 (げんいん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "원인"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 211,
+      "word": "結果 (けっか)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "결과"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 212,
+      "word": "目的 (もくてき)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "목적"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 213,
+      "word": "目標 (もくひょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "목표"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 214,
+      "word": "変化 (へんか)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "변화"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 215,
+      "word": "影響 (えいきょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "영향"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 216,
+      "word": "効果 (こうか)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "효과"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 217,
+      "word": "伝統 (でんとう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "전통"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 218,
+      "word": "知識 (ちしき)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "지식"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 219,
+      "word": "感情 (かんじょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "감정"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 220,
+      "word": "表情 (ひょうじょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "표정"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 221,
+      "word": "態度 (たいど)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "태도"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 222,
+      "word": "行動 (こうどう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "행동"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 223,
+      "word": "表現 (ひょうげん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "표현"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 224,
+      "word": "調査 (ちょうさ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "조사"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 225,
+      "word": "発見 (はっけん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "발견"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 226,
+      "word": "発明 (はつめい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "발명"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 227,
+      "word": "発達 (はったつ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "발달"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 228,
+      "word": "条件 (じょうけん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "조건"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 229,
+      "word": "状況 (じょうきょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "상황"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 230,
+      "word": "環境 (かんきょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "환경"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 231,
+      "word": "気候 (きこう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "기후"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 232,
+      "word": "事件 (じけん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "사건"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 233,
+      "word": "犯罪 (はんざい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "범죄"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 234,
+      "word": "治療 (ちりょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "치료"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 235,
+      "word": "手術 (しゅじゅつ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "수술"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 236,
+      "word": "体調 (たいちょう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "몸 상태",
+        "컨디션"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 237,
+      "word": "栄養 (えいよう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "영양"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 238,
+      "word": "睡眠 (すいみん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "수면"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 239,
+      "word": "休憩 (きゅうけい)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "휴식",
+        "쉬는 시간"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 240,
+      "word": "休暇 (きゅうか)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "휴가"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 241,
+      "word": "面接 (めんせつ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "면접"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 242,
+      "word": "履歴書 (りれきしょ)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "이력서"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 243,
+      "word": "不合格 (ふごうかく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "불합격"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 244,
+      "word": "専攻 (せんこう)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "전공"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 245,
+      "word": "講演 (こうえん)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "강연"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 246,
+      "word": "契約 (けいやく)",
+      "partOfSpeech": "명사",
+      "meaning": [
+        "계약"
+      ],
+      "difficulty": "high",
+      "topic": "jlpt_n3"
+    },
+    {
+      "id": 247,
       "word": "取引 (とりひき)",
       "partOfSpeech": "명사",
       "meaning": [
         "거래"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 121,
+      "id": 248,
       "word": "交渉 (こうしょう)",
       "partOfSpeech": "명사",
       "meaning": [
         "교섭",
         "협상"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 122,
-      "word": "競争 (きょうそう)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "경쟁"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n4"
-    },
-    {
-      "id": 123,
+      "id": 249,
       "word": "協力 (きょうりょく)",
       "partOfSpeech": "명사",
       "meaning": [
         "협력"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 124,
+      "id": 250,
       "word": "支持 (しじ)",
       "partOfSpeech": "명사",
       "meaning": [
         "지지",
         "후원"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 125,
-      "word": "反対 (はんたい)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "반대"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 126,
-      "word": "賛成 (さんせい)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "찬성"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n4"
-    },
-    {
-      "id": 127,
+      "id": 251,
       "word": "批判 (ひはん)",
       "partOfSpeech": "명사",
       "meaning": [
         "비판"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 128,
+      "id": 252,
       "word": "評価 (ひょうか)",
       "partOfSpeech": "명사",
       "meaning": [
         "평가"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 129,
+      "id": 253,
       "word": "基準 (きじゅん)",
       "partOfSpeech": "명사",
       "meaning": [
         "기준"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 130,
+      "id": 254,
       "word": "標準 (ひょうじゅん)",
       "partOfSpeech": "명사",
       "meaning": [
         "표준"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 131,
-      "word": "比較 (ひかく)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "비교"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n4"
-    },
-    {
-      "id": 132,
+      "id": 255,
       "word": "割合 (わりあい)",
       "partOfSpeech": "명사",
       "meaning": [
         "비율"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 133,
+      "id": 256,
       "word": "平均 (へいきん)",
       "partOfSpeech": "명사",
       "meaning": [
         "평균"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 134,
+      "id": 257,
       "word": "増加 (ぞうか)",
       "partOfSpeech": "명사",
       "meaning": [
         "증가"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 135,
+      "id": 258,
       "word": "減少 (げんしょう)",
       "partOfSpeech": "명사",
       "meaning": [
         "감소"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 136,
+      "id": 259,
       "word": "発展 (はってん)",
       "partOfSpeech": "명사",
       "meaning": [
         "발전"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 137,
-      "word": "衰退 (すいたい)",
-      "partOfSpeech": "명사",
-      "meaning": [
-        "쇠퇴"
-      ],
-      "difficulty": "high",
-      "topic": "jlpt_n1"
-    },
-    {
-      "id": 138,
+      "id": 260,
       "word": "改善 (かいぜん)",
       "partOfSpeech": "명사",
       "meaning": [
         "개선"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 139,
+      "id": 261,
       "word": "改革 (かいかく)",
       "partOfSpeech": "명사",
       "meaning": [
         "개혁"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 140,
+      "id": 262,
       "word": "維持 (いじ)",
       "partOfSpeech": "명사",
       "meaning": [
         "유지"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 141,
+      "id": 263,
       "word": "保護 (ほご)",
       "partOfSpeech": "명사",
       "meaning": [
         "보호"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 142,
+      "id": 264,
       "word": "防止 (ぼうし)",
       "partOfSpeech": "명사",
       "meaning": [
         "방지"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 143,
+      "id": 265,
       "word": "予防 (よぼう)",
       "partOfSpeech": "명사",
       "meaning": [
         "예방"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 144,
+      "id": 266,
       "word": "対策 (たいさく)",
       "partOfSpeech": "명사",
       "meaning": [
         "대책"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 145,
+      "id": 267,
       "word": "方針 (ほうしん)",
       "partOfSpeech": "명사",
       "meaning": [
         "방침"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 146,
+      "id": 268,
       "word": "誠実 (せいじつ)",
       "partOfSpeech": "형용사",
       "meaning": [
         "성실함"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 147,
-      "word": "親切 (しんせつ)",
-      "partOfSpeech": "형용사",
-      "meaning": [
-        "친절함"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
-    },
-    {
-      "id": 148,
+      "id": 269,
       "word": "冷静 (れいせい)",
       "partOfSpeech": "형용사",
       "meaning": [
         "침착함",
         "냉정함"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 149,
+      "id": 270,
       "word": "勇敢 (ゆうかん)",
       "partOfSpeech": "형용사",
       "meaning": [
         "용감함"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 150,
-      "word": "謙虚 (けんきょ)",
-      "partOfSpeech": "형용사",
-      "meaning": [
-        "겸손함"
-      ],
-      "difficulty": "high",
-      "topic": "jlpt_n1"
-    },
-    {
-      "id": 151,
-      "word": "傲慢 (ごうまん)",
-      "partOfSpeech": "형용사",
-      "meaning": [
-        "오만함"
-      ],
-      "difficulty": "high",
-      "topic": "jlpt_n1"
-    },
-    {
-      "id": 152,
+      "id": 271,
       "word": "頑固 (がんこ)",
       "partOfSpeech": "형용사",
       "meaning": [
         "완고함",
         "고집스러움"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 153,
+      "id": 272,
       "word": "柔軟 (じゅうなん)",
       "partOfSpeech": "형용사",
       "meaning": [
         "유연함"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 154,
-      "word": "敏速 (びんそく)",
-      "partOfSpeech": "형용사",
-      "meaning": [
-        "민첩함",
-        "신속함"
-      ],
-      "difficulty": "high",
-      "topic": "jlpt_n1"
-    },
-    {
-      "id": 155,
+      "id": 273,
       "word": "正確 (せいかく)",
       "partOfSpeech": "형용사",
       "meaning": [
         "정확함"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 156,
+      "id": 274,
       "word": "適切 (てきせつ)",
       "partOfSpeech": "형용사",
       "meaning": [
         "적절함"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 157,
+      "id": 275,
       "word": "妥当 (だとう)",
       "partOfSpeech": "형용사",
       "meaning": [
         "타당함"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 158,
+      "id": 276,
       "word": "深刻 (しんこく)",
       "partOfSpeech": "형용사",
       "meaning": [
         "심각함"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
     },
     {
-      "id": 159,
+      "id": 277,
       "word": "貴重 (きちょう)",
       "partOfSpeech": "형용사",
       "meaning": [
         "귀중함"
       ],
-      "difficulty": "medium",
+      "difficulty": "high",
       "topic": "jlpt_n3"
-    },
-    {
-      "id": 160,
-      "word": "重要 (じゅうよう)",
-      "partOfSpeech": "형용사",
-      "meaning": [
-        "중요함"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n4"
-    },
-    {
-      "id": 161,
-      "word": "必要 (ひつよう)",
-      "partOfSpeech": "형용사",
-      "meaning": [
-        "필요함"
-      ],
-      "difficulty": "low",
-      "topic": "jlpt_n5"
     }
   ]
 }

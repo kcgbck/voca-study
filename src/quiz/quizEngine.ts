@@ -1,5 +1,4 @@
-// 4지선다 퀴즈 출제 엔진 및 정답 유일성 Hard Gate (지시서 P0-C Section 20~27 준수)
-import type { WordEntry, QuizQuestion } from '../types/word';
+import type { WordEntry, QuizQuestion, JapaneseQuizMode } from '../types/word';
 import { evaluateDistractorSafety, normalizeMeaning } from './synonymDictionary';
 
 export interface QuizGenOptions {
@@ -7,12 +6,38 @@ export interface QuizGenOptions {
   matchPartOfSpeech?: boolean;
   matchDifficulty?: boolean;
   maxAttempts?: number;
+  japaneseMode?: JapaneseQuizMode;
 }
 
 export interface ValidationResult {
   isValid: boolean;
   reason?: string;
 }
+
+/**
+ * 일본어 표제어에서 한자 및 히라가나 읽기(요미가나) 추출
+ */
+export function parseJapaneseWord(rawWord: string): {
+  kanji: string;
+  reading: string;
+  isPureKana: boolean;
+} {
+  if (!rawWord) return { kanji: '', reading: '', isPureKana: true };
+  const match = rawWord.match(/^([^\(（]+)\s*[\(（]([^\)）]+)[\)）]$/);
+  if (match) {
+    return {
+      kanji: match[1].trim(),
+      reading: match[2].trim(),
+      isPureKana: false,
+    };
+  }
+  return {
+    kanji: rawWord.trim(),
+    reading: rawWord.trim(),
+    isPureKana: true,
+  };
+}
+
 
 /**
  * 재현 가능한 난수 생성을 위한 선형 합동 PRNG (지시서 27항)
@@ -81,17 +106,26 @@ export function validateQuestionUniqueness(
   }
 
   // 5. 정답 개념 집합과 오답 보기 간 의미 중복(동의어/다의어) 검사 (지시서 24, 25항)
-  const allTargetMeanings = targetMeanings.length > 0 ? targetMeanings : [correctOption];
-  for (let i = 0; i < question.options.length; i++) {
-    if (i === question.correctIndex) continue; // 정답 본인은 제외
+  // 히라가나 모드('hiragana')일 때는 일본어 발음 문자열이므로 한국어 뜻 사전 검사를 건너뜁니다.
+  if (question.quizMode !== 'hiragana') {
+    const allTargetMeanings = targetMeanings.length > 0 ? targetMeanings : [correctOption];
+    for (let i = 0; i < question.options.length; i++) {
+      if (i === question.correctIndex) continue; // 정답 본인은 제외
 
-    const distractor = question.options[i];
-    const safety = evaluateDistractorSafety(allTargetMeanings, distractor);
-    if (safety === 'BLOCK') {
-      return {
-        isValid: false,
-        reason: `오답 보기 "${distractor}"이(가) 정답 의미(${allTargetMeanings.join(', ')})와 동의어 또는 다의어로 BLOCK되었습니다`,
-      };
+      const distractor = question.options[i];
+      let meaningToCheck = distractor;
+      if (question.quizMode === 'combined') {
+        const mMatch = distractor.match(/\((.+)\)/);
+        if (mMatch) meaningToCheck = mMatch[1].trim();
+      }
+
+      const safety = evaluateDistractorSafety(allTargetMeanings, meaningToCheck);
+      if (safety === 'BLOCK') {
+        return {
+          isValid: false,
+          reason: `오답 보기 "${distractor}"이(가) 정답 의미(${allTargetMeanings.join(', ')})와 동의어 또는 다의어로 BLOCK되었습니다`,
+        };
+      }
     }
   }
 
@@ -99,7 +133,7 @@ export function validateQuestionUniqueness(
 }
 
 /**
- * 안전한 4지선다 문제 생성기 (지시서 21, 26항)
+ * 안전한 4지선다 문제 생성기 (지시서 21, 26항 및 일본어 등급/출제 모드 지원)
  */
 export function createQuizQuestion(
   wordList: WordEntry[],
@@ -120,7 +154,128 @@ export function createQuizQuestion(
     targetMeaningList.push(targetWord.meaning);
   }
 
-  // 대표 뜻 선정
+  const targetParsed = parseJapaneseWord(targetWord.word);
+  const jMode = options.japaneseMode;
+
+  // ----------------------------------------------------
+  // 모드 1: 히라가나(발음) 맞추기
+  // ----------------------------------------------------
+  if (jMode === 'hiragana') {
+    const isTargetPure = targetParsed.isPureKana;
+    const correctOption = targetParsed.reading;
+    const displayWord = isTargetPure
+      ? (targetMeaningList[0] || targetWord.word)
+      : targetParsed.kanji;
+    const prompt = isTargetPure
+      ? '알맞은 일본어 단어를 고르세요'
+      : '단어의 올바른 히라가나(발음)를 고르세요';
+
+    // 오답 후보 풀: 다른 단어들의 reading 추출
+    const readingSet = new Set<string>();
+    readingSet.add(correctOption.toLowerCase());
+    const candidateReadings: string[] = [];
+
+    const shuffledWords = prng.shuffle(wordList);
+    for (const w of shuffledWords) {
+      if (w.word.toLowerCase() === targetWord.word.toLowerCase()) continue;
+      const parsed = parseJapaneseWord(w.word);
+      const r = parsed.reading.trim();
+      if (!r || readingSet.has(r.toLowerCase())) continue;
+      readingSet.add(r.toLowerCase());
+      candidateReadings.push(r);
+      if (candidateReadings.length === 3) break;
+    }
+
+    if (candidateReadings.length < 3) return null;
+
+    const rawOptions = [correctOption, ...candidateReadings];
+    const shuffledOptions = prng.shuffle(rawOptions);
+    const correctIndex = shuffledOptions.indexOf(correctOption);
+
+    const question: QuizQuestion = {
+      wordId: targetWord.id || targetWord.word,
+      word: targetWord.word,
+      displayWord,
+      prompt,
+      quizMode: 'hiragana',
+      options: shuffledOptions,
+      correctIndex,
+      difficulty: targetWord.difficulty || 'medium',
+      partOfSpeech: targetWord.partOfSpeech,
+      meaning: targetMeaningList,
+      exampleSentence: targetWord.exampleSentence,
+      exampleTranslation: targetWord.exampleTranslation,
+    };
+
+    const validation = validateQuestionUniqueness(question, targetMeaningList);
+    return validation.isValid ? question : null;
+  }
+
+  // ----------------------------------------------------
+  // 모드 2: 히라가나 + 한글 뜻 같이 맞추기
+  // ----------------------------------------------------
+  if (jMode === 'combined') {
+    const repMeaning = targetMeaningList[0] || '';
+    const correctOption = `${targetParsed.reading} (${repMeaning})`;
+    const displayWord = targetParsed.isPureKana ? targetParsed.reading : targetParsed.kanji;
+    const prompt = '히라가나와 뜻이 바르게 연결된 것을 고르세요';
+
+    const chosenOptions = new Set<string>();
+    chosenOptions.add(correctOption);
+    const chosenReadings = new Set<string>();
+    chosenReadings.add(targetParsed.reading.toLowerCase());
+    const candidateCombined: string[] = [];
+
+    const shuffledWords = prng.shuffle(wordList);
+    for (const w of shuffledWords) {
+      if (w.word.toLowerCase() === targetWord.word.toLowerCase()) continue;
+      const parsed = parseJapaneseWord(w.word);
+      const r = parsed.reading.trim();
+      const m = (Array.isArray(w.meaning) ? w.meaning[0] : w.meaning) || '';
+      if (!r || !m) continue;
+      if (chosenReadings.has(r.toLowerCase())) continue;
+
+      const optStr = `${r} (${m})`;
+      if (chosenOptions.has(optStr)) continue;
+
+      // 의미 충돌 검사
+      const safety = evaluateDistractorSafety(targetMeaningList, m);
+      if (safety !== 'SAFE') continue;
+
+      chosenOptions.add(optStr);
+      chosenReadings.add(r.toLowerCase());
+      candidateCombined.push(optStr);
+      if (candidateCombined.length === 3) break;
+    }
+
+    if (candidateCombined.length < 3) return null;
+
+    const rawOptions = [correctOption, ...candidateCombined];
+    const shuffledOptions = prng.shuffle(rawOptions);
+    const correctIndex = shuffledOptions.indexOf(correctOption);
+
+    const question: QuizQuestion = {
+      wordId: targetWord.id || targetWord.word,
+      word: targetWord.word,
+      displayWord,
+      prompt,
+      quizMode: 'combined',
+      options: shuffledOptions,
+      correctIndex,
+      difficulty: targetWord.difficulty || 'medium',
+      partOfSpeech: targetWord.partOfSpeech,
+      meaning: targetMeaningList,
+      exampleSentence: targetWord.exampleSentence,
+      exampleTranslation: targetWord.exampleTranslation,
+    };
+
+    const validation = validateQuestionUniqueness(question, targetMeaningList);
+    return validation.isValid ? question : null;
+  }
+
+  // ----------------------------------------------------
+  // 모드 3: 기본 한글 뜻 맞추기 (TOEIC, 해사영어, 일본어 기본)
+  // ----------------------------------------------------
   const correctOption = targetMeaningList[0];
   if (!correctOption) return null;
 
@@ -140,12 +295,6 @@ export function createQuizQuestion(
       }
     }
   }
-
-  // 조건별 오답 필터링 시도:
-  // 1단계: 품사 일치 & 난이도 일치
-  // 2단계: 난이도 완화 (지시서 26항: 상 -> 중)
-  // 3단계: 전체 SAFE 풀에서 선별
-  let selectedDistractors: string[] = [];
 
   const filterPool = (matchPos: boolean, matchDiff: boolean) => {
     return candidatePool.filter((c) => {
@@ -169,7 +318,6 @@ export function createQuizQuestion(
       const norm = normalizeMeaning(item.meaning);
       if (chosenNorm.has(norm)) continue;
 
-      // 이미 선택된 다른 오답과의 상호 동의어도 BLOCK
       let conflictWithChosen = false;
       for (const existing of chosen) {
         if (evaluateDistractorSafety([existing], item.meaning) === 'BLOCK') {
@@ -188,6 +336,8 @@ export function createQuizQuestion(
     return chosen;
   };
 
+  let selectedDistractors: string[] = [];
+
   // 1단계 시도 (조건 엄격)
   if (options.matchPartOfSpeech || options.matchDifficulty) {
     selectedDistractors = tryPickDistractors(
@@ -205,12 +355,10 @@ export function createQuizQuestion(
     selectedDistractors = tryPickDistractors(candidatePool);
   }
 
-  // 지시서 26항: 그래도 3개 미만이면 복수정답 위험 문제를 내지 않고 null 반환
   if (selectedDistractors.length < 3) {
     return null;
   }
 
-  // 4개 보기 생성 및 셔플
   const rawOptions = [correctOption, ...selectedDistractors];
   const shuffledOptions = prng.shuffle(rawOptions);
   const correctIndex = shuffledOptions.indexOf(correctOption);
@@ -218,17 +366,24 @@ export function createQuizQuestion(
   const question: QuizQuestion = {
     wordId: targetWord.id || targetWord.word,
     word: targetWord.word,
+    displayWord: targetWord.word,
+    prompt: '단어의 알맞은 한글 뜻을 고르세요',
+    quizMode: 'meaning',
     options: shuffledOptions,
     correctIndex,
     difficulty: targetWord.difficulty || 'medium',
+    partOfSpeech: targetWord.partOfSpeech,
+    meaning: targetMeaningList,
+    exampleSentence: targetWord.exampleSentence,
+    exampleTranslation: targetWord.exampleTranslation,
   };
 
   // 최종 Hard Gate 검증
   const validation = validateQuestionUniqueness(question, targetMeaningList);
   if (!validation.isValid) {
-    // 검증 실패 시 생성 취소
     return null;
   }
 
   return question;
 }
+

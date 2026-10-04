@@ -1,6 +1,7 @@
-// 클라이언트 사용자 인증, 기기 코드 관리, 점수 동기화 및 랭킹 서비스
-import { UserProfile, RankingResponse, calculateScore, calculateAccuracy } from '../types/user';
+import { UserProfile, RankingResponse, RankingCategory, calculateScore, calculateAccuracy } from '../types/user';
 import { validateNickname, generateCleanNickname } from '../utils/profanityFilter';
+import { attendanceService, getKSTDateString } from './attendanceService';
+
 
 const LOCAL_STORAGE_KEY = 'voca_user_profile_v1';
 const PENDING_SCORE_KEY = 'voca_pending_score_v1';
@@ -231,8 +232,9 @@ export class UserService {
 
   /**
    * 문제 풀이 결과(맞춘 수, 틀린 수) 누적 및 점수 동기화
+   * @param lang 'en' (영어) | 'ja' (일본어)
    */
-  public async addQuizResult(correctDelta: number, incorrectDelta: number): Promise<UserProfile> {
+  public async addQuizResult(correctDelta: number, incorrectDelta: number, lang: 'en' | 'ja' = 'en'): Promise<UserProfile> {
     if (!this.currentProfile) {
       await this.initSession();
     }
@@ -240,12 +242,33 @@ export class UserService {
     const cDelta = Math.max(0, correctDelta);
     const iDelta = Math.max(0, incorrectDelta);
 
+    // 1. 출석체크 자동 연동
+    const attResult = attendanceService.recordAttendance();
+    const today = getKSTDateString();
+
     if (this.currentProfile) {
+      // 종합 성적
       this.currentProfile.correctCount += cDelta;
       this.currentProfile.incorrectCount += iDelta;
       this.currentProfile.totalScore = calculateScore(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
       this.currentProfile.accuracy = calculateAccuracy(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
+
+      // 언어별 세부 성적
+      if (lang === 'ja') {
+        this.currentProfile.correctCountJa = (this.currentProfile.correctCountJa || 0) + cDelta;
+        this.currentProfile.incorrectCountJa = (this.currentProfile.incorrectCountJa || 0) + iDelta;
+        this.currentProfile.totalScoreJa = calculateScore(this.currentProfile.correctCountJa, this.currentProfile.incorrectCountJa);
+      } else {
+        this.currentProfile.correctCountEn = (this.currentProfile.correctCountEn || 0) + cDelta;
+        this.currentProfile.incorrectCountEn = (this.currentProfile.incorrectCountEn || 0) + iDelta;
+        this.currentProfile.totalScoreEn = calculateScore(this.currentProfile.correctCountEn, this.currentProfile.incorrectCountEn);
+      }
+
+      // 출석 통계
+      this.currentProfile.attendanceStreak = attResult.streak;
+      this.currentProfile.lastAttendanceDate = today;
       this.currentProfile.lastActiveAt = new Date().toISOString();
+
       this.saveToStorage(this.currentProfile);
     }
 
@@ -256,15 +279,37 @@ export class UserService {
     this.setPendingScore(pending);
 
     // 비동기 백그라운드 서버 동기화
-    this.flushPendingScore().catch(() => {});
+    this.flushPendingScore(lang).catch(() => {});
 
     return this.currentProfile!;
   }
 
   /**
+   * 수동 출석체크 완료 시 서버 동기화
+   */
+  public async syncAttendance(streak: number): Promise<void> {
+    if (!this.currentProfile) return;
+    this.currentProfile.attendanceStreak = streak;
+    this.currentProfile.lastAttendanceDate = getKSTDateString();
+    this.saveToStorage(this.currentProfile);
+
+    try {
+      await fetch('/api/score/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          deviceCode: this.currentProfile.deviceCode,
+          attendanceStreak: streak,
+          lastAttendanceDate: this.currentProfile.lastAttendanceDate,
+        }),
+      });
+    } catch (_) {}
+  }
+
+  /**
    * 미전송 점수 서버 동기화
    */
-  public async flushPendingScore(): Promise<void> {
+  public async flushPendingScore(lang: 'en' | 'ja' = 'en'): Promise<void> {
     if (this.isSyncing || !this.currentProfile) return;
     const pending = this.getPendingScore();
     if (pending.correct === 0 && pending.incorrect === 0) return;
@@ -278,6 +323,12 @@ export class UserService {
           deviceCode: this.currentProfile.deviceCode,
           correctDelta: pending.correct,
           incorrectDelta: pending.incorrect,
+          lang,
+          totalCorrectEn: this.currentProfile.correctCountEn,
+          totalIncorrectEn: this.currentProfile.incorrectCountEn,
+          totalCorrectJa: this.currentProfile.correctCountJa,
+          totalIncorrectJa: this.currentProfile.incorrectCountJa,
+          attendanceStreak: this.currentProfile.attendanceStreak || 0,
         }),
       });
 
@@ -288,13 +339,15 @@ export class UserService {
           this.currentProfile.incorrectCount = data.user.incorrectCount;
           this.currentProfile.totalScore = data.user.totalScore;
           this.currentProfile.accuracy = data.user.accuracy;
+          if (typeof data.user.totalScoreEn === 'number') this.currentProfile.totalScoreEn = data.user.totalScoreEn;
+          if (typeof data.user.totalScoreJa === 'number') this.currentProfile.totalScoreJa = data.user.totalScoreJa;
+          if (typeof data.user.attendanceStreak === 'number') this.currentProfile.attendanceStreak = data.user.attendanceStreak;
           this.saveToStorage(this.currentProfile);
         }
         // 전송 성공 시 큐 비우기
         this.setPendingScore({ correct: 0, incorrect: 0 });
       }
     } catch (err) {
-      // 전송 실패 시 큐를 유지하여 다음 기회에 재전송
       console.warn('점수 서버 동기화 보류 (네트워크 미연결):', err);
     } finally {
       this.isSyncing = false;
@@ -315,10 +368,13 @@ export class UserService {
         const data = await res.json();
         if (data.user && this.currentProfile) {
           this.currentProfile.nickname = data.user.nickname;
-          this.currentProfile.correctCount = Math.max(this.currentProfile.correctCount, data.user.correctCount);
-          this.currentProfile.incorrectCount = Math.max(this.currentProfile.incorrectCount, data.user.incorrectCount);
+          this.currentProfile.correctCount = Math.max(this.currentProfile.correctCount, data.user.correctCount || 0);
+          this.currentProfile.incorrectCount = Math.max(this.currentProfile.incorrectCount, data.user.incorrectCount || 0);
           this.currentProfile.totalScore = calculateScore(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
           this.currentProfile.accuracy = calculateAccuracy(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
+          if (typeof data.user.totalScoreEn === 'number') this.currentProfile.totalScoreEn = data.user.totalScoreEn;
+          if (typeof data.user.totalScoreJa === 'number') this.currentProfile.totalScoreJa = data.user.totalScoreJa;
+          if (typeof data.user.attendanceStreak === 'number') this.currentProfile.attendanceStreak = data.user.attendanceStreak;
           this.saveToStorage(this.currentProfile);
         }
       }
@@ -326,12 +382,13 @@ export class UserService {
   }
 
   /**
-   * 실시간 랭킹 목록 조회
+   * 카테고리별 실시간 랭킹 목록 조회
+   * @param category 'all' | 'en' | 'ja' | 'streak'
    */
-  public async getRanking(): Promise<RankingResponse> {
+  public async getRanking(category: RankingCategory = 'all'): Promise<RankingResponse> {
     const deviceCode = this.currentProfile?.deviceCode || '';
     try {
-      const res = await fetch(`/api/ranking?deviceCode=${encodeURIComponent(deviceCode)}`);
+      const res = await fetch(`/api/ranking?category=${category}&deviceCode=${encodeURIComponent(deviceCode)}`);
       if (res.ok) {
         return await res.json();
       }
@@ -345,10 +402,25 @@ export class UserService {
       id: this.currentProfile.id,
       nickname: this.currentProfile.nickname,
       shortDeviceCode: this.currentProfile.deviceCode.split('-').pop() || '****',
-      totalScore: this.currentProfile.totalScore,
-      correctCount: this.currentProfile.correctCount,
-      incorrectCount: this.currentProfile.incorrectCount,
+      totalScore: category === 'en'
+        ? (this.currentProfile.totalScoreEn || 0)
+        : category === 'ja'
+        ? (this.currentProfile.totalScoreJa || 0)
+        : this.currentProfile.totalScore,
+      correctCount: category === 'en'
+        ? (this.currentProfile.correctCountEn || 0)
+        : category === 'ja'
+        ? (this.currentProfile.correctCountJa || 0)
+        : this.currentProfile.correctCount,
+      incorrectCount: category === 'en'
+        ? (this.currentProfile.incorrectCountEn || 0)
+        : category === 'ja'
+        ? (this.currentProfile.incorrectCountJa || 0)
+        : this.currentProfile.incorrectCount,
       accuracy: this.currentProfile.accuracy,
+      totalScoreEn: this.currentProfile.totalScoreEn || 0,
+      totalScoreJa: this.currentProfile.totalScoreJa || 0,
+      attendanceStreak: this.currentProfile.attendanceStreak || 0,
       lastActiveAt: this.currentProfile.lastActiveAt,
     } : undefined;
 
@@ -356,8 +428,10 @@ export class UserService {
       topRankers: myRankItem ? [myRankItem] : [],
       myRank: myRankItem,
       totalUsers: myRankItem ? 1 : 0,
+      category,
     };
   }
 }
 
 export const userService = UserService.getInstance();
+

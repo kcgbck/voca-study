@@ -1,5 +1,7 @@
 // 사용자 계정, 점수 및 랭킹 도메인 모델
 
+export type RankingCategory = 'all' | 'en' | 'ja' | 'streak';
+
 export interface UserProfile {
   id: string;
   deviceCode: string;
@@ -8,6 +10,16 @@ export interface UserProfile {
   incorrectCount: number;
   totalScore: number;
   accuracy: number;
+  // 언어별 세부 성적
+  correctCountEn?: number;
+  incorrectCountEn?: number;
+  totalScoreEn?: number;
+  correctCountJa?: number;
+  incorrectCountJa?: number;
+  totalScoreJa?: number;
+  // 출석 통계
+  attendanceStreak?: number;
+  lastAttendanceDate?: string;
   rank?: number;
   lastActiveAt: string;
   createdAt: string;
@@ -22,6 +34,10 @@ export interface RankingItem {
   correctCount: number;
   incorrectCount: number;
   accuracy: number;
+  // 카테고리별 세부 지표
+  totalScoreEn?: number;
+  totalScoreJa?: number;
+  attendanceStreak?: number;
   lastActiveAt: string;
 }
 
@@ -29,7 +45,9 @@ export interface RankingResponse {
   topRankers: RankingItem[];
   myRank?: RankingItem;
   totalUsers: number;
+  category?: RankingCategory;
 }
+
 
 /**
  * 점수 계산 공식:

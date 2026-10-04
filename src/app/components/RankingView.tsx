@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { userService } from '../../services/userService';
-import { UserProfile, RankingResponse, RankingItem } from '../../types/user';
+import { UserProfile, RankingResponse, RankingItem, RankingCategory, calculateAccuracy } from '../../types/user';
 import { validateNickname } from '../../utils/profanityFilter';
 
 interface RankingViewProps {
@@ -10,6 +10,7 @@ interface RankingViewProps {
 export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [rankingData, setRankingData] = useState<RankingResponse | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<RankingCategory>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -22,14 +23,14 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
   // 복사 완료 알림
   const [copyFeedback, setCopyFeedback] = useState(false);
 
-  const loadData = async (refresh = false) => {
+  const loadData = async (refresh = false, cat: RankingCategory = selectedCategory) => {
     if (refresh) setIsRefreshing(true);
     else setIsLoading(true);
 
     try {
       const curProfile = await userService.initSession();
       setProfile({ ...curProfile });
-      const ranking = await userService.getRanking();
+      const ranking = await userService.getRanking(cat);
       setRankingData(ranking);
     } catch (err) {
       console.error('랭킹 데이터 로드 실패:', err);
@@ -37,6 +38,11 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
       setIsLoading(false);
       setIsRefreshing(false);
     }
+  };
+
+  const handleSelectCategory = (cat: RankingCategory) => {
+    setSelectedCategory(cat);
+    loadData(false, cat);
   };
 
   useEffect(() => {
@@ -92,7 +98,9 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
               <span>실시간 랭킹 보드</span>
             </h1>
             <p className="ranking-sub-desc">
-              맞춘 문제 +10점 / 틀린 문제 -2점
+              {selectedCategory === 'streak'
+                ? '연속 출석일수 순위 (매일 출석체크)'
+                : '맞춘 문제 +10점 / 틀린 문제 -2점'}
             </p>
           </div>
         </div>
@@ -105,6 +113,41 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
           <span className={isRefreshing ? 'spin-animation' : ''}>🔄</span>
           <span>새로고침</span>
         </button>
+      </div>
+
+      {/* 랭킹 카테고리 4대 탭 (종합 / 영어 / 일본어 / 연속 출석) */}
+      <div className="ranking-category-tabs" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '12px' }}>
+        {[
+          { id: 'all', icon: '🏆', label: '종합' },
+          { id: 'en', icon: '📖', label: '영어' },
+          { id: 'ja', icon: '🇯🇵', label: '일본어' },
+          { id: 'streak', icon: '🔥', label: '연속 출석' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            className={`ranking-cat-tab-btn ${selectedCategory === tab.id ? 'active' : ''}`}
+            onClick={() => handleSelectCategory(tab.id as RankingCategory)}
+            style={{
+              padding: '8px 4px',
+              fontSize: '12px',
+              fontWeight: selectedCategory === tab.id ? '800' : '600',
+              borderRadius: '8px',
+              border: selectedCategory === tab.id ? '1px solid #38bdf8' : '1px solid rgba(255,255,255,0.08)',
+              background: selectedCategory === tab.id ? 'rgba(56, 189, 248, 0.18)' : 'rgba(255,255,255,0.04)',
+              color: selectedCategory === tab.id ? '#38bdf8' : '#94a3b8',
+              cursor: 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '2px',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <span style={{ fontSize: '14px' }}>{tab.icon}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
       </div>
 
       {/* 내 순위 & 프로필 카드 (모바일 최적화 고정 카드) */}
@@ -144,46 +187,147 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
           </div>
 
           <div className="my-rank-display">
-            <span className="my-rank-label">내 순위</span>
+            <span className="my-rank-label">
+              {selectedCategory === 'en'
+                ? '영어 순위'
+                : selectedCategory === 'ja'
+                ? '일어 순위'
+                : selectedCategory === 'streak'
+                ? '출석 순위'
+                : '내 순위'}
+            </span>
             <span className="my-rank-num">
               {rankingData?.myRank ? `${rankingData.myRank.rank}위` : '순위 밖'}
             </span>
           </div>
         </div>
 
-        {/* 4분할 지표 그리드 (모바일 1열 4분할) */}
+        {/* 4분할 지표 그리드 (카테고리별 맞춤 지표) */}
         <div className="my-stats-grid">
-          <div className="my-stat-box">
-            <span className="my-stat-label">총 점수</span>
-            <span className="my-stat-value score">
-              {profile?.totalScore || 0}점
-            </span>
-          </div>
-          <div className="my-stat-box">
-            <span className="my-stat-label">맞춘 문제</span>
-            <span className="my-stat-value correct">
-              +{profile?.correctCount || 0}
-            </span>
-          </div>
-          <div className="my-stat-box">
-            <span className="my-stat-label">틀린 문제</span>
-            <span className="my-stat-value incorrect">
-              -{profile?.incorrectCount || 0}
-            </span>
-          </div>
-          <div className="my-stat-box">
-            <span className="my-stat-label">정답률</span>
-            <span className="my-stat-value accuracy">
-              {profile?.accuracy || 0}%
-            </span>
-          </div>
+          {selectedCategory === 'en' ? (
+            <>
+              <div className="my-stat-box">
+                <span className="my-stat-label">영어 점수</span>
+                <span className="my-stat-value score">
+                  {profile?.totalScoreEn || 0}점
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">맞춘 문제</span>
+                <span className="my-stat-value correct">
+                  +{profile?.correctCountEn || 0}
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">틀린 문제</span>
+                <span className="my-stat-value incorrect">
+                  -{profile?.incorrectCountEn || 0}
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">정답률</span>
+                <span className="my-stat-value accuracy">
+                  {calculateAccuracy(profile?.correctCountEn || 0, profile?.incorrectCountEn || 0)}%
+                </span>
+              </div>
+            </>
+          ) : selectedCategory === 'ja' ? (
+            <>
+              <div className="my-stat-box">
+                <span className="my-stat-label">일본어 점수</span>
+                <span className="my-stat-value score">
+                  {profile?.totalScoreJa || 0}점
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">맞춘 문제</span>
+                <span className="my-stat-value correct">
+                  +{profile?.correctCountJa || 0}
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">틀린 문제</span>
+                <span className="my-stat-value incorrect">
+                  -{profile?.incorrectCountJa || 0}
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">정답률</span>
+                <span className="my-stat-value accuracy">
+                  {calculateAccuracy(profile?.correctCountJa || 0, profile?.incorrectCountJa || 0)}%
+                </span>
+              </div>
+            </>
+          ) : selectedCategory === 'streak' ? (
+            <>
+              <div className="my-stat-box">
+                <span className="my-stat-label">연속 출석</span>
+                <span className="my-stat-value" style={{ color: '#f59e0b', fontWeight: '800' }}>
+                  🔥 {profile?.attendanceStreak || 0}일
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">총 점수</span>
+                <span className="my-stat-value score">
+                  {profile?.totalScore || 0}점
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">맞춘 문제</span>
+                <span className="my-stat-value correct">
+                  +{profile?.correctCount || 0}
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">정답률</span>
+                <span className="my-stat-value accuracy">
+                  {profile?.accuracy || 0}%
+                </span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="my-stat-box">
+                <span className="my-stat-label">총 점수</span>
+                <span className="my-stat-value score">
+                  {profile?.totalScore || 0}점
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">맞춘 문제</span>
+                <span className="my-stat-value correct">
+                  +{profile?.correctCount || 0}
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">틀린 문제</span>
+                <span className="my-stat-value incorrect">
+                  -{profile?.incorrectCount || 0}
+                </span>
+              </div>
+              <div className="my-stat-box">
+                <span className="my-stat-label">정답률</span>
+                <span className="my-stat-value accuracy">
+                  {profile?.accuracy || 0}%
+                </span>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
       {/* 랭킹 리스트 섹션 */}
       <div className="ranking-list-section">
         <div className="ranking-list-header">
-          <span>🏆 전체 랭킹 TOP 50</span>
+          <span>
+            {selectedCategory === 'en'
+              ? '📖 영어 랭킹 TOP 50'
+              : selectedCategory === 'ja'
+              ? '🇯🇵 일본어 랭킹 TOP 50'
+              : selectedCategory === 'streak'
+              ? '🔥 연속 출석 랭킹 TOP 50'
+              : '🏆 종합 랭킹 TOP 50'}
+          </span>
           <span>총 {rankingData?.totalUsers || 0}명 참여</span>
         </div>
 
@@ -236,7 +380,9 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
                         <span>#{item.shortDeviceCode}</span>
                         <span>•</span>
                         <span className="rank-meta-accuracy">
-                          {item.accuracy}% 정답
+                          {selectedCategory === 'streak'
+                            ? `총 ${item.totalScore.toLocaleString()}점`
+                            : `${item.accuracy}% 정답`}
                         </span>
                       </div>
                     </div>
@@ -244,12 +390,25 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
 
                   {/* 점수 & 상세 내역 */}
                   <div className="rank-item-right">
-                    <span className="rank-item-score">
-                      {item.totalScore.toLocaleString()}점
-                    </span>
-                    <span className="rank-item-sub">
-                      맞춤 {item.correctCount} / 틀림 {item.incorrectCount}
-                    </span>
+                    {selectedCategory === 'streak' ? (
+                      <>
+                        <span className="rank-item-score" style={{ color: '#f59e0b' }}>
+                          🔥 {item.attendanceStreak || 0}일
+                        </span>
+                        <span className="rank-item-sub">
+                          연속 출석
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="rank-item-score">
+                          {item.totalScore.toLocaleString()}점
+                        </span>
+                        <span className="rank-item-sub">
+                          맞춤 {item.correctCount} / 틀림 {item.incorrectCount}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
               );

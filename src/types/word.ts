@@ -15,6 +15,8 @@ export interface WordEntry {
   sourceBookId?: string;
   confidence?: 'HIGH' | 'MEDIUM' | 'LOW';
   createdAt?: string;
+  exampleSentence?: string;
+  exampleTranslation?: string;
 }
 
 export interface WordBook {
@@ -45,13 +47,23 @@ export interface WordStat {
   lastStudiedAt: string;
 }
 
+export type JapaneseQuizMode = 'meaning' | 'hiragana' | 'combined';
+
 export interface QuizQuestion {
   wordId: string;
   word: string;
+  displayWord?: string;
+  prompt?: string;
+  quizMode?: JapaneseQuizMode;
   options: string[]; // 4지선다 보기
   correctIndex: number; // 0, 1, 2, 3
   difficulty: DifficultyLevel;
+  partOfSpeech?: string;
+  meaning?: string[];
+  exampleSentence?: string;
+  exampleTranslation?: string;
 }
+
 
 // 지시서 DB-PILOT-200 Section 9, 10, 15, 34 표준 어휘 DB 모델
 export type BuiltinDifficulty = 'easy' | 'medium' | 'hard';

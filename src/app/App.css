@@ -689,14 +689,121 @@ body {
   margin-bottom: 4px;
 }
 
+.quiz-badge-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
 .difficulty-badge {
   font-size: 10px;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.1);
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: 4px;
   color: var(--accent);
+  letter-spacing: 0.5px;
 }
+
+/* 문제 풀이 후 단어 아래 표시되는 빈출 실전문장 박스 */
+.quiz-example-box {
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 10px auto 0;
+  max-width: 540px;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.quiz-example-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.quiz-example-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #818cf8;
+}
+
+.quiz-example-speak-btn {
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: #c7d2fe;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.quiz-example-speak-btn:hover {
+  background: rgba(99, 102, 241, 0.35);
+  color: #ffffff;
+}
+
+.quiz-example-speak-btn.speaking {
+  background: #4f46e5;
+  color: #ffffff;
+  border-color: #818cf8;
+  animation: pulseSpeaking 0.8s ease-in-out infinite alternate;
+}
+
+.quiz-example-text {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-main);
+  word-break: keep-all;
+  font-weight: 500;
+}
+
+.quiz-example-highlight {
+  font-weight: 800;
+  color: #38bdf8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.quiz-example-translation {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #94a3b8;
+  margin-top: 5px;
+  word-break: keep-all;
+}
+
+.quiz-prompt-guide {
+  font-size: 13px;
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 8px;
+  padding: 6px 12px;
+  margin: 6px 0 10px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.quiz-answered-detail {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin: 8px 0;
+  font-size: 13px;
+  color: #6ee7b7;
+  text-align: center;
+}
+
 
 .quiz-options-list {
   display: flex;
@@ -1933,3 +2040,85 @@ body {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* 랭킹 4대 카테고리 탭 모바일 핏 */
+.ranking-category-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ranking-cat-tab-btn {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ranking-cat-tab-btn:active {
+  transform: scale(0.97);
+}
+
+/* 출석체크 모달 모바일 반응형 */
+.attendance-modal-card {
+  max-height: 92vh;
+  max-height: 92dvh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+}
+
+/* 스마트폰 초소형 화면(380px 이하) 칸맞춤 최적화 */
+@media (max-width: 380px) {
+  .app-container {
+    padding: 8px 10px;
+  }
+
+  .nav-btn {
+    font-size: 11px;
+    padding: 7px 1px;
+  }
+
+  .book-tab-btn {
+    font-size: 11px;
+    padding: 7px 2px;
+    gap: 2px;
+  }
+
+  .japanese-sub-tab-btn {
+    font-size: 11px;
+    padding: 7px 3px;
+  }
+
+  .control-btn {
+    font-size: 10px;
+    padding: 5px 1px;
+    letter-spacing: -0.5px;
+  }
+
+  .ranking-cat-tab-btn {
+    font-size: 11px;
+    padding: 6px 2px;
+  }
+
+  .my-stat-label {
+    font-size: 9px;
+  }
+
+  .my-stat-value {
+    font-size: 12px;
+  }
+
+  .rank-nickname {
+    font-size: 13px;
+    max-width: 110px;
+  }
+
+  .rank-item-score {
+    font-size: 14px;
+  }
+}
+

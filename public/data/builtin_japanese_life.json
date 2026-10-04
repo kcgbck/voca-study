@@ -1,8 +1,8 @@
 {
-  "databaseVersion": 1,
+  "databaseVersion": 2,
   "name": "완전 생활일본어 (여행·식당·교통·호텔·쇼핑 실전 회화 어휘)",
   "category": "japanese_life",
-  "description": "일본 여행 및 일상생활 생존 필수 실전 어휘 161어 수록",
+  "description": "일본 여행 및 일상생활 생존 필수 실전 어휘 수록",
   "wordCount": 160,
   "words": [
     {
