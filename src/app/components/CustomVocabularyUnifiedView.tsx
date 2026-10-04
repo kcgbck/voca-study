@@ -15,26 +15,15 @@ interface Props {
 export const CustomVocabularyUnifiedView: React.FC<Props> = ({
   onStartQuizWithWords,
   initialMode = 'photo',
-  onBack,
+  onBack: _onBack,
 }) => {
   const [mode, setMode] = useState<'photo' | 'pdf'>(initialMode);
 
   return (
     <div className="custom-vocab-unified-view" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      {/* 사진 vs PDF 통합 선택 탭 및 뒤로가기 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-        {onBack && (
-          <button
-            type="button"
-            className="ranking-back-btn"
-            onClick={onBack}
-            title="홈으로 돌아가기"
-            style={{ width: '34px', height: '34px', fontSize: '18px', flexShrink: 0 }}
-          >
-            ←
-          </button>
-        )}
-        <div className="book-selector-tabs" style={{ flex: 1, margin: 0, gridTemplateColumns: '1fr 1fr' }}>
+      {/* 사진 vs PDF 통합 선택 탭 */}
+      <div style={{ marginBottom: '4px' }}>
+        <div className="book-selector-tabs" style={{ width: '100%', margin: 0, gridTemplateColumns: '1fr 1fr' }}>
           <button
             type="button"
             className={`book-tab-btn ${mode === 'photo' ? 'active' : ''}`}

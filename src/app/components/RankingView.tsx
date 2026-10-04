@@ -7,7 +7,7 @@ interface RankingViewProps {
   onBack: () => void;
 }
 
-export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
+export const RankingView: React.FC<RankingViewProps> = ({ onBack: _onBack }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [rankingData, setRankingData] = useState<RankingResponse | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<RankingCategory>('all');
@@ -28,10 +28,14 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
     else setIsLoading(true);
 
     try {
+      // 1. 미전송 점수가 남아있다면 서버에 먼저 동기화
+      await userService.flushPendingScore(cat === 'ja' ? 'ja' : 'en');
       const curProfile = await userService.initSession();
-      setProfile({ ...curProfile });
+      setProfile(curProfile ? { ...curProfile } : null);
       const ranking = await userService.getRanking(cat);
       setRankingData(ranking);
+      const latestProfile = userService.getProfile();
+      if (latestProfile) setProfile({ ...latestProfile });
     } catch (err) {
       console.error('랭킹 데이터 로드 실패:', err);
     } finally {
@@ -85,13 +89,6 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
       {/* 상단 네비게이션 헤더 */}
       <div className="ranking-nav-bar">
         <div className="ranking-nav-left">
-          <button
-            onClick={onBack}
-            className="ranking-back-btn"
-            title="뒤로 가기"
-          >
-            ←
-          </button>
           <div className="ranking-title-group">
             <h1 className="ranking-main-title">
               <span>🏆</span>
@@ -197,7 +194,7 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack }) => {
                 : '내 순위'}
             </span>
             <span className="my-rank-num">
-              {rankingData?.myRank ? `${rankingData.myRank.rank}위` : '순위 밖'}
+              {rankingData?.myRank && rankingData.myRank.rank > 0 ? `${rankingData.myRank.rank}위` : '순위 밖'}
             </span>
           </div>
         </div>

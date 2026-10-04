@@ -11,7 +11,7 @@ export interface MaritimeWordEntry {
   topic: 'navigation' | 'emergency' | 'safety' | 'cargo' | 'communication' | 'engine';
 }
 
-const smcpRawWords: Array<Omit<MaritimeWordEntry, 'id'>> = [
+export const smcpRawWords: Array<Omit<MaritimeWordEntry, 'id'>> = [
   // 1. Emergency & Distress (퇴선, 조난, 화재, 비상)
   {
     word: 'abandon vessel',
@@ -1447,4 +1447,6 @@ export function buildMaritimeSmcpDatabase() {
   console.log(`[Success] ${outputPath} 파일 생성 완료 (단어 수: ${words.length})`);
 }
 
-buildMaritimeSmcpDatabase();
+if (process.argv[1] && process.argv[1].includes('generateMaritimeSmcp.ts')) {
+  buildMaritimeSmcpDatabase();
+}

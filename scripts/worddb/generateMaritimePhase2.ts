@@ -1449,4 +1449,6 @@ export function buildMaritimePhase2Database() {
   console.log(`[Success] ${p1Path} 파일 갱신 완료! 총 어휘 수: ${combinedList.length}개`);
 }
 
-buildMaritimePhase2Database();
+if (process.argv[1] && process.argv[1].includes('generateMaritimePhase2.ts')) {
+  buildMaritimePhase2Database();
+}

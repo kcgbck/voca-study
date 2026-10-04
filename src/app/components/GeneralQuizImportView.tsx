@@ -13,7 +13,7 @@ interface Props {
   onStartQuiz: (bookId: string) => void;
 }
 
-export const GeneralQuizImportView: React.FC<Props> = ({ onBackToHome, onStartQuiz }) => {
+export const GeneralQuizImportView: React.FC<Props> = ({ onBackToHome: _onBackToHome, onStartQuiz }) => {
   const [docType, setDocType] = useState<DocumentType>('MULTIPLE_CHOICE');
   const [docClassificationReason, setDocClassificationReason] = useState<string>('');
   const [bookTitle, setBookTitle] = useState<string>('신규 일반 문제집');
@@ -200,17 +200,9 @@ export const GeneralQuizImportView: React.FC<Props> = ({ onBackToHome, onStartQu
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '16px' }}>
       {/* 상단 네비게이션 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-        <button
-          onClick={onBackToHome}
-          className="ranking-back-btn"
-          style={{ width: '34px', height: '34px', fontSize: '18px', flexShrink: 0 }}
-          title="홈으로 돌아가기"
-        >
-          ←
-        </button>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
         <h2 style={{
-          fontSize: 'clamp(14px, 3.8vw, 17px)',
+          fontSize: 'clamp(15px, 4vw, 18px)',
           fontWeight: 'bold',
           color: '#60a5fa',
           whiteSpace: 'nowrap',

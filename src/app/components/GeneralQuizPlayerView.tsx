@@ -123,9 +123,13 @@ export const GeneralQuizPlayerView: React.FC<Props> = ({ bookId, onBackToHome, o
       const wrongCount = questions.length - correctCount;
       const earned = Math.max(0, correctCount * 10 - wrongCount * 2);
       setSyncedScore(earned);
-      userService.addQuizResult(correctCount, wrongCount).catch(console.error);
+      const isJapanese = Boolean(
+        (bookTitle && /[\u3040-\u309F\u30A0-\u30FF]/.test(bookTitle)) ||
+        questions.some((q) => /[\u3040-\u309F\u30A0-\u30FF]/.test(q.stem))
+      );
+      userService.addQuizResult(correctCount, wrongCount, isJapanese ? 'ja' : 'en').catch(console.error);
     }
-  }, [isCompleted, questions.length, correctCount]);
+  }, [isCompleted, questions.length, correctCount, bookTitle, questions]);
 
   if (isCompleted) {
     const accuracy = Math.round((correctCount / questions.length) * 100);
@@ -197,15 +201,6 @@ export const GeneralQuizPlayerView: React.FC<Props> = ({ bookId, onBackToHome, o
     <div style={{ maxWidth: '680px', margin: '0 auto', padding: '16px' }}>
       {/* 상단 프로그레스 바 */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-        <button
-          type="button"
-          onClick={onBackToHome}
-          className="ranking-back-btn"
-          style={{ width: '34px', height: '34px', fontSize: '18px', flexShrink: 0 }}
-          title="홈으로 돌아가기"
-        >
-          ←
-        </button>
         <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#93c5fd' }}>
           {currentIndex + 1} / {questions.length}
         </span>

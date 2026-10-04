@@ -64,7 +64,60 @@ async function ensureD1Columns(db: D1Database): Promise<void> {
       // 이미 존재하는 컬럼 무시
     }
   }
+
+  // 기존 사용자들의 과거 점수(일본어 분리 전 풀었던 점수)가 영어 점수로 반영되도록 1회 안전 마이그레이션
+  try {
+    await db.prepare(`
+      UPDATE users 
+      SET correct_count_en = correct_count, 
+          incorrect_count_en = incorrect_count, 
+          total_score_en = total_score 
+      WHERE (total_score_en = 0 OR total_score_en IS NULL) 
+        AND (total_score > 0 OR correct_count > 0)
+        AND (correct_count_ja = 0 OR correct_count_ja IS NULL)
+    `).run();
+  } catch (err) {
+    console.error('Score migration error:', err);
+  }
+
+  // 일본어 정답 기록이 있으나 점수가 0/NULL인 경우 자동 계산 갱신
+  try {
+    await db.prepare(`
+      UPDATE users 
+      SET total_score_ja = MAX(0, (COALESCE(correct_count_ja, 0) * 10) - (COALESCE(incorrect_count_ja, 0) * 2))
+      WHERE (total_score_ja = 0 OR total_score_ja IS NULL)
+        AND (COALESCE(correct_count_ja, 0) > 0)
+    `).run();
+  } catch (err) {
+    console.error('Score JA calculation migration error:', err);
+  }
+
   columnsChecked = true;
+}
+
+let cleanupExecuted = false;
+async function performDatabaseCleanup(db: D1Database): Promise<{ deletedSpecial: number; deletedDummies: number }> {
+  try {
+    // 1. 요청된 특정 사용자 계정 삭제: "토익찍고1탈해경"
+    const delTarget = await db.prepare("DELETE FROM users WHERE nickname = '토익찍고1탈해경'").run();
+    const deletedSpecial = delTarget.meta?.changes ?? 0;
+
+    // 2. 문제를 한 문제도 풀지 않고 점수/출석이 0인 더미/단순접속 계정 삭제
+    const delDummy = await db.prepare(`
+      DELETE FROM users 
+      WHERE (correct_count = 0 OR correct_count IS NULL)
+        AND (incorrect_count = 0 OR incorrect_count IS NULL)
+        AND (total_score = 0 OR total_score IS NULL)
+        AND (attendance_streak = 0 OR attendance_streak IS NULL)
+    `).run();
+    const deletedDummies = delDummy.meta?.changes ?? 0;
+
+    cleanupExecuted = true;
+    return { deletedSpecial, deletedDummies };
+  } catch (err) {
+    console.error('Database cleanup error:', err);
+    return { deletedSpecial: 0, deletedDummies: 0 };
+  }
 }
 
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
@@ -119,10 +172,24 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
   }
 
   try {
+    // 0-1. 데이터베이스 수동 정리 엔드포인트 (/api/admin/cleanup)
+    if (url.pathname === '/api/admin/cleanup') {
+      await ensureD1Columns(env.DB);
+      const res = await performDatabaseCleanup(env.DB);
+      return jsonResponse({
+        success: true,
+        message: '더미 계정 및 요청된 계정 삭제 완료',
+        ...res,
+      });
+    }
+
     // 1. 기기 코드 기반 로그인 또는 자동 회원가입
     // POST /api/auth/device-login
     if (url.pathname === '/api/auth/device-login' && request.method === 'POST') {
       await ensureD1Columns(env.DB);
+      if (!cleanupExecuted) {
+        await performDatabaseCleanup(env.DB);
+      }
       const body = (await request.json().catch(() => ({}))) as {
         deviceCode?: string;
         nickname?: string;
@@ -163,6 +230,9 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
               createdAt: existing.created_at,
             },
           });
+        } else {
+          // 기기 코드가 전달되었으나 삭제된 계정인 경우 신규 코드 생성으로 전환
+          targetCode = undefined;
         }
       }
 
@@ -284,25 +354,35 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
       const cDelta = Math.max(0, body.correctDelta || 0);
       const iDelta = Math.max(0, body.incorrectDelta || 0);
 
-      const newCorrect = (user.correct_count || 0) + cDelta;
-      const newIncorrect = (user.incorrect_count || 0) + iDelta;
-      const newScore = calculateScore(newCorrect, newIncorrect);
+      const cDeltaEn = typeof (body as any).correctDeltaEn === 'number' ? Math.max(0, (body as any).correctDeltaEn) : (body.lang !== 'ja' ? cDelta : 0);
+      const iDeltaEn = typeof (body as any).incorrectDeltaEn === 'number' ? Math.max(0, (body as any).incorrectDeltaEn) : (body.lang !== 'ja' ? iDelta : 0);
+      const cDeltaJa = typeof (body as any).correctDeltaJa === 'number' ? Math.max(0, (body as any).correctDeltaJa) : (body.lang === 'ja' ? cDelta : 0);
+      const iDeltaJa = typeof (body as any).incorrectDeltaJa === 'number' ? Math.max(0, (body as any).incorrectDeltaJa) : (body.lang === 'ja' ? iDelta : 0);
 
-      let newCorrectEn = user.correct_count_en ?? 0;
-      let newIncorrectEn = user.incorrect_count_en ?? 0;
-      let newCorrectJa = user.correct_count_ja ?? 0;
-      let newIncorrectJa = user.incorrect_count_ja ?? 0;
+      let newCorrectEn = (user.correct_count_en ?? 0) + cDeltaEn;
+      let newIncorrectEn = (user.incorrect_count_en ?? 0) + iDeltaEn;
+      let newCorrectJa = (user.correct_count_ja ?? 0) + cDeltaJa;
+      let newIncorrectJa = (user.incorrect_count_ja ?? 0) + iDeltaJa;
 
-      if (body.lang === 'ja') {
-        newCorrectJa += cDelta;
-        newIncorrectJa += iDelta;
-      } else {
-        newCorrectEn += cDelta;
-        newIncorrectEn += iDelta;
+      if (typeof body.totalCorrectEn === 'number') {
+        newCorrectEn = Math.max(newCorrectEn, body.totalCorrectEn);
+      }
+      if (typeof body.totalIncorrectEn === 'number') {
+        newIncorrectEn = Math.max(newIncorrectEn, body.totalIncorrectEn);
+      }
+      if (typeof body.totalCorrectJa === 'number') {
+        newCorrectJa = Math.max(newCorrectJa, body.totalCorrectJa);
+      }
+      if (typeof body.totalIncorrectJa === 'number') {
+        newIncorrectJa = Math.max(newIncorrectJa, body.totalIncorrectJa);
       }
 
       const newScoreEn = calculateScore(newCorrectEn, newIncorrectEn);
       const newScoreJa = calculateScore(newCorrectJa, newIncorrectJa);
+
+      const newCorrect = Math.max((user.correct_count || 0) + cDeltaEn + cDeltaJa, newCorrectEn + newCorrectJa);
+      const newIncorrect = Math.max((user.incorrect_count || 0) + iDeltaEn + iDeltaJa, newIncorrectEn + newIncorrectJa);
+      const newScore = calculateScore(newCorrect, newIncorrect);
 
       const newStreak = typeof body.attendanceStreak === 'number'
         ? Math.max(user.attendance_streak ?? 0, body.attendanceStreak)
@@ -350,18 +430,27 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
     }
 
     // 4. 실시간 랭킹 조회 (종합 / 영어 / 일본어 / 연속 출석 분리)
+    // 실제 학습 활동이 있는 사용자만 랭킹에 노출 (더미 및 미참여 계정 제외)
     // GET /api/ranking?category=all|en|ja|streak&deviceCode=...
     if (url.pathname === '/api/ranking' && request.method === 'GET') {
       await ensureD1Columns(env.DB);
+      if (!cleanupExecuted) {
+        await performDatabaseCleanup(env.DB);
+      }
       const deviceCode = url.searchParams.get('deviceCode')?.trim().toUpperCase();
       const category = (url.searchParams.get('category')?.trim() || 'all') as RankingCategory;
 
+      let whereClause = 'WHERE (correct_count > 0 OR incorrect_count > 0 OR total_score > 0)';
       let orderByClause = 'ORDER BY total_score DESC, correct_count DESC, last_active_at DESC';
+
       if (category === 'en') {
+        whereClause = 'WHERE (COALESCE(total_score_en, 0) > 0 OR COALESCE(correct_count_en, 0) > 0 OR COALESCE(incorrect_count_en, 0) > 0)';
         orderByClause = 'ORDER BY COALESCE(total_score_en, 0) DESC, COALESCE(correct_count_en, 0) DESC, last_active_at DESC';
       } else if (category === 'ja') {
+        whereClause = 'WHERE (COALESCE(total_score_ja, 0) > 0 OR COALESCE(correct_count_ja, 0) > 0 OR COALESCE(incorrect_count_ja, 0) > 0)';
         orderByClause = 'ORDER BY COALESCE(total_score_ja, 0) DESC, COALESCE(correct_count_ja, 0) DESC, last_active_at DESC';
       } else if (category === 'streak') {
+        whereClause = 'WHERE COALESCE(attendance_streak, 0) > 0';
         orderByClause = 'ORDER BY COALESCE(attendance_streak, 0) DESC, total_score DESC, last_active_at DESC';
       }
 
@@ -376,6 +465,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
                 COALESCE(attendance_streak, 0) as attendance_streak,
                 last_attendance_date, last_active_at
          FROM users
+         ${whereClause}
          ${orderByClause}
          LIMIT 50`
       ).all<any>();
@@ -386,13 +476,13 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         let displayIncorrect = row.incorrect_count;
 
         if (category === 'en') {
-          displayScore = row.total_score_en;
           displayCorrect = row.correct_count_en;
           displayIncorrect = row.incorrect_count_en;
+          displayScore = row.total_score_en > 0 ? row.total_score_en : calculateScore(displayCorrect, displayIncorrect);
         } else if (category === 'ja') {
-          displayScore = row.total_score_ja;
           displayCorrect = row.correct_count_ja;
           displayIncorrect = row.incorrect_count_ja;
+          displayScore = row.total_score_ja > 0 ? row.total_score_ja : calculateScore(displayCorrect, displayIncorrect);
         }
 
         return {
@@ -404,15 +494,15 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
           correctCount: displayCorrect,
           incorrectCount: displayIncorrect,
           accuracy: calculateAccuracy(displayCorrect, displayIncorrect),
-          totalScoreEn: row.total_score_en,
-          totalScoreJa: row.total_score_ja,
+          totalScoreEn: row.total_score_en > 0 ? row.total_score_en : calculateScore(row.correct_count_en, row.incorrect_count_en),
+          totalScoreJa: row.total_score_ja > 0 ? row.total_score_ja : calculateScore(row.correct_count_ja, row.incorrect_count_ja),
           attendanceStreak: row.attendance_streak,
           lastActiveAt: row.last_active_at,
         };
       });
 
       const totalRes = await env.DB.prepare(
-        'SELECT COUNT(*) as count FROM users'
+        `SELECT COUNT(*) as count FROM users ${whereClause}`
       ).first<{ count: number }>();
       const totalUsers = totalRes?.count || topRankers.length;
 
@@ -432,31 +522,52 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         ).bind(deviceCode).first<any>();
 
         if (me) {
-          let rankNumber = 1;
+          const myEnScore = me.total_score_en > 0 ? me.total_score_en : calculateScore(me.correct_count_en, me.incorrect_count_en);
+          const myJaScore = me.total_score_ja > 0 ? me.total_score_ja : calculateScore(me.correct_count_ja, me.incorrect_count_ja);
+
+          let hasParticipated = false;
           if (category === 'en') {
-            const rRes = await env.DB.prepare(
-              `SELECT COUNT(*) + 1 as rank FROM users 
-               WHERE COALESCE(total_score_en, 0) > ? OR (COALESCE(total_score_en, 0) = ? AND COALESCE(correct_count_en, 0) > ?)`
-            ).bind(me.total_score_en, me.total_score_en, me.correct_count_en).first<{ rank: number }>();
-            rankNumber = rRes?.rank || 1;
+            hasParticipated = (myEnScore > 0 || me.correct_count_en > 0 || me.incorrect_count_en > 0);
           } else if (category === 'ja') {
-            const rRes = await env.DB.prepare(
-              `SELECT COUNT(*) + 1 as rank FROM users 
-               WHERE COALESCE(total_score_ja, 0) > ? OR (COALESCE(total_score_ja, 0) = ? AND COALESCE(correct_count_ja, 0) > ?)`
-            ).bind(me.total_score_ja, me.total_score_ja, me.correct_count_ja).first<{ rank: number }>();
-            rankNumber = rRes?.rank || 1;
+            hasParticipated = (myJaScore > 0 || me.correct_count_ja > 0 || me.incorrect_count_ja > 0);
           } else if (category === 'streak') {
-            const rRes = await env.DB.prepare(
-              `SELECT COUNT(*) + 1 as rank FROM users 
-               WHERE COALESCE(attendance_streak, 0) > ? OR (COALESCE(attendance_streak, 0) = ? AND total_score > ?)`
-            ).bind(me.attendance_streak, me.attendance_streak, me.total_score).first<{ rank: number }>();
-            rankNumber = rRes?.rank || 1;
+            hasParticipated = (me.attendance_streak > 0);
           } else {
-            const rRes = await env.DB.prepare(
-              `SELECT COUNT(*) + 1 as rank FROM users 
-               WHERE total_score > ? OR (total_score = ? AND correct_count > ?)`
-            ).bind(me.total_score, me.total_score, me.correct_count).first<{ rank: number }>();
-            rankNumber = rRes?.rank || 1;
+            hasParticipated = (me.total_score > 0 || me.correct_count > 0 || me.incorrect_count > 0);
+          }
+
+          let rankNumber = 0;
+          if (hasParticipated) {
+            const cleanWhere = whereClause.replace('WHERE ', '');
+            if (category === 'en') {
+              const rRes = await env.DB.prepare(
+                `SELECT COUNT(*) + 1 as rank FROM users 
+                 WHERE ${cleanWhere} 
+                   AND (COALESCE(total_score_en, 0) > ? OR (COALESCE(total_score_en, 0) = ? AND COALESCE(correct_count_en, 0) > ?))`
+              ).bind(myEnScore, myEnScore, me.correct_count_en).first<{ rank: number }>();
+              rankNumber = rRes?.rank || 1;
+            } else if (category === 'ja') {
+              const rRes = await env.DB.prepare(
+                `SELECT COUNT(*) + 1 as rank FROM users 
+                 WHERE ${cleanWhere}
+                   AND (COALESCE(total_score_ja, 0) > ? OR (COALESCE(total_score_ja, 0) = ? AND COALESCE(correct_count_ja, 0) > ?))`
+              ).bind(myJaScore, myJaScore, me.correct_count_ja).first<{ rank: number }>();
+              rankNumber = rRes?.rank || 1;
+            } else if (category === 'streak') {
+              const rRes = await env.DB.prepare(
+                `SELECT COUNT(*) + 1 as rank FROM users 
+                 WHERE ${cleanWhere}
+                   AND (COALESCE(attendance_streak, 0) > ? OR (COALESCE(attendance_streak, 0) = ? AND total_score > ?))`
+              ).bind(me.attendance_streak, me.attendance_streak, me.total_score).first<{ rank: number }>();
+              rankNumber = rRes?.rank || 1;
+            } else {
+              const rRes = await env.DB.prepare(
+                `SELECT COUNT(*) + 1 as rank FROM users 
+                 WHERE ${cleanWhere}
+                   AND (total_score > ? OR (total_score = ? AND correct_count > ?))`
+              ).bind(me.total_score, me.total_score, me.correct_count).first<{ rank: number }>();
+              rankNumber = rRes?.rank || 1;
+            }
           }
 
           let displayScore = me.total_score;
@@ -464,11 +575,11 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
           let displayIncorrect = me.incorrect_count;
 
           if (category === 'en') {
-            displayScore = me.total_score_en;
+            displayScore = myEnScore;
             displayCorrect = me.correct_count_en;
             displayIncorrect = me.incorrect_count_en;
           } else if (category === 'ja') {
-            displayScore = me.total_score_ja;
+            displayScore = myJaScore;
             displayCorrect = me.correct_count_ja;
             displayIncorrect = me.incorrect_count_ja;
           }

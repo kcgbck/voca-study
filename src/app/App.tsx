@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { QuizPreviewView } from './components/QuizPreviewView';
-import { CustomVocabularyUnifiedView } from './components/CustomVocabularyUnifiedView';
-import { GeneralQuizImportView } from './components/GeneralQuizImportView';
+import { CustomMakerUnifiedView } from './components/CustomMakerUnifiedView';
 import { GeneralQuizPlayerView } from './components/GeneralQuizPlayerView';
 import { RankingView } from './components/RankingView';
 import { SettingsModal, ThemeMode } from './components/SettingsModal';
@@ -11,7 +10,7 @@ import type { WordEntry } from '../types/word';
 import type { UserProfile } from '../types/user';
 import './App.css';
 
-type ActiveTab = 'home' | 'quiz' | 'custom_vocab' | 'general_import' | 'general_quiz' | 'ranking';
+type ActiveTab = 'home' | 'quiz_en' | 'quiz_ja' | 'custom_maker' | 'general_quiz' | 'ranking';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
@@ -19,7 +18,7 @@ export const App: React.FC = () => {
   const [customWords, setCustomWords] = useState<WordEntry[] | undefined>(undefined);
   const [customTitle, setCustomTitle] = useState<string | undefined>(undefined);
   const [customSourceType, setCustomSourceType] = useState<
-    'builtin' | 'maritime' | 'japanese_exam' | 'japanese_life' | 'wrong_notes' | 'photo' | 'pdf'
+    'builtin' | 'maritime' | 'maritime_comm' | 'japanese_exam' | 'japanese_life' | 'wrong_notes' | 'photo' | 'pdf'
   >('builtin');
 
   // 테마 상태 ('dark' | 'light' | 'system')
@@ -85,7 +84,7 @@ export const App: React.FC = () => {
     const handlePopState = (event: PopStateEvent) => {
       const state = event.state as {
         tab?: ActiveTab;
-        quizSource?: 'builtin' | 'maritime' | 'japanese_exam' | 'japanese_life' | 'wrong_notes';
+        quizSource?: 'builtin' | 'maritime' | 'maritime_comm' | 'japanese_exam' | 'japanese_life' | 'wrong_notes';
       } | null;
       if (state && state.tab) {
         if (state.quizSource) {
@@ -108,7 +107,7 @@ export const App: React.FC = () => {
   const navigateToTab = (
     tab: ActiveTab,
     pushHistory = true,
-    quizSource?: 'builtin' | 'maritime' | 'japanese_exam' | 'japanese_life' | 'wrong_notes'
+    quizSource?: 'builtin' | 'maritime' | 'maritime_comm' | 'japanese_exam' | 'japanese_life' | 'wrong_notes'
   ) => {
     if (quizSource) {
       setCustomSourceType(quizSource);
@@ -120,7 +119,7 @@ export const App: React.FC = () => {
     setActiveTab(tab);
     if (pushHistory) {
       window.history.pushState(
-        { tab, quizSource: quizSource || (tab === 'quiz' ? customSourceType : undefined) },
+        { tab, quizSource: quizSource || ((tab === 'quiz_en' || tab === 'quiz_ja') ? customSourceType : undefined) },
         '',
         window.location.pathname
       );
@@ -194,7 +193,7 @@ export const App: React.FC = () => {
     setCustomWords(entries);
     setCustomTitle(title || `추출 단어장 (${entries.length}단어)`);
     setCustomSourceType(sourceType);
-    navigateToTab('quiz', true);
+    navigateToTab('quiz_en', true);
   };
 
   return (
@@ -235,31 +234,25 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {/* 상단 4개 탭 1줄 그리드 네비게이션 (토익·해사영어 통합) */}
-        <nav className="header-nav">
+        {/* 상단 3대 메인 탭 그리드 네비게이션: 홈 / 영어 / 일본어 */}
+        <nav className="header-nav" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
           <button
             className={`nav-btn ${activeTab === 'home' ? 'active' : ''}`}
             onClick={() => navigateToTab('home')}
           >
-            홈
+            🏠 홈
           </button>
           <button
-            className={`nav-btn ${activeTab === 'quiz' ? 'active' : ''}`}
-            onClick={() => navigateToTab('quiz', true, 'builtin')}
+            className={`nav-btn ${activeTab === 'quiz_en' ? 'active' : ''}`}
+            onClick={() => navigateToTab('quiz_en', true, 'builtin')}
           >
-            기본 문제
+            🔤 영어
           </button>
           <button
-            className={`nav-btn ${activeTab === 'general_import' || activeTab === 'general_quiz' ? 'active' : ''}`}
-            onClick={() => navigateToTab('general_import')}
+            className={`nav-btn ${activeTab === 'quiz_ja' ? 'active' : ''}`}
+            onClick={() => navigateToTab('quiz_ja', true, 'japanese_exam')}
           >
-            문제집
-          </button>
-          <button
-            className={`nav-btn ${activeTab === 'custom_vocab' ? 'active' : ''}`}
-            onClick={() => navigateToTab('custom_vocab')}
-          >
-            영단어
+            🇯🇵 일본어
           </button>
         </nav>
       </header>
@@ -268,7 +261,29 @@ export const App: React.FC = () => {
       <main className="app-main">
         {activeTab === 'home' && (
           <div className="home-dashboard">
-            {/* 상단 모바일 핏 내 학습 랭킹 요약 배너 */}
+            {/* 1. 홈 최상단: 출석체크 캘린더 대형 진입 버튼 */}
+            <button
+              className="menu-card"
+              style={{
+                borderLeft: '4px solid #f59e0b',
+                background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(217, 119, 6, 0.1))',
+                marginBottom: '10px',
+                padding: '14px 16px',
+              }}
+              onClick={() => setIsAttendanceOpen(true)}
+            >
+              <div className="menu-header-line">
+                <span className="menu-icon" style={{ fontSize: '18px' }}>📅</span>
+                <span className="menu-title" style={{ color: '#fbbf24', fontSize: '16px' }}>
+                  오늘 출석체크 하기 (연속 {currentUser?.attendanceStreak || 0}일 출석 중 🔥)
+                </span>
+              </div>
+              <span className="menu-sub" style={{ color: '#fde68a' }}>
+                매일 출석 도장 찍고 연속 출석 랭킹 상위권에 도전하세요!
+              </span>
+            </button>
+
+            {/* 2. 상단 모바일 핏 내 학습 랭킹 요약 배너 */}
             <div
               onClick={() => navigateToTab('ranking')}
               style={{
@@ -315,7 +330,7 @@ export const App: React.FC = () => {
             {/* 홈 핵심 메뉴 그리드 (이모지와 제목을 동일 크기 한 줄로 배치) */}
             <div className="action-menu-grid">
               {/* 1번째: TOEIC 문제풀이 */}
-              <button className="menu-card primary" onClick={() => navigateToTab('quiz', true, 'builtin')}>
+              <button className="menu-card primary" onClick={() => navigateToTab('quiz_en', true, 'builtin')}>
                 <div className="menu-header-line">
                   <span className="menu-icon">📝</span>
                   <span className="menu-title">TOEIC(1800단어) 문제풀이</span>
@@ -324,7 +339,7 @@ export const App: React.FC = () => {
               </button>
 
               {/* 2번째: 해사영어 문제풀이 */}
-              <button className="menu-card maritime" onClick={() => navigateToTab('quiz', true, 'maritime')}>
+              <button className="menu-card maritime" onClick={() => navigateToTab('quiz_en', true, 'maritime')}>
                 <div className="menu-header-line">
                   <span className="menu-icon">⚓</span>
                   <span className="menu-title">해사영어(451단어) 문제풀이</span>
@@ -332,69 +347,56 @@ export const App: React.FC = () => {
                 <span className="menu-sub">SMCP · 해기사 3·4급 · 국제협약(COLREGs/SOLAS/MARPOL)</span>
               </button>
 
-              {/* 3번째: 일본어 단어 문제집 (시험용 vs 생활일본어) */}
+              {/* 3번째: 실전 해사 통신 문장 퀴즈 */}
+              <button
+                className="menu-card"
+                style={{ borderLeft: '4px solid #38bdf8' }}
+                onClick={() => navigateToTab('quiz_en', true, 'maritime_comm')}
+              >
+                <div className="menu-header-line">
+                  <span className="menu-icon">📻</span>
+                  <span className="menu-title">실전 해사 통신 문장 (150선)</span>
+                </div>
+                <span className="menu-sub">VHF 무선통신 · VTS 관제 · 조난/긴급/도선/조타 지령 150선 4지선다</span>
+              </button>
+
+              {/* 4번째: 일본어 단어 문제집 (시험용 vs 생활일본어) */}
               <button
                 className="menu-card"
                 style={{ borderLeft: '4px solid #ef4444' }}
-                onClick={() => navigateToTab('quiz', true, 'japanese_exam')}
+                onClick={() => navigateToTab('quiz_ja', true, 'japanese_exam')}
               >
                 <div className="menu-header-line">
                   <span className="menu-icon">🇯🇵</span>
-                  <span className="menu-title">일본어 단어 문제집 (321단어)</span>
+                  <span className="menu-title">일본어 단어 문제집 (437단어)</span>
                 </div>
                 <span className="menu-sub">시험용(JLPT N5~N3) · 완전 생활일본어(여행·실전) 2탭</span>
               </button>
 
-              {/* 4번째: 출석체크 캘린더 & 연속 출석 */}
+              {/* 5번째: 내가 만드는 문제집 (커스텀 통합 메뉴) */}
               <button
                 className="menu-card"
-                style={{ borderLeft: '4px solid #f59e0b' }}
-                onClick={() => setIsAttendanceOpen(true)}
+                style={{ borderLeft: '4px solid #8b5cf6' }}
+                onClick={() => navigateToTab('custom_maker')}
               >
                 <div className="menu-header-line">
-                  <span className="menu-icon">📅</span>
-                  <span className="menu-title">출석체크 캘린더 (연속 {currentUser?.attendanceStreak || 0}일 🔥)</span>
+                  <span className="menu-icon">📚</span>
+                  <span className="menu-title">내가 만드는 문제집 (4·5지선다 & 영단어)</span>
                 </div>
-                <span className="menu-sub">매일 출석 도장 찍고 연속 출석 랭킹 도전!</span>
+                <span className="menu-sub">사진·스캔·PDF로 4/5지선다 문제집 및 영단어장 제작</span>
               </button>
 
-              {/* 5번째: 틀린 문제 모음집 (오답노트) */}
+              {/* 6번째: 틀린 문제 모음집 (오답노트) */}
               <button
                 className="menu-card"
                 style={{ borderLeft: '4px solid #f97316' }}
-                onClick={() => navigateToTab('quiz', true, 'wrong_notes')}
+                onClick={() => navigateToTab('quiz_en', true, 'wrong_notes')}
               >
                 <div className="menu-header-line">
                   <span className="menu-icon">📝</span>
                   <span className="menu-title">틀린 문제 모음집 (오답노트)</span>
                 </div>
                 <span className="menu-sub">틀렸던 단어만 모아서 집중 복습 및 4지선다 다시 풀기</span>
-              </button>
-
-              {/* 6번째: 내가 만드는 문제집 */}
-              <button
-                className="menu-card"
-                style={{ borderLeft: '4px solid #8b5cf6' }}
-                onClick={() => navigateToTab('general_import')}
-              >
-                <div className="menu-header-line">
-                  <span className="menu-icon">📚</span>
-                  <span className="menu-title">내가 만드는 문제집</span>
-                </div>
-                <span className="menu-sub">사진·스캔·PDF로 4/5지선다 제작 및 풀이</span>
-              </button>
-
-              {/* 7번째: 내가 만드는 영단어 문제집 */}
-              <button
-                className="menu-card"
-                style={{ borderLeft: '4px solid #06b6d4' }}
-                onClick={() => navigateToTab('custom_vocab')}
-              >
-                <div className="menu-header-line">
-                  <span className="menu-icon">🔤</span>
-                  <span className="menu-title">내가 만드는 영단어 문제집</span>
-                </div>
-                <span className="menu-sub">사진·스캔·PDF로 영단어 제작 및 풀이</span>
               </button>
             </div>
           </div>
@@ -406,12 +408,13 @@ export const App: React.FC = () => {
           />
         )}
 
-        {activeTab === 'quiz' && (
+        {activeTab === 'quiz_en' && (
           <QuizPreviewView
-            key={customSourceType + (customTitle || '')}
+            key={'en_' + customSourceType + (customTitle || '')}
             initialWords={customWords}
             bookTitle={customTitle}
             sourceType={customSourceType}
+            languageMode="en"
             instantGrading={instantGrading}
             shuffleOrder={shuffleOrder}
             onOpenRanking={() => navigateToTab('ranking')}
@@ -419,22 +422,30 @@ export const App: React.FC = () => {
           />
         )}
 
-        {activeTab === 'custom_vocab' && (
-          <CustomVocabularyUnifiedView
-            onStartQuizWithWords={(words, title, sourceType) =>
-              handleStartQuizWithWords(words, title, sourceType)
-            }
+        {activeTab === 'quiz_ja' && (
+          <QuizPreviewView
+            key={'ja_' + (customSourceType === 'builtin' ? 'japanese_exam' : customSourceType) + (customTitle || '')}
+            initialWords={customWords}
+            bookTitle={customTitle}
+            sourceType={customSourceType === 'builtin' ? 'japanese_exam' : customSourceType}
+            languageMode="ja"
+            instantGrading={instantGrading}
+            shuffleOrder={shuffleOrder}
+            onOpenRanking={() => navigateToTab('ranking')}
             onBack={handleGoBack}
           />
         )}
 
-        {activeTab === 'general_import' && (
-          <GeneralQuizImportView
+        {activeTab === 'custom_maker' && (
+          <CustomMakerUnifiedView
             onBackToHome={handleGoBack}
-            onStartQuiz={(bookId) => {
+            onStartGeneralQuiz={(bookId) => {
               setSelectedQuestionBookId(bookId);
               navigateToTab('general_quiz');
             }}
+            onStartVocabQuiz={(words, title, sourceType) =>
+              handleStartQuizWithWords(words, title, sourceType)
+            }
           />
         )}
 

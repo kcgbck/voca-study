@@ -1,0 +1,2709 @@
+{
+  "databaseVersion": 1,
+  "name": "IMO SMCP 실전 해사 통신 문장 퀴즈",
+  "category": "maritime_communication",
+  "description": "실제 해상 무선통신(VHF Channel 16 / VTS 관제) 및 조난, 긴급, 안전, 도선, 조타/기관 표준 지령 150선 4지선다 문제집",
+  "wordCount": 150,
+  "words": [
+    {
+      "id": 1,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "MAYDAY. I am on fire after explosion. I require immediate firefighting assistance.",
+      "meaning": [
+        "메이데이. 본선은 폭발 후 화재 발생 중이다. 즉각적인 소화 지원을 요청한다."
+      ],
+      "distractors": [
+        "메이데이. 본선은 화재 후 폭발 위험이 있다. 즉각적인 예인 지원을 요청한다.",
+        "메이데이. 본선은 폭발로 인한 화재를 진압했다. 즉각적인 의료 지원을 요청한다.",
+        "팬팬. 본선은 폭발 후 화재가 발생했으나 자력으로 소화 작업을 진행 중이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Distress Traffic - Fire/Explosion",
+      "standardExample": "MAYDAY, MAYDAY, MAYDAY. This is M/V PACIFIC. I am on fire after explosion.",
+      "exampleMeaning": "메이데이, 메이데이, 메이데이. 본선은 퍼시픽호. 본선은 폭발 후 화재 발생 중이다."
+    },
+    {
+      "id": 2,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "MAYDAY. I am flooding below water line. I cannot control flooding.",
+      "meaning": [
+        "메이데이. 본선은 흘수선 하부에 침수 중이며 침수를 제어할 수 없다."
+      ],
+      "distractors": [
+        "메이데이. 본선은 흘수선 하부에 침수 중이나 자체 펌프로 침수를 제어하고 있다.",
+        "메이데이. 본선은 흘수선 상부에 파손이 발생했으나 침수를 제어할 수 있다.",
+        "팬팬. 본선은 흘수선 하부 격벽에 균열이 발생하여 침수 위험에 처해 있다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Distress Traffic - Flooding",
+      "standardExample": "MAYDAY. I am flooding below water line. Request high capacity pumps.",
+      "exampleMeaning": "메이데이. 흘수선 하부에 침수 중이다. 대용량 배수펌프를 요청한다."
+    },
+    {
+      "id": 3,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "MAYDAY. I have collided with unknown object. Dangerous list to port side.",
+      "meaning": [
+        "메이데이. 본선은 미상의 물체와 충돌했다. 좌현으로 위험한 경사가 발생했다."
+      ],
+      "distractors": [
+        "메이데이. 본선은 미상의 물체와 충돌했다. 우현으로 위험한 경사가 발생했다.",
+        "메이데이. 본선은 미상의 물체와 접촉했으나 선체 경사는 발생하지 않았다.",
+        "팬팬. 본선은 미상의 선박과 충돌할 위험이 있어 좌현으로 급격히 회두했다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Distress Traffic - Collision & List",
+      "standardExample": "MAYDAY. Collided with unknown object. Vessel listing 15 degrees to port.",
+      "exampleMeaning": "메이데이. 미상의 물체와 충돌함. 본선이 좌현으로 15도 경사됨."
+    },
+    {
+      "id": 4,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "MAYDAY. I am aground in position latitude 35 degrees North, longitude 129 degrees East.",
+      "meaning": [
+        "메이데이. 본선은 북위 35도, 동경 129도 위치에 좌초되었다."
+      ],
+      "distractors": [
+        "메이데이. 본선은 북위 35도, 서경 129도 위치에 좌초되었다.",
+        "팬팬. 본선은 북위 35도, 동경 129도 위치에서 저수심에 접촉한 후 자력 이초했다.",
+        "메이데이. 본선은 북위 35도, 동경 129도 위치에서 충돌 후 침수 중이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Distress Traffic - Grounding",
+      "standardExample": "MAYDAY. Vessel aground on rocky shoal. Bottom damage reported.",
+      "exampleMeaning": "메이데이. 본선이 암초에 좌초됨. 선저 손상이 보고됨."
+    },
+    {
+      "id": 5,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "MAYDAY. Vessel has serious list and is in danger of capsizing.",
+      "meaning": [
+        "메이데이. 본선은 심각한 경사가 발생하여 전복될 위험에 처해 있다."
+      ],
+      "distractors": [
+        "메이데이. 본선은 심각한 침수가 발생하여 침몰될 위험에 처해 있다.",
+        "팬팬. 본선은 약간의 횡경사가 발생했으나 복원력을 완전히 회복했다.",
+        "메이데이. 본선은 이미 전복되었으며 생존자가 구명정에 탑승 중이다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Distress Traffic - Danger of capsizing",
+      "standardExample": "MAYDAY. List increasing rapidly. Vessel in imminent danger of capsizing.",
+      "exampleMeaning": "메이데이. 경사가 급격히 증가 중임. 본선이 전복 직전 위험에 처함."
+    },
+    {
+      "id": 6,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "MAYDAY. I am sinking. I require immediate search and rescue.",
+      "meaning": [
+        "메이데이. 본선은 침몰 중이다. 즉각적인 수색 및 구조를 요청한다."
+      ],
+      "distractors": [
+        "메이데이. 본선은 좌초 중이다. 즉각적인 구난 예인선을 요청한다.",
+        "팬팬. 본선은 침수가 발생했으나 침몰 위험은 없으며 배수 지원을 요청한다.",
+        "메이데이. 본선은 충돌 위험에 처해 있다. 즉각적인 교통 관제를 요청한다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Distress Traffic - Sinking",
+      "standardExample": "MAYDAY. Engine room flooded, ship sinking rapidly. Request SAR assistance.",
+      "exampleMeaning": "메이데이. 기관실 침수 완료, 급속히 침몰 중임. 수색구조 지원 요청."
+    },
+    {
+      "id": 7,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "MAYDAY. I am disabled and adrift. Drifting toward rocky shore.",
+      "meaning": [
+        "메이데이. 본선은 항행 불능 상태로 표류 중이다. 암초 해안 쪽으로 밀려가고 있다."
+      ],
+      "distractors": [
+        "메이데이. 본선은 항행 불능 상태로 표류 중이다. 외해 쪽으로 안전하게 밀려가고 있다.",
+        "팬팬. 본선은 조종에 어려움이 있으나 자력으로 암초 해안을 벗어나고 있다.",
+        "메이데이. 본선은 암초에 이미 좌초되었으며 항행 불능 상태이다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Distress Traffic - Disabled and adrift",
+      "standardExample": "MAYDAY. Main engine dead, drifting at 3 knots toward dangerous rocks.",
+      "exampleMeaning": "메이데이. 주기관 정지, 위험한 암초 쪽으로 3노트로 표류 중임."
+    },
+    {
+      "id": 8,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "MAYDAY. I am under attack by armed pirates. I require armed assistance.",
+      "meaning": [
+        "메이데이. 본선은 무장 해적에게 공격받고 있다. 무장 지원을 요청한다."
+      ],
+      "distractors": [
+        "메이데이. 본선은 무장 해적을 퇴치했다. 해경 경비정의 호위를 요청한다.",
+        "팬팬. 본선은 무장 해적 의심 선박에게 추격당하고 있다. 회피 기동을 조언해 달라.",
+        "메이데이. 본선은 무장 해적에게 나포되었다. 즉각적인 군사 작전을 중단하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Distress Traffic - Piracy / Armed attack",
+      "standardExample": "MAYDAY. Pirates boarding on port quarter. Crew retreating to citadel.",
+      "exampleMeaning": "메이데이. 해적이 좌현 선미로 승선 중임. 승무원 안전격실로 후퇴 중."
+    },
+    {
+      "id": 9,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Abandon vessel! All crew proceed to lifeboat stations.",
+      "meaning": [
+        "퇴선하라! 전 승무원은 구명정 배치 장소로 집결하라."
+      ],
+      "distractors": [
+        "퇴선 준비! 비당직 승무원만 구명정 배치 장소로 집결하라.",
+        "비상 소집! 전 승무원은 소화 배치 장소로 집결하라.",
+        "훈련 종료! 전 승무원은 구명정 장비를 원위치시키고 보고하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Standard Emergency Order - Abandon vessel",
+      "standardExample": "General alarm sounding: Abandon vessel! Launch lifeboats on starboard.",
+      "exampleMeaning": "비상벨 명동: 퇴선하라! 우현 구명정을 강하하라."
+    },
+    {
+      "id": 10,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "I have launched lifeboats and liferafts. Number of persons on board is twenty-four.",
+      "meaning": [
+        "구명정과 구명뗏목을 강하시켰다. 승선 인원은 24명이다."
+      ],
+      "distractors": [
+        "구명정과 구명뗏목을 준비 중이다. 승선 인원은 24명이다.",
+        "구명정만 강하시켰으며 구명뗏목은 유실되었다. 탑승 인원은 24명이다.",
+        "구명정과 구명뗏목을 회수 완료했다. 탑승 인원은 14명이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Distress Traffic - Lifeboats launched",
+      "standardExample": "MRCC: Have you launched lifeboats? Ship: Yes, lifeboats and liferafts launched.",
+      "exampleMeaning": "구조본부: 구명정을 강하시켰는가? 본선: 그렇다, 구명정과 뗏목을 강하시켰다."
+    },
+    {
+      "id": 11,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Stand by on VHF Channel 16 for distress traffic coordination.",
+      "meaning": [
+        "조난 통신 조율을 위해 VHF 16번 채널에서 대기 청취하라."
+      ],
+      "distractors": [
+        "조난 통신 종료 후 일상 통신을 위해 VHF 16번 채널에서 대기 청취하라.",
+        "도선사 교신 조율을 위해 VHF 16번 채널에서 대기 청취하라.",
+        "조난 통신 조율을 위해 VHF 06번 채널로 이동하여 대기 청취하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Distress Traffic - Radio watch",
+      "standardExample": "All stations: Silence Mayday. Stand by on VHF Channel 16.",
+      "exampleMeaning": "모든 무선국 통신 침묵. VHF 16번 채널을 청취 대기하라."
+    },
+    {
+      "id": 12,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "I am proceeding to distress position. My ETA is 1400 UTC.",
+      "meaning": [
+        "본선은 조난 위치로 이동 중이다. 도착 예정 시간은 UTC 14시이다."
+      ],
+      "distractors": [
+        "본선은 조난 위치에서 수색을 종료했다. 복귀 예정 시간은 UTC 14시이다.",
+        "본선은 조난 위치로 이동할 수 없다. 지원 가능 시간은 UTC 14시이다.",
+        "귀선이 조난 위치로 이동 중인가? 귀선의 도착 예정 시간은 UTC 14시인가?"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP SAR Communications - Proceeding to distress",
+      "standardExample": "Coast Guard: Report your ETA. Ship: I am proceeding to distress position, ETA 1400 UTC.",
+      "exampleMeaning": "해경: 도착 예정 시간을 보고하라. 본선: 조난 위치로 이동 중, ETA 1400 UTC."
+    },
+    {
+      "id": 13,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "PAN PAN. I have engine trouble. I am maneuvering with difficulty.",
+      "meaning": [
+        "판판. 본선은 기관 고장이 발생했다. 조종에 어려움을 겪고 있다."
+      ],
+      "distractors": [
+        "판판. 본선은 타기 고장이 발생했다. 조종에 어려움을 겪고 있다.",
+        "메이데이. 본선은 주기관 폭발로 완전 조종불능 상태이다.",
+        "판판. 본선은 기관 고장이 발생했으나 비상 기관으로 정상 조종 중이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Urgency Traffic - Engine trouble",
+      "standardExample": "PAN PAN. Engine RPM reduced due to overheating. Maneuvering with difficulty.",
+      "exampleMeaning": "판판. 과열로 인해 기관 회전수 감속됨. 조종 곤란 상태임."
+    },
+    {
+      "id": 14,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "PAN PAN. I have lost steering gear. I am not under command.",
+      "meaning": [
+        "판판. 본선은 조타기를 상실했다. 본선은 조종불능 상태이다."
+      ],
+      "distractors": [
+        "판판. 본선은 조타기를 상실했으나 보조 기관으로 조종을 유지하고 있다.",
+        "판판. 본선은 주기관을 상실했다. 본선은 조종불능 상태이다.",
+        "세퀴리테. 본선은 조타기 점검 중이므로 일시적으로 조종제한 상태이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Urgency Traffic - Steering failure",
+      "standardExample": "PAN PAN, PAN PAN, PAN PAN. Rudder jammed hard to port. Not under command.",
+      "exampleMeaning": "판판. 타가 좌현 끝으로 고착됨. 본선 조종불능선임."
+    },
+    {
+      "id": 15,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "PAN PAN. Person overboard in position 2 miles south of lighthouse.",
+      "meaning": [
+        "판판. 등대 남쪽 2마일 위치에 바다로 사람이 추락했다 (낙항자 발생)."
+      ],
+      "distractors": [
+        "판판. 등대 북쪽 2마일 위치에 바다로 사람이 추락했다.",
+        "판판. 등대 남쪽 2마일 위치에서 해상 추락자를 성공적으로 인양 구조했다.",
+        "세퀴리테. 등대 남쪽 2마일 위치에서 구명정이 표류 중이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Urgency Traffic - Person overboard",
+      "standardExample": "PAN PAN. Man overboard from port side! All ships in vicinity keep sharp lookout.",
+      "exampleMeaning": "판판. 좌현에서 사람 추락! 부근의 모든 선박은 철저히 경계하라."
+    },
+    {
+      "id": 16,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "PAN PAN. I require urgent medical assistance for injured crew member.",
+      "meaning": [
+        "판판. 부상당한 선원을 위해 긴급 의료 지원이 필요하다."
+      ],
+      "distractors": [
+        "판판. 질병에 걸린 선원을 위해 원격 의료 조언(TMAS)만 필요하다.",
+        "메이데이. 사망한 선원을 위해 즉각적인 시신 인양 지원이 필요하다.",
+        "판판. 부상당한 선원이 응급 처치를 받아 정상 회복되었다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Urgency Traffic - Medical assistance",
+      "standardExample": "PAN PAN. Crew member suffered severe fracture. Require helicopter evacuation.",
+      "exampleMeaning": "판판. 선원이 심각한 골절상을 입음. 헬기 후송을 요청함."
+    },
+    {
+      "id": 17,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Propeller is fouled by fishing net. I require diver assistance.",
+      "meaning": [
+        "프로펠러가 어망에 감겼다. 잠수부 지원을 요청한다."
+      ],
+      "distractors": [
+        "타판이 어망에 감겼다. 잠수부 지원을 요청한다.",
+        "프로펠러에 감긴 어망을 자체 절단하여 정상 항해 중이다.",
+        "프로펠러 날개가 파손되었다. 예인선 지원을 요청한다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Urgency Traffic - Fouled propeller",
+      "standardExample": "VTS: Why are you stopped? Ship: Propeller is fouled by fishing net.",
+      "exampleMeaning": "관제탑: 왜 정지했는가? 본선: 프로펠러에 어망이 감겼다."
+    },
+    {
+      "id": 18,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "SECURITE. Gale warning. Wind northwesterly Beaufort force 8 expected.",
+      "meaning": [
+        "세퀴리테. 강풍 경보. 북서풍 보퍼트 계급 8의 바람이 예상됨."
+      ],
+      "distractors": [
+        "세퀴리테. 강풍 경보. 북동풍 보퍼트 계급 8의 바람이 예상됨.",
+        "세퀴리테. 폭풍 경보. 북서풍 보퍼트 계급 10의 바람이 예상됨.",
+        "판판. 강풍 주의보. 남서풍 보퍼트 계급 8의 바람이 관측됨."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Safety Traffic - Gale warning",
+      "standardExample": "SECURITE, SECURITE, SECURITE. Gale warning issued for sea area East.",
+      "exampleMeaning": "세퀴리테. 동해 해역에 강풍 경보가 발령되었음."
+    },
+    {
+      "id": 19,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "SECURITE. Visibility reduced by dense fog to less than 0.5 nautical miles.",
+      "meaning": [
+        "세퀴리테. 짙은 안개로 인해 시정이 0.5해리 미만으로 감소함."
+      ],
+      "distractors": [
+        "세퀴리테. 폭우로 인해 시정이 0.5해리 미만으로 감소함.",
+        "세퀴리테. 짙은 안개로 인해 시정이 1.5해리 정도로 유지됨.",
+        "정보. 짙은 안개가 걷혀 시정이 5해리 이상으로 호전됨."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Safety Traffic - Dense fog warning",
+      "standardExample": "SECURITE. Dense fog in harbor approach. All vessels sound fog signals.",
+      "exampleMeaning": "세퀴리테. 항만 접근로에 농무 발생. 모든 선박은 무중신호를 취명하라."
+    },
+    {
+      "id": 20,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "SECURITE. Semi-submerged container sighted adrift in vicinity of fairway.",
+      "meaning": [
+        "세퀴리테. 항로 부근에서 반쯤 침수된 컨테이너가 표류 중인 것이 목격됨."
+      ],
+      "distractors": [
+        "세퀴리테. 항로 부근에서 완전히 침몰된 바지선이 목격됨.",
+        "세퀴리테. 항로 부근에서 표류하던 컨테이너가 모두 인양 완료됨.",
+        "경고. 항로 중앙에서 컨테이너 적재 작업이 진행 중임."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Safety Traffic - Floating hazard",
+      "standardExample": "SECURITE. Danger to navigation: 40-foot container adrift in channel entrance.",
+      "exampleMeaning": "세퀴리테. 항행 위험: 40피트 컨테이너가 수로 입구에 표류 중임."
+    },
+    {
+      "id": 21,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "SECURITE. Light buoy number 3 unlit and off station.",
+      "meaning": [
+        "세퀴리테. 3번 등부표가 소등되었으며 정위치를 이탈함."
+      ],
+      "distractors": [
+        "세퀴리테. 3번 등부표가 소등되었으나 정위치를 유지하고 있음.",
+        "세퀴리테. 3번 등부표가 점등 상태이나 정위치를 이탈함.",
+        "세퀴리테. 4번 등부표가 소등되었으며 정위치를 이탈함."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Safety Traffic - Navigational aid defective",
+      "standardExample": "SECURITE. Navigational warning: Fairway buoy unlit and drifting north.",
+      "exampleMeaning": "세퀴리테. 항행 경보: 항로 부표가 소등되고 북쪽으로 표류 중임."
+    },
+    {
+      "id": 22,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "You are running into danger. Shallow water ahead of you.",
+      "meaning": [
+        "귀선은 위험으로 향하고 있다. 전방에 천소(얕은 수심)가 있음."
+      ],
+      "distractors": [
+        "귀선은 위험으로 향하고 있다. 전방에 침몰선 장애물이 있음.",
+        "귀선은 안전 수역으로 향하고 있다. 전방에 충분한 수심이 확보됨.",
+        "본선은 위험으로 향하고 있다. 본선 전방에 천소가 있음."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Warning - Navigational danger",
+      "standardExample": "WARNING: You are running into danger. Shallow water 1 mile ahead on your course.",
+      "exampleMeaning": "경고: 귀선은 위험으로 향하고 있다. 귀선 침로 전방 1마일에 천소가 있음."
+    },
+    {
+      "id": 23,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Dangerous wreck reported in position bearing 090 degrees, distance 3 miles.",
+      "meaning": [
+        "방위 090도, 거리 3마일 위치에 위험 침몰선이 보고됨."
+      ],
+      "distractors": [
+        "방위 270도, 거리 3마일 위치에 위험 침몰선이 보고됨.",
+        "방위 090도, 거리 3마일 위치에 있는 침몰선이 폭파 제거됨.",
+        "방위 090도, 거리 13마일 위치에 암초가 보고됨."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Navigational Warning - Dangerous wreck",
+      "standardExample": "Notice to Mariners: Dangerous wreck located. Give wide berth.",
+      "exampleMeaning": "항행통보: 위험 침몰선 발견됨. 충분한 안전 거리를 유지하라."
+    },
+    {
+      "id": 24,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "What is your present course and speed?",
+      "meaning": [
+        "귀선의 현재 침로와 속력은 얼마인가?"
+      ],
+      "distractors": [
+        "귀선의 계획 침로와 최대 속력은 얼마인가?",
+        "귀선의 현재 선수 방위와 엔진 회전수는 얼마인가?",
+        "본선의 현재 침로와 속력은 얼마인가?"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Query - Course and speed",
+      "standardExample": "VTS: What is your present course and speed? Ship: Course 180, speed 12 knots.",
+      "exampleMeaning": "관제탑: 현재 침로와 속력은? 본선: 침로 180도, 속력 12노트."
+    },
+    {
+      "id": 25,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "My present course is 045 degrees, speed 14 knots.",
+      "meaning": [
+        "본선의 현재 침로는 045도, 속력은 14노트이다."
+      ],
+      "distractors": [
+        "본선의 현재 침로는 045도, 속력은 4노트이다.",
+        "본선의 현재 침로는 054도, 속력은 14노트이다.",
+        "귀선의 현재 침로는 045도, 속력은 14노트인가?"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Response - Course and speed",
+      "standardExample": "VTS acknowledged. Maintain course 045 degrees until waypoint Alpha.",
+      "exampleMeaning": "관제탑 알겠음. 변곡점 알파까지 침로 045도를 유지하라."
+    },
+    {
+      "id": 26,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "What is your maximum present draft?",
+      "meaning": [
+        "귀선의 현재 최대 흘수는 얼마인가?"
+      ],
+      "distractors": [
+        "귀선의 만재 시 설계 흘수는 얼마인가?",
+        "귀선의 현재 최소 흘수는 얼마인가?",
+        "귀선의 현재 선수 흘수와 선미 흘수는 각각 얼마인가?"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Query - Maximum draft",
+      "standardExample": "VTS: What is your maximum present draft? Ship: My draft is 10.2 meters.",
+      "exampleMeaning": "관제탑: 현재 최대 흘수는? 본선: 본선 흘수는 10.2미터임."
+    },
+    {
+      "id": 27,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Report your position when passing reporting point Alpha.",
+      "meaning": [
+        "보고점 알파를 통과할 때 귀선의 위치를 보고하라."
+      ],
+      "distractors": [
+        "보고점 브라보를 통과할 때 귀선의 위치를 보고하라.",
+        "보고점 알파에 도착하기 전에 입항 허가를 요청하라.",
+        "보고점 알파를 통과할 때 본선이 귀선의 위치를 통보하겠다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Instruction - Reporting point",
+      "standardExample": "INSTRUCTION: Report your position when passing reporting point Alpha.",
+      "exampleMeaning": "지시: 보고점 알파를 통과할 때 귀선의 위치를 보고하라."
+    },
+    {
+      "id": 28,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Traffic clearance granted. You may enter traffic lane.",
+      "meaning": [
+        "통항 허가됨. 통항로에 진입해도 좋다."
+      ],
+      "distractors": [
+        "통항 대기. 선박 통과 후 통항로에 진입하라.",
+        "통항 거부됨. 통항로에 진입하지 마라.",
+        "통항 허가됨. 통항로를 즉시 이탈하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Clearance - Traffic lane entry",
+      "standardExample": "VTS: Traffic clearance granted. Enter TSS northbound lane now.",
+      "exampleMeaning": "관제탑: 통항 허가됨. 지금 북상 통항로로 진입하라."
+    },
+    {
+      "id": 29,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Do not enter fairway until outward bound vessel has passed.",
+      "meaning": [
+        "출항 선박이 통과할 때까지 항로에 진입하지 마라."
+      ],
+      "distractors": [
+        "입항 선박이 통과할 때까지 항로에 진입하지 마라.",
+        "출항 선박이 통과한 직후에도 항로 진입을 보류하라.",
+        "출항 선박의 우현을 추월하며 항로에 진입하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP VTS Instruction - Wait outside fairway",
+      "standardExample": "INSTRUCTION: Do not enter fairway until outward bound container vessel has cleared.",
+      "exampleMeaning": "지시: 출항하는 컨테이너선이 빠져나갈 때까지 항로에 진입하지 마라."
+    },
+    {
+      "id": 30,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Risk of collision exists with vessel approaching on your port bow.",
+      "meaning": [
+        "귀선의 좌현 선수 쪽에서 접근하는 선박과 충돌 위험이 존재한다."
+      ],
+      "distractors": [
+        "귀선의 우현 선수 쪽에서 접근하는 선박과 충돌 위험이 존재한다.",
+        "귀선의 좌현 선미 쪽에서 접근하는 선박과 충돌 위험이 존재한다.",
+        "귀선의 좌현 선수 쪽에서 접근하는 선박이 피항 조치를 완료했다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Collision Avoidance - Risk of collision",
+      "standardExample": "WARNING: Risk of collision exists with vessel on your port bow. CPA is 0.1 miles.",
+      "exampleMeaning": "경고: 귀선 좌현 선수 쪽 선박과 충돌 위험 존재. 최근접거리는 0.1마일임."
+    },
+    {
+      "id": 31,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "I am altering my course to starboard.",
+      "meaning": [
+        "본선은 침로를 우현으로 변경하고 있다."
+      ],
+      "distractors": [
+        "본선은 침로를 좌현으로 변경하고 있다.",
+        "본선은 침로를 변경하지 않고 현재 침로를 유지하고 있다.",
+        "귀선은 침로를 우현으로 변경하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Maneuvering Intention - Altering course",
+      "standardExample": "Ship to ship: I am altering my course to starboard to pass astern of you.",
+      "exampleMeaning": "선박 대 선박: 귀선의 선미 뒤를 통과하기 위해 본선 우현으로 변침 중임."
+    },
+    {
+      "id": 32,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Advise you pass astern of oncoming vessel.",
+      "meaning": [
+        "마주 오는 선박의 선미 쪽으로 통과할 것을 권고한다."
+      ],
+      "distractors": [
+        "마주 오는 선박의 선수 쪽으로 횡단 통과할 것을 권고한다.",
+        "마주 오는 선박과 좌현 대 좌현으로 평행하게 마주치길 권고한다.",
+        "추월하는 선박의 선미 쪽으로 통과할 것을 권고한다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP VTS Advice - Passing astern",
+      "standardExample": "ADVICE: Advise you pass astern of oncoming tanker to avoid collision.",
+      "exampleMeaning": "권고: 충돌을 방지하기 위해 마주 오는 유조선의 선미 쪽으로 통과하라."
+    },
+    {
+      "id": 33,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "I will keep clear of you.",
+      "meaning": [
+        "본선이 귀선을 피하여 항행하겠다."
+      ],
+      "distractors": [
+        "귀선이 본선을 피하여 항행해 주길 바란다.",
+        "본선은 유지선이므로 현재 침로를 유지하겠다.",
+        "본선은 귀선과 같은 침로로 나란히 항행하겠다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Action to avoid collision - Keep clear",
+      "standardExample": "Ship: I will keep clear of you. Altering course 20 degrees to starboard.",
+      "exampleMeaning": "본선: 본선이 귀선을 피하겠음. 우현으로 20도 변침 중."
+    },
+    {
+      "id": 34,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Do you agree to port-to-port passing?",
+      "meaning": [
+        "좌현 대 좌현 통과에 동의하는가?"
+      ],
+      "distractors": [
+        "우현 대 우현 통과에 동의하는가?",
+        "본선의 좌현을 추월하여 통과하는 것에 동의하는가?",
+        "좌현 대 좌현 통과 계획을 취소하겠는가?"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Meeting arrangement - Port-to-port",
+      "standardExample": "Vessel A: Do you agree to port-to-port passing? Vessel B: Yes, agree.",
+      "exampleMeaning": "A선박: 좌현 대 좌현 통과에 동의하는가? B선박: 그렇다, 동의한다."
+    },
+    {
+      "id": 35,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Check your anchor. You are dragging anchor.",
+      "meaning": [
+        "닻을 확인하라. 귀선은 주묘(닻 끌림) 중이다."
+      ],
+      "distractors": [
+        "닻을 투하하라. 귀선은 묘박 구역에 진입했다.",
+        "닻을 감아올려라. 귀선의 닻 파지력이 정상이다.",
+        "닻을 확인하라. 귀선의 닻줄이 팽팽하게 고정되어 있다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Warning - Dragging anchor",
+      "standardExample": "WARNING: Check your anchor! You are dragging anchor toward shoal water.",
+      "exampleMeaning": "경고: 닻을 확인하라! 귀선은 천소 쪽으로 주묘되고 있다."
+    },
+    {
+      "id": 36,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "I am heaving up anchor.",
+      "meaning": [
+        "본선은 닻을 감아올리고(양묘하고) 있다."
+      ],
+      "distractors": [
+        "본선은 닻을 놓아(투묘하고) 있다.",
+        "본선은 닻줄을 더 신출(내어주고)하고 있다.",
+        "본선은 양묘를 완료하고 기관 항해 중이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Anchoring - Heaving up",
+      "standardExample": "VTS: Are you ready to get underway? Ship: Yes, I am heaving up anchor now.",
+      "exampleMeaning": "관제탑: 항해 시작 준비가 되었는가? 본선: 그렇다, 지금 양묘 중이다."
+    },
+    {
+      "id": 37,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Rig pilot ladder on port side, 1.5 meters above water.",
+      "meaning": [
+        "수면 위 1.5미터 높이로 좌현에 도선사용 사다리를 설치하라."
+      ],
+      "distractors": [
+        "수면 위 1.5미터 높이로 우현에 도선사용 사다리를 설치하라.",
+        "수면 위 2.5미터 높이로 좌현에 도선사용 사다리를 설치하라.",
+        "수면 위 1.5미터 높이로 좌현에 현현사다리만 단독 설치하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Pilotage - Rigging pilot ladder",
+      "standardExample": "Pilot station: Rig pilot ladder on port side, 1.5 meters above water.",
+      "exampleMeaning": "도선소: 수면 위 1.5미터 높이로 좌현에 도선사 사다리를 설치하라."
+    },
+    {
+      "id": 38,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Make a lee on your starboard side for pilot boat.",
+      "meaning": [
+        "도선선을 위해 귀선의 우현 쪽으로 바람막이(피파)를 만들어라."
+      ],
+      "distractors": [
+        "도선선을 위해 귀선의 좌현 쪽으로 바람막이(피파)를 만들어라.",
+        "도선선을 위해 귀선의 우현 쪽으로 바람을 정면으로 받으며 감속하라.",
+        "도선선을 위해 선미 쪽에 풍상측(바람받이 구역)을 형성하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Pilotage - Making a lee",
+      "standardExample": "Pilot: Alter course 020 to make a lee on starboard side for boarding.",
+      "exampleMeaning": "도선사: 승선을 위해 우현 쪽에 피파를 만들도록 020도로 변침하라."
+    },
+    {
+      "id": 39,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Stand by mooring lines forward and aft.",
+      "meaning": [
+        "선수 및 선미 계류줄을 대기시켜라."
+      ],
+      "distractors": [
+        "선수 계류줄만 대기시키고 선미는 해제하라.",
+        "선수 및 선미 계류줄을 모두 바다로 풀어내어라.",
+        "선수 및 선미 닻을 즉시 투하 대기시켜라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Berthing - Stand by mooring lines",
+      "standardExample": "Bridge order: All stations stand by mooring lines forward and aft.",
+      "exampleMeaning": "선교 명령: 전 배치 부서는 선수 선미 계류줄을 대기하라."
+    },
+    {
+      "id": 40,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Make fast forward spring line.",
+      "meaning": [
+        "선수 스프링 줄을 묶어 고정하라."
+      ],
+      "distractors": [
+        "선미 스프링 줄을 묶어 고정하라.",
+        "선수 스프링 줄을 풀어 늦추어라.",
+        "선수 브레스트 라인을 묶어 고정하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Mooring Orders - Make fast spring",
+      "standardExample": "Pilot: Send forward spring ashore and make fast immediately.",
+      "exampleMeaning": "도선사: 선수 스프링을 부두로 보내 즉시 묶어 고정하라."
+    },
+    {
+      "id": 41,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Slack away head line.",
+      "meaning": [
+        "선수 헤드 라인을 늦춰라 (풀어주어라)."
+      ],
+      "distractors": [
+        "선수 헤드 라인을 팽팽하게 감아들여라.",
+        "선미 스턴 라인을 늦춰라 (풀어주어라).",
+        "선수 헤드 라인을 비트에 단단히 묶어라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Mooring Orders - Slack away",
+      "standardExample": "Heaving too tight! Slack away head line two meters.",
+      "exampleMeaning": "너무 팽팽하게 당겨짐! 선수 헤드 라인을 2미터 늦춰라."
+    },
+    {
+      "id": 42,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "All lines made fast. Finished with engine.",
+      "meaning": [
+        "모든 계류줄이 고정되었다. 기관 사용 끝."
+      ],
+      "distractors": [
+        "모든 계류줄이 풀렸다. 기관 시동 준비.",
+        "선수 계류줄만 고정되었다. 기관 조종 대기.",
+        "모든 계류줄이 고정되었다. 기관 비상 대기 유지."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Berthing Complete - Finished with engine",
+      "standardExample": "Captain to Chief Engineer: All lines made fast. Finished with engine.",
+      "exampleMeaning": "선장이 기관장에게: 모든 계류줄 고정 완료됨. 기관 사용 끝."
+    },
+    {
+      "id": 43,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Midships!",
+      "meaning": [
+        "키 중앙! (타각을 0도로 놓아라)"
+      ],
+      "distractors": [
+        "좌현 10도! (키를 좌현 10도로 돌려라)",
+        "우현 전타! (키를 우현 끝까지 감아라)",
+        "그대로 보침! (현재 선수 방위로 고정하라)"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Standard Wheel Order - Midships",
+      "standardExample": "Order: Midships! Helmsman reply: Midships, wheel is midships, sir.",
+      "exampleMeaning": "명령: 키 중앙! 조타수 복창: 키 중앙, 타각 0도입니다."
+    },
+    {
+      "id": 44,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Port ten!",
+      "meaning": [
+        "좌현 10도! (키를 좌현으로 10도 돌려라)"
+      ],
+      "distractors": [
+        "우현 10도! (키를 우현으로 10도 돌려라)",
+        "좌현 20도! (키를 좌현으로 20도 돌려라)",
+        "좌현 전타! (키를 좌현 최대로 돌려라)"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Standard Wheel Order - Port ten",
+      "standardExample": "Conning officer: Port ten! Helmsman: Port ten on the wheel.",
+      "exampleMeaning": "지휘관: 좌현 10도! 조타수: 키 좌현 10도 잡았습니다."
+    },
+    {
+      "id": 45,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Hard-a-starboard!",
+      "meaning": [
+        "우현 전타! (키를 우현 끝까지 최대로 돌려라)"
+      ],
+      "distractors": [
+        "좌현 전타! (키를 좌현 끝까지 최대로 돌려라)",
+        "우현 20도! (키를 우현으로 20도 돌려라)",
+        "키 중앙! (키를 0도로 복귀시켜라)"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Standard Wheel Order - Hard-a-starboard",
+      "standardExample": "Emergency to avoid collision: Hard-a-starboard! Full ahead!",
+      "exampleMeaning": "충돌 회피 비상 명령: 우현 전타! 전속 전진!"
+    },
+    {
+      "id": 46,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Steady as she goes!",
+      "meaning": [
+        "그대로 보침! (현재 침로를 그대로 유지하라)"
+      ],
+      "distractors": [
+        "키 중앙! (타각을 0도로 정렬하라)",
+        "역타를 쳐라! (회두 타세를 멈추어라)",
+        "타각을 5도로 줄여라! (타세를 완만하게 하라)"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Standard Wheel Order - Steady as she goes",
+      "standardExample": "Pilot: Steady as she goes! Helmsman: Steady on heading 085, sir.",
+      "exampleMeaning": "도선사: 그대로 보침! 조타수: 현재 침로 085도로 보침 유지합니다."
+    },
+    {
+      "id": 47,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Meet her!",
+      "meaning": [
+        "역타를 쳐라! (회두 타세를 멈추도록 반대 방향으로 키를 잡어라)"
+      ],
+      "distractors": [
+        "그대로 보침! (현재 침로를 그대로 유지하라)",
+        "타세를 줄여라! (타각을 절반으로 감해라)",
+        "키 중앙! (타각을 0도로 복귀시켜라)"
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Standard Wheel Order - Meet her",
+      "standardExample": "Ship swinging fast to port. Order: Meet her! Check swing of vessel.",
+      "exampleMeaning": "선박이 좌현으로 빠르게 회두 중. 명령: 역타를 쳐서 회두세를 멈춰라!"
+    },
+    {
+      "id": 48,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Dead slow ahead!",
+      "meaning": [
+        "극미속 전진!"
+      ],
+      "distractors": [
+        "미속 전진!",
+        "반속 전진!",
+        "극미속 후진!"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Standard Engine Order - Dead slow ahead",
+      "standardExample": "Entering congested port. Engine order: Dead slow ahead.",
+      "exampleMeaning": "혼잡한 항만 진입. 기관 명령: 극미속 전진."
+    },
+    {
+      "id": 49,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Full astern! Emergency crash-stop!",
+      "meaning": [
+        "전속 후진! 비상 급정지!"
+      ],
+      "distractors": [
+        "전속 전진! 비상 전속 항해!",
+        "반속 후진! 비상 감속!",
+        "기관 비상 정지! 주기관 트립!"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Engine Order - Emergency full astern",
+      "standardExample": "Collision imminent! Telegraph: Full astern! Emergency crash-stop!",
+      "exampleMeaning": "충돌 임박! 엔진 텔레그래프: 전속 후진! 비상 급정지!"
+    },
+    {
+      "id": 50,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Stop engine!",
+      "meaning": [
+        "기관 정지!"
+      ],
+      "distractors": [
+        "미속 전진!",
+        "미속 후진!",
+        "기관 비상 대기!"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Standard Engine Order - Stop engine",
+      "standardExample": "Approaching berth. Order: Stop engine, let vessel drift in.",
+      "exampleMeaning": "부두 접근 중. 명령: 기관 정지, 본선 타력으로 진입하라."
+    },
+    {
+      "id": 51,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "What is your IMO number and call sign?",
+      "meaning": [
+        "귀선의 IMO 번호와 호출부호(콜사인)는 무엇인가?"
+      ],
+      "distractors": [
+        "귀선의 선적국과 공식 선박 식별번호는 무엇인가?",
+        "귀선의 MMSI 번호와 호출부호(콜사인)는 무엇인가?",
+        "귀선의 IMO 번호와 총톤수(GRT)는 얼마인가?"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Identification - IMO number & Call sign",
+      "standardExample": "VTS: What is your IMO number and call sign? Ship: IMO 9876543, Call sign DSVK.",
+      "exampleMeaning": "관제탑: IMO 번호와 콜사인은? 본선: IMO 9876543, 콜사인 DSVK."
+    },
+    {
+      "id": 52,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "I am anchoring with two shackles in the water.",
+      "meaning": [
+        "본선은 닻줄 2절(샤클)을 신출하여 투묘 중이다."
+      ],
+      "distractors": [
+        "본선은 닻줄 4절(샤클)을 신출하여 투묘 중이다.",
+        "본선은 닻줄 2절(샤클)을 감아올리며 양묘 중이다.",
+        "본선은 양현 닻을 각각 2절(샤클)씩 신출하여 비상 정박 중이다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Anchoring - Shackles in water",
+      "standardExample": "Report to VTS: Anchor let go, two shackles in the water, holding well.",
+      "exampleMeaning": "관제탑 보고: 투묘 완료, 물속 닻줄 2절, 파지력 양호함."
+    },
+    {
+      "id": 53,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Vessel is underway using engines, making way through water.",
+      "meaning": [
+        "본선은 주기관을 사용하여 항행 중이며 수면을 가르고 대수 속력을 내고 있다."
+      ],
+      "distractors": [
+        "본선은 주기관을 정지하고 대수 속력 없이 수면 상에 정류(not making way) 중이다.",
+        "본선은 닻을 내리고 정박 중이며 주기관은 즉시 사용 가능한 상태이다.",
+        "본선은 주기관을 사용하여 항행 중이나 조류에 밀려 대지 속력만 발생하고 있다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "COLREGs & SMCP Navigation status - Underway making way",
+      "standardExample": "AIS status updated: Underway using engine, making way through water at 14 knots.",
+      "exampleMeaning": "AIS 상태 갱신: 주기관 사용 항행 중, 14노트로 대수 진행 중."
+    },
+    {
+      "id": 54,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "You must maintain a minimum distance of one nautical mile.",
+      "meaning": [
+        "귀선은 최소 1해리의 거리를 유지해야 한다."
+      ],
+      "distractors": [
+        "귀선은 최대 1해리 이내의 거리를 유지해야 한다.",
+        "귀선은 최소 0.5해리의 안전거리를 유지해야 한다.",
+        "귀선은 최소 2해리의 거리를 유지하며 추월해야 한다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Instruction - Safe distance",
+      "standardExample": "INSTRUCTION: Maintain a minimum distance of one nautical mile from dangerous cargo ship.",
+      "exampleMeaning": "지시: 위험물 운반선으로부터 최소 1해리의 안전 거리를 유지하라."
+    },
+    {
+      "id": 55,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Is your radar in operational condition?",
+      "meaning": [
+        "귀선의 레이더는 정상 작동 상태인가?"
+      ],
+      "distractors": [
+        "귀선의 ARPA(자동충돌예방원조장치)는 정상 작동 상태인가?",
+        "귀선의 전자해도표시장치(ECDIS)는 정상 작동 상태인가?",
+        "귀선의 AIS(선박자동식별장치)는 정상 송수신 상태인가?"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Equipment check - Radar operational",
+      "standardExample": "VTS: Is your radar operational? Ship: Yes, both X-band and S-band radars operational.",
+      "exampleMeaning": "관제탑: 레이더 작동하는가? 본선: X밴드와 S밴드 레이더 모두 정상 작동함."
+    },
+    {
+      "id": 56,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "My radar has blind sectors from 120 degrees to 150 degrees.",
+      "meaning": [
+        "본선의 레이더는 120도에서 150도 방향에 사각지대(음영구역)가 있다."
+      ],
+      "distractors": [
+        "본선의 레이더는 120도에서 150도 방향에 허상(가상 목표물)이 나타난다.",
+        "본선의 레이더는 210도에서 240도 방향에 사각지대(음영구역)가 있다.",
+        "본선은 120도에서 150도 방향으로 침로를 변경하여 레이더를 보정 중이다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Equipment defect - Blind sector",
+      "standardExample": "Ship report: Radar has blind sectors astern due to heavy crane installation.",
+      "exampleMeaning": "본선 보고: 대형 크레인 설치로 인해 선미 쪽에 레이더 음영 구역이 있음."
+    },
+    {
+      "id": 57,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Advise you keep clear of fairway. Heavy inbound traffic.",
+      "meaning": [
+        "항로를 피하여 대기할 것을 권고한다. 입항 선박 교통량이 매우 많다."
+      ],
+      "distractors": [
+        "항로를 피하여 대기할 것을 권고한다. 출항 선박 교통량이 매우 많다.",
+        "항로 진입을 즉시 허가한다. 입항 선박 교통량이 매우 적다.",
+        "항로 중심선을 따라 항행할 것을 권고한다. 입항 선박 교통량이 집중되어 있다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Advice - Heavy traffic",
+      "standardExample": "ADVICE: Advise you keep clear of fairway until inward bound convoy has cleared.",
+      "exampleMeaning": "권고: 입항 선단이 빠져나갈 때까지 항로를 피해 떨어져 있으라."
+    },
+    {
+      "id": 58,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Sound fog horn one prolonged blast at intervals of not more than two minutes.",
+      "meaning": [
+        "2분을 넘지 않는 간격으로 무중 신호(장음 1회)를 취명하라."
+      ],
+      "distractors": [
+        "2분을 넘지 않는 간격으로 무중 신호(장음 2회)를 연속 취명하라.",
+        "1분을 넘지 않는 간격으로 무중 신호(단음 1회)를 취명하라.",
+        "2분을 넘지 않는 간격으로 무중 신호(장음 1회, 단음 2회)를 취명하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "COLREGs Rule 35 & SMCP - Fog signal power-driven vessel",
+      "standardExample": "Bridge watch: Restricted visibility. Sound one prolonged blast every two minutes.",
+      "exampleMeaning": "선교 당직: 제한 시정. 2분 간격으로 장음 1회를 취명하라."
+    },
+    {
+      "id": 59,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "I require tug assistance for swinging and unberthing.",
+      "meaning": [
+        "선체 회두 및 이안(출항) 작업을 위해 예인선 지원이 필요하다."
+      ],
+      "distractors": [
+        "선체 회두 및 접안(입항) 작업을 위해 예인선 지원이 필요하다.",
+        "선체 직진 유지 및 비상 정동 작업을 위해 예인선 지원이 필요하다.",
+        "선미 계류줄 인도를 위한 작업정 지원이 필요하다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Tug Assistance - Swinging and unberthing",
+      "standardExample": "Ship: I require two tugs for swinging and unberthing at 0600 tomorrow.",
+      "exampleMeaning": "본선: 내일 06시 선체 회두 및 이안을 위해 예인선 2척을 요청함."
+    },
+    {
+      "id": 60,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Watertight doors are closed. Damage control measures in progress.",
+      "meaning": [
+        "수밀문이 폐쇄되었다. 침수 방수 대책이 진행 중이다."
+      ],
+      "distractors": [
+        "방화문이 폐쇄되었다. 소화 방재 대책이 진행 중이다.",
+        "수밀문이 개방되었다. 빌지 배수 대책이 완료되었다.",
+        "수밀문이 폐쇄되었다. 전 구역 퇴선 대책이 진행 중이다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Damage Control - Watertight doors closed",
+      "standardExample": "Bridge report: All watertight doors closed. Bilge pumps running full capacity.",
+      "exampleMeaning": "선교 보고: 전 수밀문 폐쇄 완료. 빌지 펌프 최대 용량 가동 중."
+    },
+    {
+      "id": 61,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Do you have any deficiencies or restrictions?",
+      "meaning": [
+        "귀선에 결함이나 운항 제한 사항이 있는가?"
+      ],
+      "distractors": [
+        "귀선에 항해 장비 고장이나 통신 제한 사항이 있는가?",
+        "귀선에 승선원 질병이나 검역 제한 사항이 있는가?",
+        "귀선에 위험물 적재나 하역 제한 사항이 있는가?"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Query - Deficiencies & Restrictions",
+      "standardExample": "VTS: Do you have any deficiencies or restrictions? Ship: No deficiencies, all systems normal.",
+      "exampleMeaning": "관제탑: 결함이나 제한 사항이 있는가? 본선: 결함 없음, 전 시스템 정상."
+    },
+    {
+      "id": 62,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "I am constrained by my draft.",
+      "meaning": [
+        "본선은 흘수제약선이다."
+      ],
+      "distractors": [
+        "본선은 조종불능선(NUC)이다.",
+        "본선은 조종제한선(RAM)이다.",
+        "본선은 어로종사선이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "COLREGs & SMCP - Constrained by draft",
+      "standardExample": "Ship to VTS: I am constrained by my draft. Require clear fairway through channel.",
+      "exampleMeaning": "본선이 관제탑에: 본선은 흘수제약선임. 수로 통과 시 항로 확보 요청."
+    },
+    {
+      "id": 63,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "The maximum permitted draft in the channel is 12.5 meters.",
+      "meaning": [
+        "수로 내 최대 허용 흘수는 12.5미터이다."
+      ],
+      "distractors": [
+        "수로 내 최소 보장 수심은 12.5미터이다.",
+        "수로 내 최대 허용 전폭은 12.5미터이다.",
+        "수로 내 최대 허용 흘수는 11.5미터이다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP VTS Information - Maximum permitted draft",
+      "standardExample": "VTS broadcast: The maximum permitted draft in the channel is 12.5 meters at high water.",
+      "exampleMeaning": "관제탑 방송: 만조 시 수로 내 최대 허용 흘수는 12.5미터이다."
+    },
+    {
+      "id": 64,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Are you on even keel?",
+      "meaning": [
+        "귀선은 등흘수(이븐 킬) 상태인가?"
+      ],
+      "distractors": [
+        "귀선은 선미 트림(바이 더 스턴) 상태인가?",
+        "귀선은 선수 트림(바이 더 헤드) 상태인가?",
+        "귀선은 직립(업라이트) 횡경사 0도 상태인가?"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Stability - Even keel",
+      "standardExample": "Pilot: Are you on even keel? Chief Officer: Yes, forward draft 8m, aft draft 8m, on even keel.",
+      "exampleMeaning": "도선사: 등흘수 상태인가? 일등항해사: 그렇다, 선수 8m, 선미 8m로 등흘수임."
+    },
+    {
+      "id": 65,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "No, I am trimmed by the stern by 1.2 meters.",
+      "meaning": [
+        "아니다, 본선은 선미 트림 1.2미터 상태이다."
+      ],
+      "distractors": [
+        "아니다, 본선은 선수 트림 1.2미터 상태이다.",
+        "아니다, 본선은 우현으로 1.2도 경사된 상태이다.",
+        "그렇다, 본선은 선미 트림 없이 완전 등흘수 상태이다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Stability - Trimmed by stern",
+      "standardExample": "Ship report: Forward draft 7.8m, aft draft 9.0m, trimmed by the stern by 1.2 meters.",
+      "exampleMeaning": "본선 보고: 선수 흘수 7.8m, 선미 흘수 9.0m, 선미 트림 1.2미터임."
+    },
+    {
+      "id": 66,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Wide berth requested for underwater cable operations.",
+      "meaning": [
+        "해저 케이블 부설 작업 중이므로 충분한 안전거리를 두고 우회 항행을 요청함."
+      ],
+      "distractors": [
+        "해저 준설 작업 중이므로 감속하여 통과할 것을 요청함.",
+        "침몰선 탐색 작업 중이므로 항로 외측으로 통항할 것을 요청함.",
+        "해저 케이블 점검 작업이 완료되었으므로 정상 통항을 허가함."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Navigational Warning - Wide berth requested",
+      "standardExample": "SECURITE: Cable ship laying optical cable. Wide berth of 1 nautical mile requested.",
+      "exampleMeaning": "세퀴리테: 광케이블 포설 작업 중. 1해리의 충분한 안전거리 유지 요청."
+    },
+    {
+      "id": 67,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "WARNING. Obstruction in the fairway. Sunken container reported.",
+      "meaning": [
+        "경고. 항로 상에 장애물 있음. 침몰 컨테이너가 보고됨."
+      ],
+      "distractors": [
+        "경고. 항로 상에 장애물 있음. 표류 어망이 보고됨.",
+        "주의. 항로 외측에 천소 있음. 침몰 바지선이 보고됨.",
+        "정보. 항로 상의 침몰 컨테이너가 성공적으로 인양 완료됨."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Warning - Obstruction in fairway",
+      "standardExample": "VTS WARNING: Obstruction in the fairway. Sunken container reported in position.",
+      "exampleMeaning": "관제탑 경고: 항로 상 장애물 있음. 해당 위치에 침몰 컨테이너 보고됨."
+    },
+    {
+      "id": 68,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "INTENTION. I will reduce speed to dead slow ahead.",
+      "meaning": [
+        "의도. 본선은 극미속 전진으로 속력을 감속할 예정이다."
+      ],
+      "distractors": [
+        "의도. 본선은 미속 전진으로 속력을 감속할 예정이다.",
+        "의도. 본선은 주기관을 정지하고 관성으로 전진할 예정이다.",
+        "의도. 본선은 극미속 후진으로 선박을 정지시킬 예정이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Intention - Reduce speed",
+      "standardExample": "Ship to traffic: INTENTION. I will reduce speed to dead slow ahead to allow you to pass.",
+      "exampleMeaning": "본선이 타선박에: 의도. 귀선 통과를 위해 본선 속력을 극미속으로 감속하겠음."
+    },
+    {
+      "id": 69,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "INFORMATION. You are entering area with heavy fishing activity.",
+      "meaning": [
+        "정보. 귀선은 조업 중인 어선이 밀집된 해역으로 진입 중임."
+      ],
+      "distractors": [
+        "경고. 귀선은 통항 금지 구역인 양식장 해역으로 진입 중임.",
+        "정보. 귀선은 해상 사격 훈련 구역으로 진입 중임.",
+        "지시. 조업 중인 어선 밀집 해역을 우회하여 외해로 항행하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Information - Fishing activity",
+      "standardExample": "VTS: INFORMATION. You are entering area with heavy fishing activity. Post extra lookouts.",
+      "exampleMeaning": "관제탑: 정보. 어선 조업 밀집 구역 진입 중임. 추가 경계원을 배치하라."
+    },
+    {
+      "id": 70,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "INSTRUCTION. Stop your vessel immediately.",
+      "meaning": [
+        "지시. 즉시 귀선을 정지하라."
+      ],
+      "distractors": [
+        "권고. 귀선의 속력을 즉시 절반으로 감속하라.",
+        "지시. 즉시 항로 밖으로 침로를 변경하라.",
+        "의도. 본선은 귀선을 피하기 위해 즉시 정지하겠다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Instruction - Stop vessel",
+      "standardExample": "Coast Guard: INSTRUCTION. Stop your vessel immediately and stand by for inspection.",
+      "exampleMeaning": "해양경찰: 지시. 즉시 선박을 정지하고 검문검색에 대비하라."
+    },
+    {
+      "id": 71,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "REQUEST. Can you give me radar assistance?",
+      "meaning": [
+        "요청. 본선에 레이더 관제 지원을 제공해 줄 수 있는가?"
+      ],
+      "distractors": [
+        "질문. 본선의 레이더 영상이 관제 센터에 수신되고 있는가?",
+        "요청. 본선의 침로 수정을 위해 도선선 배치를 요청할 수 있는가?",
+        "지시. 귀선의 레이더를 작동시켜 본선과의 거리를 측정하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Request - Radar assistance",
+      "standardExample": "Ship in heavy fog: REQUEST. Can you give me radar assistance through fairway?",
+      "exampleMeaning": "농무 속 본선: 요청. 수로 통과 시 레이더 관제 지원을 제공해 줄 수 있는가?"
+    },
+    {
+      "id": 72,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "ADVICE. You must wait outside harbor until tidal window opens.",
+      "meaning": [
+        "권고. 조석 통항 창구가 열릴 때까지 항만 외측에서 대기해야 한다."
+      ],
+      "distractors": [
+        "지시. 만조 시간에 맞추어 항만 내측 정박지로 즉시 진입해야 한다.",
+        "권고. 간조 시간대 통항 창구가 닫힐 때까지 전속력으로 통과해야 한다.",
+        "정보. 조석 제한이 해제되었으므로 항만 외측 대기를 종료하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Advice - Tidal window wait",
+      "standardExample": "VTS ADVICE: Draft exceeds low water depth. Wait outside harbor until tidal window opens.",
+      "exampleMeaning": "관제탑 권고: 흘수가 저수심을 초과함. 조석 창구가 열릴 때까지 외항 대기하라."
+    },
+    {
+      "id": 73,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Is your propeller clear?",
+      "meaning": [
+        "프로펠러 주변에 장애물이 없는가?"
+      ],
+      "distractors": [
+        "프로펠러 피치가 정상적으로 작동하는가?",
+        "선미 타판(러더) 주변에 장애물이 없는가?",
+        "기관 전진 회전 시 프로펠러 진동이 없는가?"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Maneuvering check - Propeller clear",
+      "standardExample": "Pilot: Is your propeller clear? Third Mate on stern: Yes, sir, propeller is clear!",
+      "exampleMeaning": "도선사: 프로펠러 주변 이상 없는가? 선미 3등항해사: 네, 프로펠러 이상 없습니다!"
+    },
+    {
+      "id": 74,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Let go starboard anchor!",
+      "meaning": [
+        "우현 닻을 투하하라!"
+      ],
+      "distractors": [
+        "좌현 닻을 투하하라!",
+        "우현 닻을 감아올려라(양묘하라)!",
+        "양현 닻을 동시에 투하하라!"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Anchoring Order - Let go starboard anchor",
+      "standardExample": "Bridge command: Stand by starboard anchor... Let go starboard anchor!",
+      "exampleMeaning": "선교 명령: 우현 닻 대기... 우현 닻 투하!"
+    },
+    {
+      "id": 75,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Heave in anchor!",
+      "meaning": [
+        "닻을 감아올려라 (양묘하라)!"
+      ],
+      "distractors": [
+        "닻을 바닥에 투하하라 (투묘하라)!",
+        "닻줄을 더 늦추어라 (신출하라)!",
+        "닻줄 윈치 브레이크를 체결하고 대기하라!"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Anchoring Order - Heave in anchor",
+      "standardExample": "Bridge to forecastle: Heave in anchor! Report shackles coming in.",
+      "exampleMeaning": "선교에서 선수로: 양묘하라! 감겨 들어오는 닻줄 샤클을 보고하라."
+    },
+    {
+      "id": 76,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "How many shackles are left to come in?",
+      "meaning": [
+        "감아올릴 닻줄이 몇 절(샤클) 남았는가?"
+      ],
+      "distractors": [
+        "수중에 들어가 있는 닻줄이 총 몇 절(샤클)인가?",
+        "더 내어주어야 할 닻줄이 몇 절(샤클) 남았는가?",
+        "양묘 윈치에 감겨 있는 체인이 몇 미터인가?"
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Anchoring Query - Shackles left",
+      "standardExample": "Bridge: How many shackles are left to come in? Chief Officer: One shackle on deck, sir.",
+      "exampleMeaning": "선교: 남은 닻줄 몇 샤클인가? 일등항해사: 갑판 위에 1샤클 남았습니다."
+    },
+    {
+      "id": 77,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Anchor is aweigh!",
+      "meaning": [
+        "닻이 해저에서 떨어졌다 (이저 / 양묘 완료 직전)!"
+      ],
+      "distractors": [
+        "닻이 해저에 닿았다 (착저)!",
+        "닻줄이 수직 상태이다 (직립묘)!",
+        "닻이 수면 위로 완전히 올라왔다 (수면묘)!"
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Anchoring Status - Anchor aweigh",
+      "standardExample": "Forecastle report: Anchor is aweigh! Ship is now underway.",
+      "exampleMeaning": "선수부 보고: 닻이 해저에서 떨어졌습니다 (이저 완료)! 본선 이제 항행 개시."
+    },
+    {
+      "id": 78,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Anchor is up and down!",
+      "meaning": [
+        "닻줄이 수직 상태이다 (직립묘)!"
+      ],
+      "distractors": [
+        "닻이 해저에서 완전히 떨어졌다 (이저)!",
+        "닻줄이 선수 전방으로 길게 뻗어 있다 (장묘)!",
+        "닻이 선체 호스파이프에 완전히 수납되었다 (격납묘)!"
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Anchoring Status - Up and down",
+      "standardExample": "Chief Officer: Anchor is up and down! Weight is coming on the windlass.",
+      "exampleMeaning": "일등항해사: 닻줄 직립 상태입니다! 양묘기에 하중이 걸리고 있습니다."
+    },
+    {
+      "id": 79,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Anchor is clear!",
+      "meaning": [
+        "닻에 해저 장애물이 걸리지 않고 깨끗하다!"
+      ],
+      "distractors": [
+        "닻에 폐로프나 체인이 걸렸다 (오묘)!",
+        "닻이 해저 펄 속에 단단히 파묻혔다!",
+        "닻줄이 프로펠러 샤프트에 감기지 않고 깨끗하다!"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Anchoring Status - Anchor clear",
+      "standardExample": "Forecastle: Anchor is in sight and anchor is clear! Ready to secure.",
+      "exampleMeaning": "선수: 닻이 보이며 이물질 없이 깨끗합니다! 고박 준비 완료."
+    },
+    {
+      "id": 80,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Anchor is fouled!",
+      "meaning": [
+        "닻에 체인이나 폐기물이 얽혔다 (오묘)!"
+      ],
+      "distractors": [
+        "닻에 장애물이 걸리지 않고 깨끗하게 올라왔다 (청묘)!",
+        "닻이 해저에서 떨어지지 않고 걸려 있다 (착저)!",
+        "닻줄 윈치 기어가 맞물려 회전하지 않는다!"
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Anchoring Status - Anchor fouled",
+      "standardExample": "Warning from bow: Anchor is fouled with abandoned fishing cable!",
+      "exampleMeaning": "선수 경고: 닻에 버려진 폐그물 케이블이 얽혀 감겼습니다 (오묘)!"
+    },
+    {
+      "id": 81,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Make fast tug on starboard quarter.",
+      "meaning": [
+        "우현 선미 쪽에 예인선을 연결하라."
+      ],
+      "distractors": [
+        "좌현 선미 쪽에 예인선을 연결하라.",
+        "우현 선수 쪽에 예인선을 연결하라.",
+        "우현 선미의 예인선 줄을 벗겨내라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Tug Orders - Make fast tug",
+      "standardExample": "Pilot order: Make fast tug on starboard quarter with ship line.",
+      "exampleMeaning": "도선사 명령: 본선 로프로 우현 선미 쪽에 예인선을 연결하라."
+    },
+    {
+      "id": 82,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Cast off tug line!",
+      "meaning": [
+        "예인선 줄을 벗겨라 (해빙하라)!"
+      ],
+      "distractors": [
+        "예인선 줄을 단단히 묶어 고정하라!",
+        "예인선 줄을 윈치로 천천히 감아들여라!",
+        "예인선 줄을 더 길게 늦추어주어라!"
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Tug Orders - Cast off tug line",
+      "standardExample": "Vessel clear of berth. Pilot order: Cast off tug line forward and aft.",
+      "exampleMeaning": "선박 이안 완료. 도선사 명령: 선수 선미 예인선 줄을 벗겨라!"
+    },
+    {
+      "id": 83,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Vessel not under command displays two red lights in vertical line.",
+      "meaning": [
+        "조종불능선은 수직선상에 전주 홍등 2개를 표시한다."
+      ],
+      "distractors": [
+        "조종제한선은 수직선상에 홍-백-홍 전주등 3개를 표시한다.",
+        "조종불능선은 수직선상에 전주 백등 2개를 표시한다.",
+        "흘수제약선은 수직선상에 전주 홍등 3개를 표시한다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "COLREGs Rule 27 - Vessel not under command lights",
+      "standardExample": "Navigation check: Target ahead is displaying two all-round red lights; vessel not under command.",
+      "exampleMeaning": "항해 점검: 전방 목표물이 수직 홍등 2개를 표시 중임; 조종불능선임."
+    },
+    {
+      "id": 84,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Safe speed must be maintained in restricted visibility.",
+      "meaning": [
+        "시계 제한 시에는 반드시 안전 속력을 유지해야 한다."
+      ],
+      "distractors": [
+        "시계 제한 시에는 통항 시간을 줄이기 위해 최고 속력을 유지해야 한다.",
+        "시계 제한 시에는 주기관을 정지하고 대기 속력을 0노트로 유지해야 한다.",
+        "시계 제한 시에는 좁은 수로에서만 한정하여 안전 속력을 적용한다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "COLREGs Rule 6 & 19 - Safe speed in fog",
+      "standardExample": "Master instruction: Entering heavy fog bank. Safe speed must be maintained at all times.",
+      "exampleMeaning": "선장 지침: 짙은 안개 구역 진입. 항시 안전 속력을 유지해야 한다."
+    },
+    {
+      "id": 85,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Risk of collision deemed to exist if bearing does not appreciably change.",
+      "meaning": [
+        "방위가 현저히 변하지 않으면 충돌 위험이 존재하는 것으로 간주된다."
+      ],
+      "distractors": [
+        "상대방 선박의 거리가 2마일 이상이면 방위 변화와 무관하게 충돌 위험이 없다.",
+        "방위선이 급격하게 변할 때 충돌 위험이 가장 큰 것으로 간주된다.",
+        "상대선과 침로가 평행하면 방위가 변하지 않아도 충돌 위험이 없다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "COLREGs Rule 7 - Risk of collision",
+      "standardExample": "Officer on watch: Bearing of approaching vessel is steady. Risk of collision exists.",
+      "exampleMeaning": "당직 항해사: 접근 선박의 방위가 일정함. 충돌 위험이 존재함."
+    },
+    {
+      "id": 86,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Give-way vessel shall take early and substantial action to keep well clear.",
+      "meaning": [
+        "피항선은 일찍이 큰 폭의 동작을 취하여 충분히 피해야 한다."
+      ],
+      "distractors": [
+        "피항선은 마지막 순간까지 현재 침로와 속력을 유지해야 한다.",
+        "유지선은 일찍이 큰 폭으로 변침하여 피항선을 피해야 한다.",
+        "피항선은 작은 각도로 연속 변침하여 서서히 거리를 벌려야 한다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "COLREGs Rule 16 - Action by give-way vessel",
+      "standardExample": "Bridge rule: As give-way vessel, we must take early and substantial action to keep well clear.",
+      "exampleMeaning": "선교 원칙: 피항선으로서 우리는 일찍이 대폭적인 동작을 취해 충분히 피해야 한다."
+    },
+    {
+      "id": 87,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Stand-on vessel shall keep her course and speed.",
+      "meaning": [
+        "유지선은 그 침로와 속력을 유지하여야 한다."
+      ],
+      "distractors": [
+        "유지선은 피항선의 동작과 반대 방향으로 침로를 변경해야 한다.",
+        "유지선은 충돌 위험이 발생하자마자 즉시 주기관을 감속해야 한다.",
+        "피항선은 침로를 변경하지 않고 일정한 속력만을 유지해야 한다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "COLREGs Rule 17 - Action by stand-on vessel",
+      "standardExample": "COLREGs compliance: As the stand-on vessel in crossing situation, keep her course and speed.",
+      "exampleMeaning": "규칙 준수: 횡단 상황의 유지선으로서 침로와 속력을 그대로 유지하라."
+    },
+    {
+      "id": 88,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Lifejackets must be donned before boarding liferafts.",
+      "meaning": [
+        "구명뗏목에 탑승하기 전에 구명동의(구명조끼)를 반드시 착용해야 한다."
+      ],
+      "distractors": [
+        "구명뗏목에 탑승한 직후에 구명동의(구명조끼)를 착용해야 한다.",
+        "구명뗏목 진수 직전에 방한 구명복을 벗고 구명조끼만 휴대해야 한다.",
+        "구명뗏목 탑승 시에는 부피를 줄이기 위해 구명동의 착용을 금지한다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "SOLAS Safety Drill - Lifejackets donned",
+      "standardExample": "Abandon ship drill command: Lifejackets must be donned properly before boarding liferafts.",
+      "exampleMeaning": "퇴선 훈련 지령: 구명뗏목에 탑승하기 전에 구명조끼를 올바르게 착용해야 한다."
+    },
+    {
+      "id": 89,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Inert gas system must keep oxygen level below eight percent.",
+      "meaning": [
+        "불활성가스 시스템은 산소 농도를 8% 미만으로 유지해야 한다."
+      ],
+      "distractors": [
+        "불활성가스 시스템은 산소 농도를 5% 이상 10% 이하로 유지해야 한다.",
+        "화물창 통풍 시스템은 산소 농도를 21% 이상으로 유지해야 한다.",
+        "불활성가스 시스템은 이산화탄소 농도를 8% 미만으로 유지해야 한다."
+      ],
+      "difficulty": "high",
+      "englishDefinition": "Tanker Safety & SOLAS - Inert gas oxygen level",
+      "standardExample": "Chief Officer tanker check: Inert gas system must keep cargo tank oxygen level below 8%.",
+      "exampleMeaning": "유조선 1항사 점검: 불활성가스 설비는 화물탱크 산소 농도를 8% 미만으로 유지해야 함."
+    },
+    {
+      "id": 90,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Close all cargo hatch covers tightly before departing port.",
+      "meaning": [
+        "출항 전 모든 화물창 해치 커버를 단단히 밀폐하라."
+      ],
+      "distractors": [
+        "출항 전 화물창 자연 통풍을 위해 해치 커버를 부분 개방하라.",
+        "외항 묘박지에 도달할 때까지 화물창 해치 커버 클리트를 체결하지 마라.",
+        "도선사 하선 직후에 모든 화물창 해치 커버를 수밀 폐쇄하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "Seaworthiness & SOLAS - Hatch covers closed",
+      "standardExample": "Pre-departure checklist: Close all cargo hatch covers tightly and secure cleating wedges.",
+      "exampleMeaning": "출항 전 체크리스트: 모든 화물창 해치 커버를 단단히 닫고 쐐기로 단단히 고정하라."
+    },
+    {
+      "id": 91,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Check bilge sounding every four hours during sea passage.",
+      "meaning": [
+        "해상 항해 중 매 4시간마다 빌지 측심을 실시하라."
+      ],
+      "distractors": [
+        "해상 항해 중 매 당직 교대 시마다 연료유 탱크 측심을 실시하라.",
+        "해상 항해 중 매 2시간마다 밸러스트 수위를 자동 측심하라.",
+        "입항 전 지정된 시간에만 1회 빌지 측심을 실시하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "Daily Seamanship - Bilge soundings",
+      "standardExample": "Standing orders: Duty apprentice shall check bilge sounding every four hours without fail.",
+      "exampleMeaning": "선장 야간 지침: 당직 실습사는 매 4시간마다 어김없이 빌지 측심을 실시해야 한다."
+    },
+    {
+      "id": 92,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Emergency generator started automatically on blackout.",
+      "meaning": [
+        "선내 정전(블랙아웃) 발생 시 비상 발전기가 자동으로 기동되었다."
+      ],
+      "distractors": [
+        "선내 정전 발생 시 보조 보일러가 자동으로 기동되었다.",
+        "선내 정전 발생 시 비상 발전기를 수동 크랭크로 기동시켰다.",
+        "주기관 정지 발생 시 비상 발전기가 주 배전반을 차단했다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "Engine Safety & SOLAS - Emergency generator on blackout",
+      "standardExample": "Log entry: Total blackout at 0320. Emergency generator started automatically within 45 seconds.",
+      "exampleMeaning": "항해일지 기록: 03시 20분 전력 상실. 비상 발전기가 45초 이내에 자동 기동됨."
+    },
+    {
+      "id": 93,
+      "partOfSpeech": "통신문",
+      "topic": "navigation",
+      "word": "What are your intentions? I intend to pass you port-to-port.",
+      "meaning": [
+        "귀선의 의도는 무엇인가? 본선은 좌현 대 좌현으로 귀선을 통과하고자 한다."
+      ],
+      "distractors": [
+        "귀선의 의도는 무엇인가? 본선은 우현 대 우현으로 귀선을 통과하고자 한다.",
+        "귀선의 침로는 얼마인가? 본선은 귀선의 선미를 가로질러 통과하고자 한다.",
+        "귀선의 속력은 얼마인가? 본선은 귀선의 좌현 측면을 추월하고자 한다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Navigation Traffic - Meeting vessels port-to-port",
+      "standardExample": "Vessel on my port bow, what are your intentions? - I intend to pass you port-to-port.",
+      "exampleMeaning": "본선 좌현 선수의 선박, 귀선의 의도는 무엇인가? - 본선은 좌현 대 좌현으로 귀선을 통과하고자 한다."
+    },
+    {
+      "id": 94,
+      "partOfSpeech": "통신문",
+      "topic": "navigation",
+      "word": "I am altering my course to starboard to give way to you.",
+      "meaning": [
+        "본선은 귀선에게 피항하기 위해 우현으로 변침 중이다."
+      ],
+      "distractors": [
+        "본선은 귀선에게 피항하기 위해 좌현으로 변침 중이다.",
+        "본선은 귀선의 진로를 가로막지 않기 위해 기관을 급감속 중이다.",
+        "본선은 유지선이므로 귀선이 우현으로 피항해 주길 바란다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Collision Avoidance - Starboard alteration",
+      "standardExample": "Calling vessel ahead: I am altering my course to starboard to give way to you.",
+      "exampleMeaning": "전방의 선박 호출: 본선은 귀선에게 피항하기 위해 우현으로 변침 중이다."
+    },
+    {
+      "id": 95,
+      "partOfSpeech": "통신문",
+      "topic": "vts",
+      "word": "Ulsan VTS, this is M/V OCEAN STAR. Request permission to enter the inbound fairway.",
+      "meaning": [
+        "울산 VTS, 본선은 오션스타호. 입항 항로 진입 허가를 요청한다."
+      ],
+      "distractors": [
+        "울산 VTS, 본선은 오션스타호. 출항 항로 진입 허가를 요청한다.",
+        "울산 VTS, 본선은 오션스타호. 검역 묘박지 진입 허가를 요청한다.",
+        "울산 VTS, 본선은 오션스타호. 도선사 승선 지점 대기 허가를 요청한다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Reporting - Fairway entrance request",
+      "standardExample": "Ulsan VTS, this is M/V OCEAN STAR. Request permission to enter the inbound fairway.",
+      "exampleMeaning": "울산 VTS, 본선은 오션스타호. 입항 항로 진입 허가를 요청한다."
+    },
+    {
+      "id": 96,
+      "partOfSpeech": "통신문",
+      "topic": "vts",
+      "word": "M/V OCEAN STAR, this is VTS. Permission granted. Maintain speed 10 knots.",
+      "meaning": [
+        "오션스타호, 여기는 VTS. 허가한다. 속력 10노트를 유지하라."
+      ],
+      "distractors": [
+        "오션스타호, 여기는 VTS. 허가를 보류한다. 외항에서 속력 10노트로 대기하라.",
+        "오션스타호, 여기는 VTS. 허가한다. 최대 속력 15노트로 증속하여 통과하라.",
+        "오션스타호, 여기는 VTS. 허가한다. 항로 내 속력을 6노트 이하로 감속하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Instruction - Fairway entry granted",
+      "standardExample": "M/V OCEAN STAR, permission granted to enter fairway. Maintain speed 10 knots.",
+      "exampleMeaning": "오션스타호, 항로 진입을 허가한다. 속력 10노트를 유지하라."
+    },
+    {
+      "id": 97,
+      "partOfSpeech": "통신문",
+      "topic": "vts",
+      "word": "Warning. You are running into danger. Shallow water ahead of you.",
+      "meaning": [
+        "경고. 귀선은 위험으로 향하고 있다. 귀선 전방에 천소가 있다."
+      ],
+      "distractors": [
+        "경고. 귀선은 위험으로 향하고 있다. 귀선 우현에 어망 구역이 있다.",
+        "주의. 귀선은 추천 항로를 이탈했다. 귀선 전방에 침몰선이 있다.",
+        "정보. 귀선 침로 상에 깊은 수심이 확보되어 안전하다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Navigation Warning - Running into shallow danger",
+      "standardExample": "Warning, M/V BLUE SKY. You are running into danger. Shallow water ahead of you.",
+      "exampleMeaning": "경고, 블루스카이호. 귀선은 위험으로 향하고 있다. 귀선 전방에 천소가 있다."
+    },
+    {
+      "id": 98,
+      "partOfSpeech": "통신문",
+      "topic": "pilot",
+      "word": "Pilot ladder must be rigged on the port side, 1.5 meters above water.",
+      "meaning": [
+        "도선사용 사다리는 수면 상 1.5미터 높이로 좌현에 설치되어야 한다."
+      ],
+      "distractors": [
+        "도선사용 사다리는 수면 상 1.5미터 높이로 우현에 설치되어야 한다.",
+        "도선사용 사다리는 수면 상 2.5미터 높이로 좌현에 설치되어야 한다.",
+        "도선사용 조합사다리는 수면 상 0.5미터 높이로 선미에 설치되어야 한다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Pilotage - Pilot ladder rigging instruction",
+      "standardExample": "Pilot boat approaching: Pilot ladder must be rigged on the port side, 1.5 meters above water.",
+      "exampleMeaning": "도선선 접근 중: 도선사용 사다리는 수면 상 1.5미터 높이로 좌현에 설치되어야 한다."
+    },
+    {
+      "id": 99,
+      "partOfSpeech": "통신문",
+      "topic": "pilot",
+      "word": "Make a good lee on your starboard side for the pilot boat.",
+      "meaning": [
+        "도선선을 위해 귀선의 우현 쪽에 양호한 풍하측(피바람 구역)을 형성하라."
+      ],
+      "distractors": [
+        "도선선을 위해 귀선의 좌현 쪽에 양호한 풍하측(피바람 구역)을 형성하라.",
+        "도선선을 위해 귀선의 우현 쪽에 바람을 정면으로 받는 침로를 취하라.",
+        "도선선 접현을 위해 우현 쪽 속력을 12노트로 유지하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Pilotage - Make a good lee",
+      "standardExample": "Please alter course to 180 degrees and make a good lee on your starboard side for the pilot boat.",
+      "exampleMeaning": "침로를 180도로 변경하여 도선선을 위해 귀선의 우현 쪽에 양호한 풍하측을 형성하라."
+    },
+    {
+      "id": 100,
+      "partOfSpeech": "통신문",
+      "topic": "pilot",
+      "word": "Pilot is embarking now. Stand by on the bridge.",
+      "meaning": [
+        "도선사가 지금 승선 중이다. 선교에서 대기하라."
+      ],
+      "distractors": [
+        "도선사가 지금 하선 중이다. 선교에서 기관을 대기하라.",
+        "도선선이 본선에 접현 중이다. 좌현 갑판에서 대기하라.",
+        "도선사가 승선을 완료했다. 즉시 전속 전진으로 증속하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Pilotage - Pilot embarkation in progress",
+      "standardExample": "Deck report: Pilot is embarking now. Bridge stand by.",
+      "exampleMeaning": "갑판 보고: 도선사가 지금 승선 중이다. 선교는 대기하라."
+    },
+    {
+      "id": 101,
+      "partOfSpeech": "통신문",
+      "topic": "tug",
+      "word": "Tug KOREA ONE, make fast on the port bow with ship's line.",
+      "meaning": [
+        "예인선 코리아원, 본선의 로프로 좌현 선수에 줄을 잡으라."
+      ],
+      "distractors": [
+        "예인선 코리아원, 예선 로프로 우현 선미에 줄을 잡으라.",
+        "예인선 코리아원, 본선의 로프로 우현 선수에 줄을 잡으라.",
+        "예인선 코리아원, 예선 로프로 좌현 선미에 줄을 잡으라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Tug Operations - Make fast with ship line",
+      "standardExample": "Tug KOREA ONE, make fast on the port bow with ship's line.",
+      "exampleMeaning": "예인선 코리아원, 본선의 로프로 좌현 선수에 줄을 잡으라."
+    },
+    {
+      "id": 102,
+      "partOfSpeech": "통신문",
+      "topic": "tug",
+      "word": "Tug KOREA TWO, push full power on starboard quarter.",
+      "meaning": [
+        "예인선 코리아투, 우현 선미 사분도 구역을 전력으로 밀어라."
+      ],
+      "distractors": [
+        "예인선 코리아투, 좌현 선미 사분도 구역을 전력으로 밀어라.",
+        "예인선 코리아투, 우현 선수 구역을 절반 출력으로 밀어라.",
+        "예인선 코리아투, 우현 선미 사분도 구역을 전속으로 당겨라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Tug Operations - Push full power",
+      "standardExample": "Pilot to tug: Tug KOREA TWO, push full power on starboard quarter.",
+      "exampleMeaning": "도선사가 예선에: 예인선 코리아투, 우현 선미 사분도 구역을 전력으로 밀어라."
+    },
+    {
+      "id": 103,
+      "partOfSpeech": "통신문",
+      "topic": "tug",
+      "word": "All tugs, stop pushing and stand by.",
+      "meaning": [
+        "모든 예인선, 밀기를 멈추고 대기하라."
+      ],
+      "distractors": [
+        "모든 예인선, 당기기를 멈추고 대기하라.",
+        "모든 예인선, 예인줄을 풀고 기지로 복귀하라.",
+        "선수 예인선만 밀기를 계속하고 선미 예인선은 대기하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Tug Operations - Stop pushing",
+      "standardExample": "Bridge to tugs: All tugs, stop pushing and stand by.",
+      "exampleMeaning": "선교가 예선들에: 모든 예인선, 밀기를 멈추고 대기하라."
+    },
+    {
+      "id": 104,
+      "partOfSpeech": "통신문",
+      "topic": "tug",
+      "word": "Cast off the tug line forward. Let go forward tug.",
+      "meaning": [
+        "선수의 예인줄을 벗겨내라. 선수 예인선을 방출하라."
+      ],
+      "distractors": [
+        "선미의 예인줄을 벗겨내라. 선미 예인선을 방출하라.",
+        "선수의 예인줄을 팽팽하게 감아라. 선수 예인선을 대기시켜라.",
+        "선수의 예인줄을 더 길게 늦추어라. 선수 예인선에 지시하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Tug Operations - Cast off tug line",
+      "standardExample": "Forward station: Cast off the tug line forward. Let go forward tug.",
+      "exampleMeaning": "선수 배치처: 선수의 예인줄을 벗겨내라. 선수 예인선을 방출하라."
+    },
+    {
+      "id": 105,
+      "partOfSpeech": "통신문",
+      "topic": "anchoring",
+      "word": "Stand by the starboard anchor. Let go starboard anchor.",
+      "meaning": [
+        "우현 닻 대기. 우현 닻을 놓아라(투묘하라)."
+      ],
+      "distractors": [
+        "좌현 닻 대기. 좌현 닻을 놓아라(투묘하라).",
+        "우현 닻 대기. 우현 닻줄을 두 샤클 감아올려라.",
+        "양현 닻 대기. 우현 닻 브레이크를 체결하고 대기하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Anchoring - Stand by and let go anchor",
+      "standardExample": "Master ordered: Stand by the starboard anchor. Let go starboard anchor!",
+      "exampleMeaning": "선장이 지시했다: 우현 닻 대기. 우현 닻을 놓아라!"
+    },
+    {
+      "id": 106,
+      "partOfSpeech": "통신문",
+      "topic": "anchoring",
+      "word": "How is the cable leading? Cable is leading four o'clock, long stay.",
+      "meaning": [
+        "닻줄의 신장 방향은 어떠한가? 닻줄은 4시 방향으로 길게 뻗어 있다."
+      ],
+      "distractors": [
+        "닻줄의 신장 방향은 어떠한가? 닻줄은 8시 방향으로 길게 뻗어 있다.",
+        "닻줄의 장력은 어떠한가? 닻줄은 4시 방향으로 수직으로 처져 있다.",
+        "닻줄의 신장 방향은 어떠한가? 닻줄은 2시 방향으로 짧게 뻗어 있다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Anchoring - Cable leading and stay",
+      "standardExample": "Bridge to forecastle: How is the cable leading? - Cable is leading four o'clock, long stay.",
+      "exampleMeaning": "선교가 선수에: 닻줄의 신장 방향은 어떠한가? - 닻줄은 4시 방향으로 길게 뻗어 있다."
+    },
+    {
+      "id": 107,
+      "partOfSpeech": "통신문",
+      "topic": "anchoring",
+      "word": "Anchor is aweigh. Vessel is under way.",
+      "meaning": [
+        "닻이 해저에서 완전히 떨어졌다(무게가 실렸다). 본선은 항해 중이다."
+      ],
+      "distractors": [
+        "닻줄이 직립 상태이다(직립묘). 본선은 기관 준비 중이다.",
+        "닻이 해저에 단단히 박혔다(착저). 본선은 묘박 완료 상태이다.",
+        "닻이 호스파이프에 수납되었다(격납묘). 본선은 전속 전진 중이다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Anchoring - Anchor is aweigh",
+      "standardExample": "Forecastle report: Anchor is aweigh. Vessel is under way.",
+      "exampleMeaning": "선수부 보고: 닻이 해저에서 완전히 떨어졌다. 본선은 항해 중이다."
+    },
+    {
+      "id": 108,
+      "partOfSpeech": "통신문",
+      "topic": "helm",
+      "word": "Midships. Ease the helm to midships.",
+      "meaning": [
+        "정앙(중립). 타를 중앙 중립으로 되돌려라."
+      ],
+      "distractors": [
+        "우현 10도. 타를 우현으로 되돌려라.",
+        "좌현 10도. 타를 좌현으로 되돌려라.",
+        "전타(Hard-a-port). 타를 좌현 끝까지 돌려라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Wheel Orders - Midships",
+      "standardExample": "Helmsman, midships! - Midships, sir.",
+      "exampleMeaning": "조타수, 정앙! - 정앙했습니다."
+    },
+    {
+      "id": 109,
+      "partOfSpeech": "통신문",
+      "topic": "helm",
+      "word": "Port ten. Steer course two seven zero.",
+      "meaning": [
+        "좌현 10도. 침로 270도로 조타하라."
+      ],
+      "distractors": [
+        "우현 10도. 침로 270도로 조타하라.",
+        "좌현 10도. 침로 090도로 조타하라.",
+        "좌현 20도. 침로 270도로 조타하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Wheel Orders - Port ten and steer course",
+      "standardExample": "Conning officer: Port ten. Steer course two seven zero.",
+      "exampleMeaning": "조타 지휘관: 좌현 10도. 침로 270도로 조타하라."
+    },
+    {
+      "id": 110,
+      "partOfSpeech": "통신문",
+      "topic": "helm",
+      "word": "Steady as she goes. Keep the ship heading zero four five.",
+      "meaning": [
+        "곧바로(키 멈춰). 선수를 현재 방위 045도로 유지하라."
+      ],
+      "distractors": [
+        "우현으로 더 돌려라. 선수를 방위 045도로 유지하라.",
+        "곧바로(키 멈춰). 선수를 현재 방위 225도로 유지하라.",
+        "역타를 쳐라(Meet her). 선수를 방위 045도로 급회두하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Wheel Orders - Steady as she goes",
+      "standardExample": "Steady as she goes! - Steady on zero four five, sir.",
+      "exampleMeaning": "곧바로! - 현재 방위 045도로 유지 중입니다."
+    },
+    {
+      "id": 111,
+      "partOfSpeech": "통신문",
+      "topic": "engine",
+      "word": "Dead slow ahead. Stand by engine for maneuvering.",
+      "meaning": [
+        "미속 전진. 입출항 조종을 위해 기관 대기하라."
+      ],
+      "distractors": [
+        "미속 후진. 입출항 조종을 위해 기관 대기하라.",
+        "반속 전진. 항해 전속을 위해 기관 대기하라.",
+        "기관 정지. 입출항 조종을 위해 비상 정동하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Engine Orders - Dead slow ahead and stand by engine",
+      "standardExample": "Bridge to engine room: Dead slow ahead. Stand by engine for maneuvering.",
+      "exampleMeaning": "선교가 기관실에: 미속 전진. 입출항 조종을 위해 기관 대기하라."
+    },
+    {
+      "id": 112,
+      "partOfSpeech": "통신문",
+      "topic": "engine",
+      "word": "Full astern. Crash stop the vessel immediately.",
+      "meaning": [
+        "전속 후진. 비상시 본선을 즉각 급정지하라."
+      ],
+      "distractors": [
+        "전속 전진. 비상시 장애물을 전속으로 회피하라.",
+        "반속 후진. 선박을 정박지에 서서히 감속 정지하라.",
+        "기관 비상 정지. 추진기를 중립에 두고 자연 타력으로 정지하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Engine Orders - Full astern crash stop",
+      "standardExample": "Emergency collision risk: Ring full astern! Crash stop the vessel immediately.",
+      "exampleMeaning": "비상 충돌 위험: 전속 후진을 발령하라! 본선을 즉각 급정지하라."
+    },
+    {
+      "id": 113,
+      "partOfSpeech": "통신문",
+      "topic": "engine",
+      "word": "Finished with engine. Bridge control off.",
+      "meaning": [
+        "기관 사용 완료. 선교 제어 해제."
+      ],
+      "distractors": [
+        "기관 비상 대기. 선교 수동 조작 유지.",
+        "기관 운전 준비. 선교 제어로 전환.",
+        "기관실 제어 전환. 선교 경보 시스템 해제."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Engine Orders - Finished with engine",
+      "standardExample": "Vessel safely all fast at berth: Finished with engine. Bridge control off.",
+      "exampleMeaning": "선박이 안벽에 안전하게 전 계류 완료됨: 기관 사용 완료. 선교 제어 해제."
+    },
+    {
+      "id": 114,
+      "partOfSpeech": "통신문",
+      "topic": "berthing",
+      "word": "Send heaving line forward. Make fast headline and forward breast line.",
+      "meaning": [
+        "선수에 히빙 라인(던짐줄)을 던져라. 헤드라인(선수줄)과 선수 브레스트 라인을 묶어라."
+      ],
+      "distractors": [
+        "선미에 히빙 라인(던짐줄)을 던져라. 스턴라인과 선미 브레스트 라인을 묶어라.",
+        "선수에 히빙 라인(던짐줄)을 던져라. 선수 스프링 라인만 단독으로 묶어라.",
+        "선수에 와이어를 던져라. 헤드라인을 풀고 브레스트 라인을 늦추어라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Mooring - Heaving line and mooring lines",
+      "standardExample": "Forward station: Send heaving line forward. Make fast headline and breast line.",
+      "exampleMeaning": "선수 배치처: 선수에 히빙 라인을 던져라. 헤드라인과 브레스트 라인을 묶어라."
+    },
+    {
+      "id": 115,
+      "partOfSpeech": "통신문",
+      "topic": "berthing",
+      "word": "Heave in on the forward spring line to bring the bow close.",
+      "meaning": [
+        "선수를 안벽 쪽으로 바짝 붙이기 위해 선수 스프링 라인을 감아들여라."
+      ],
+      "distractors": [
+        "선미를 안벽 쪽으로 바짝 붙이기 위해 선미 스프링 라인을 감아들여라.",
+        "선수가 안벽에서 떨어지도록 선수 스프링 라인을 천천히 늦추어라.",
+        "선수를 안벽 쪽으로 붙이기 위해 선수 헤드라인을 늦추어라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Mooring - Heave in spring line",
+      "standardExample": "Pilot to mooring crew: Heave in on the forward spring line to bring the bow close.",
+      "exampleMeaning": "도선사가 계류요원에게: 선수를 안벽 쪽으로 바짝 붙이기 위해 선수 스프링 라인을 감아들여라."
+    },
+    {
+      "id": 116,
+      "partOfSpeech": "통신문",
+      "topic": "berthing",
+      "word": "All fast forward and aft. Gangway secured.",
+      "meaning": [
+        "선수와 선미 모두 계류 완료(올 패스트). 트랩(승강 통로) 고정 완료."
+      ],
+      "distractors": [
+        "선수 계류 완료, 선미 계류 대기 중. 트랩(승강 통로) 설치 준비.",
+        "선수와 선미 계류줄 해빙 완료(싱글업). 트랩 철거 완료.",
+        "선수와 선미 모두 계류 완료. 도선사 사다리 설치 완료."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Mooring - All fast and gangway secured",
+      "standardExample": "Master to port control: Vessel is all fast forward and aft. Gangway secured.",
+      "exampleMeaning": "선장이 항만관제에: 본선은 선수와 선미 모두 계류 완료. 트랩 고정 완료."
+    },
+    {
+      "id": 117,
+      "partOfSpeech": "통신문",
+      "topic": "cargo",
+      "word": "Commence loading dangerous goods in container hold number three.",
+      "meaning": [
+        "3번 컨테이너 화물창에 위험물 적재를 개시하라."
+      ],
+      "distractors": [
+        "3번 컨테이너 화물창에서 위험물 양하(하역)를 개시하라.",
+        "2번 컨테이너 화물창에 위험물 적재를 개시하라.",
+        "3번 컨테이너 화물창에 일반 화물 적재를 개시하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Cargo Handling - Commence loading dangerous goods",
+      "standardExample": "Chief officer instructed stevedores: Commence loading dangerous goods in hold number three.",
+      "exampleMeaning": "일등항해사가 하역인부들에게 지시했다: 3번 컨테이너 화물창에 위험물 적재를 개시하라."
+    },
+    {
+      "id": 118,
+      "partOfSpeech": "통신문",
+      "topic": "cargo",
+      "word": "Stop cargo discharge immediately. Toxic vapour leakage detected.",
+      "meaning": [
+        "화물 양하를 즉각 중단하라. 유독 가스 누출이 감지되었다."
+      ],
+      "distractors": [
+        "화물 적재를 즉각 중단하라. 가연성 유류 유출이 감지되었다.",
+        "화물 양하를 즉각 중단하라. 화물창 내 산소 결핍이 감지되었다.",
+        "화물 양하를 서서히 감속하라. 미미한 증기 누출이 보고되었다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Cargo Safety - Toxic vapour leakage stop discharge",
+      "standardExample": "Emergency order: Stop cargo discharge immediately. Toxic vapour leakage detected!",
+      "exampleMeaning": "비상 지령: 화물 양하를 즉각 중단하라. 유독 가스 누출이 감지되었다!"
+    },
+    {
+      "id": 119,
+      "partOfSpeech": "통신문",
+      "topic": "cargo",
+      "word": "Cargo crane number two is unserviceable due to hydraulic pressure loss.",
+      "meaning": [
+        "2번 갑판 크레인은 유압 상실로 인해 운용 불가 상태이다."
+      ],
+      "distractors": [
+        "1번 갑판 크레인은 유압 상실로 인해 운용 불가 상태이다.",
+        "2번 갑판 크레인은 와이어 손상으로 인해 정격 하중이 제한된다.",
+        "2번 갑판 크레인은 전기 모터 과열로 인해 일시 점검 중이다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Cargo Gear - Crane unserviceable",
+      "standardExample": "Deck log entry: Cargo crane number two is unserviceable due to hydraulic pressure loss.",
+      "exampleMeaning": "갑판일지 기록: 2번 갑판 크레인은 유압 상실로 인해 운용 불가 상태이다."
+    },
+    {
+      "id": 120,
+      "partOfSpeech": "통신문",
+      "topic": "safety",
+      "word": "All crew assemble at designated muster stations. Don lifejackets.",
+      "meaning": [
+        "전 승무원은 지정된 비상소집 장소로 집합하라. 구명조끼를 착용하라."
+      ],
+      "distractors": [
+        "기관부 승무원은 기관실 비상소집 장소로 집합하라. 방화복을 착용하라.",
+        "전 승무원은 구명정 갑판으로 집합하라. 방한 구명복을 휴대하라.",
+        "비당직 승무원은 거주 구역에 대기하라. 구명조끼를 준비하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Safety Drills - Muster stations and lifejackets",
+      "standardExample": "General alarm sounded: All crew assemble at designated muster stations. Don lifejackets!",
+      "exampleMeaning": "비상경보 발령: 전 승무원은 지정된 비상소집 장소로 집합하라. 구명조끼를 착용하라!"
+    },
+    {
+      "id": 121,
+      "partOfSpeech": "통신문",
+      "topic": "safety",
+      "word": "Abandon ship. Abandon ship into starboard lifeboats.",
+      "meaning": [
+        "퇴선하라. 우현 구명정으로 퇴선하라."
+      ],
+      "distractors": [
+        "퇴선하라. 좌현 구명정으로 퇴선하라.",
+        "퇴선 대기하라. 우현 구명벌을 바다로 투하하라.",
+        "선내 대피하라. 우현 거주 구역 피난처로 대피하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Distress - Abandon ship order",
+      "standardExample": "Master gave final order: Abandon ship! Abandon ship into starboard lifeboats!",
+      "exampleMeaning": "선장이 최종 명령을 내렸다: 퇴선하라! 우현 구명정으로 퇴선하라!"
+    },
+    {
+      "id": 122,
+      "partOfSpeech": "통신문",
+      "topic": "weather",
+      "word": "Gale warning in force. Expect northwest wind force 8 to 9, rough sea.",
+      "meaning": [
+        "강풍 경보 발효 중. 북서풍 풍력 8~9계급 및 거친 파도가 예상됨."
+      ],
+      "distractors": [
+        "폭풍 경보 발효 중. 북동풍 풍력 8~9계급 및 거친 파도가 예상됨.",
+        "강풍 경보 발효 중. 남서풍 풍력 6~7계급 및 잔잔한 파도가 예상됨.",
+        "풍랑 주의보 해제. 북서풍 풍력 4~5계급으로 해상 상태 호전됨."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Weather - Gale warning",
+      "standardExample": "NAVTEX broadcast: Gale warning in force. Expect northwest wind force 8 to 9, rough sea.",
+      "exampleMeaning": "나브텍스 방송: 강풍 경보 발효 중. 북서풍 풍력 8~9계급 및 거친 파도가 예상됨."
+    },
+    {
+      "id": 123,
+      "partOfSpeech": "통신문",
+      "topic": "weather",
+      "word": "Visibility is reduced by dense fog to less than 0.5 nautical miles.",
+      "meaning": [
+        "농무로 인해 시정이 0.5해리 미만으로 악화되었다."
+      ],
+      "distractors": [
+        "농무로 인해 시정이 1.5해리 미만으로 악화되었다.",
+        "폭우로 인해 시정이 0.5해리 미만으로 악화되었다.",
+        "농무가 해소되어 시정이 2해리 이상으로 호전되었다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Weather - Visibility reduced by fog",
+      "standardExample": "Bridge announcement: Visibility is reduced by dense fog to less than 0.5 nautical miles. Sound fog horn.",
+      "exampleMeaning": "선교 안내: 농무로 인해 시정이 0.5해리 미만으로 악화되었다. 무중신호를 취명하라."
+    },
+    {
+      "id": 124,
+      "partOfSpeech": "통신문",
+      "topic": "navigation",
+      "word": "I require a tug. My steering gear is defective.",
+      "meaning": [
+        "본선은 예인선이 필요하다. 본선의 조타기가 고장 났다."
+      ],
+      "distractors": [
+        "본선은 예인선이 필요하다. 본선의 주기관이 고장 났다.",
+        "본선은 도선사가 필요하다. 본선의 조타기가 정상 복구되었다.",
+        "본선은 배수펌프가 필요하다. 본선의 조타기실이 침수되었다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Distress/Urgency - Require tug due to steering defect",
+      "standardExample": "M/V SUNSHINE to VTS: I require a tug. My steering gear is defective.",
+      "exampleMeaning": "선샤인호가 VTS에: 본선은 예인선이 필요하다. 본선의 조타기가 고장 났다."
+    },
+    {
+      "id": 125,
+      "partOfSpeech": "통신문",
+      "topic": "navigation",
+      "word": "Keep clear of me. I am not under command.",
+      "meaning": [
+        "본선으로부터 떨어져라(피항하라). 본선은 조종불능선이다."
+      ],
+      "distractors": [
+        "본선으로부터 떨어져라(피항하라). 본선은 조종제한선이다.",
+        "본선 후방으로 통과하라. 본선은 흘수제약선이다.",
+        "본선에 접근하여 호위하라. 본선은 조종불능선이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Collision Avoidance - Not under command keep clear",
+      "standardExample": "Urgent radio call: Keep clear of me. I am not under command.",
+      "exampleMeaning": "긴급 무선 호출: 본선으로부터 떨어져라. 본선은 조종불능선이다."
+    },
+    {
+      "id": 126,
+      "partOfSpeech": "통신문",
+      "topic": "navigation",
+      "word": "I am constrained by my draft. Do not impede my safe passage.",
+      "meaning": [
+        "본선은 흘수제약선이다. 본선의 안전한 통항을 방해하지 마라."
+      ],
+      "distractors": [
+        "본선은 조종제한선이다. 본선의 작업 반경 내로 진입하지 마라.",
+        "본선은 흘수제약선이다. 본선의 좌현 쪽으로 신속히 추월하라.",
+        "본선은 위험물 운반선이다. 본선의 안전거리를 2마일 유지하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Navigation - Constrained by draft",
+      "standardExample": "VLCC to crossing small vessel: I am constrained by my draft. Do not impede my safe passage.",
+      "exampleMeaning": "초대형유조선이 횡단 소형선에: 본선은 흘수제약선이다. 본선의 안전한 통항을 방해하지 마라."
+    },
+    {
+      "id": 127,
+      "partOfSpeech": "통신문",
+      "topic": "vts",
+      "word": "Report at reporting point BRAVO. State your ETA at pilot station.",
+      "meaning": [
+        "브라보 보고점에서 보고하라. 도선사 승선 지점 도착 예정 시간을 통보하라."
+      ],
+      "distractors": [
+        "알파 보고점에서 보고하라. 도선사 승선 지점 도착 예정 시간을 통보하라.",
+        "브라보 보고점에서 보고하라. 정박지 도착 예정 시간과 현재 흘수를 통보하라.",
+        "브라보 보고점을 통과하기 전 도선선과 무선 교신을 완료하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP VTS Reporting - Reporting point and ETA",
+      "standardExample": "VTS instruction: Report at reporting point BRAVO. State your ETA at pilot station.",
+      "exampleMeaning": "VTS 지시: 브라보 보고점에서 보고하라. 도선사 승선 지점 도착 예정 시간을 통보하라."
+    },
+    {
+      "id": 128,
+      "partOfSpeech": "통신문",
+      "topic": "vts",
+      "word": "You are navigating against the traffic flow. Alter course to your starboard.",
+      "meaning": [
+        "귀선은 통항 흐름에 역행하여 항해하고 있다. 귀선의 우현으로 변침하라."
+      ],
+      "distractors": [
+        "귀선은 통항 흐름에 역행하여 항해하고 있다. 귀선의 좌현으로 변침하라.",
+        "귀선은 지정 항로를 이탈했다. 귀선의 속력을 즉시 절반으로 줄여라.",
+        "귀선은 정상 통항 흐름을 유지하고 있다. 현재 침로를 그대로 유지하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP VTS Warning - Navigating against traffic flow",
+      "standardExample": "VTS alert: Vessel at position 35N: You are navigating against the traffic flow. Alter course to your starboard.",
+      "exampleMeaning": "VTS 경보: 북위 35도 위치의 선박: 귀선은 통항 흐름에 역행하여 항해하고 있다. 귀선의 우현으로 변침하라."
+    },
+    {
+      "id": 129,
+      "partOfSpeech": "통신문",
+      "topic": "vts",
+      "word": "Proceed to Anchorage NUMBER THREE and anchor until further orders.",
+      "meaning": [
+        "3번 정박지로 이동하여 추가 지시가 있을 때까지 묘박 대기하라."
+      ],
+      "distractors": [
+        "2번 정박지로 이동하여 추가 지시가 있을 때까지 묘박 대기하라.",
+        "3번 부두로 이동하여 추가 지시가 있을 때까지 접안 대기하라.",
+        "3번 정박지를 통과하여 도선사 승선 지점으로 곧바로 항행하라."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP VTS Instructions - Proceed to anchorage",
+      "standardExample": "Port control to incoming ship: Proceed to Anchorage NUMBER THREE and anchor until further orders.",
+      "exampleMeaning": "항만관제가 입항선에: 3번 정박지로 이동하여 추가 지시가 있을 때까지 묘박 대기하라."
+    },
+    {
+      "id": 130,
+      "partOfSpeech": "통신문",
+      "topic": "pilot",
+      "word": "Rig the accommodation ladder combined with the pilot ladder.",
+      "meaning": [
+        "현현사다리와 도선사용 사다리를 결합(조합 사다리)하여 설치하라."
+      ],
+      "distractors": [
+        "현현사다리만 단독으로 수면 상 1.5미터에 설치하라.",
+        "도선사용 줄사다리만 단독으로 우현에 설치하라.",
+        "조합 사다리를 철거하고 기계식 파일럿 호이스트를 준비하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Pilotage - Combination ladder rigging",
+      "standardExample": "Due to high freeboard, rig the accommodation ladder combined with the pilot ladder.",
+      "exampleMeaning": "높은 건현으로 인해, 현현사다리와 도선사용 사다리를 결합하여 설치하라."
+    },
+    {
+      "id": 131,
+      "partOfSpeech": "통신문",
+      "topic": "bunkering",
+      "word": "All scuppers and deck drains must be plugged before bunkering starts.",
+      "meaning": [
+        "급유(벙커링)를 시작하기 전에 모든 갑판 배수구와 드레인을 틀어막아야 한다."
+      ],
+      "distractors": [
+        "급유(벙커링)를 시작하기 전에 모든 통풍관과 벤트 파이프를 밀폐해야 한다.",
+        "급유(벙커링)가 완료된 직후에 갑판 배수구 플러그를 모두 제거해야 한다.",
+        "급유선 접현 전에 모든 밸러스트 배수 밸브를 개방해야 한다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Bunkering Safety - Plug scuppers",
+      "standardExample": "Chief engineer checked safety checklist: All scuppers and deck drains must be plugged before bunkering starts.",
+      "exampleMeaning": "기관장이 안전 체크리스트를 확인했다: 급유를 시작하기 전에 모든 갑판 배수구와 드레인을 틀어막아야 한다."
+    },
+    {
+      "id": 132,
+      "partOfSpeech": "통신문",
+      "topic": "bunkering",
+      "word": "Emergency stop bunkering! Fuel oil overflow on port bunker station.",
+      "meaning": [
+        "급유 비상 정지! 좌현 급유 매니폴드 구역에 연료유 넘침(오버플로) 발생."
+      ],
+      "distractors": [
+        "급유 비상 정지! 우현 급유 매니폴드 구역에 연료유 넘침(오버플로) 발생.",
+        "급유 유량 감속! 좌현 급유 매니폴드 구역에 소량의 기름 누설 감지.",
+        "급유 작업 재개! 좌현 연료유 탱크의 공기 배출 완료."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Bunkering - Emergency stop fuel overflow",
+      "standardExample": "Deck watch shouted: Emergency stop bunkering! Fuel oil overflow on port bunker station!",
+      "exampleMeaning": "갑판 당직자가 외쳤다: 급유 비상 정지! 좌현 급유 구역에 연료유 넘침 발생!"
+    },
+    {
+      "id": 133,
+      "partOfSpeech": "통신문",
+      "topic": "distress",
+      "word": "MAYDAY RELAY. Fishing vessel SUNGJIN is sinking in position 34-10 North, 128-45 East.",
+      "meaning": [
+        "메이데이 릴레이. 어선 성진호가 북위 34도 10분, 동경 128도 45분 위치에서 침몰 중이다."
+      ],
+      "distractors": [
+        "팬팬 릴레이. 어선 성진호가 북위 34도 10분, 동경 128도 45분 위치에서 표류 중이다.",
+        "메이데이 릴레이. 어선 성진호가 북위 35도 10분, 동경 129도 45분 위치에서 좌초되었다.",
+        "세퀴리테 릴레이. 어선 성진호가 침몰 선박 수색 작업을 지원 중이다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Distress Traffic - Mayday Relay for sinking vessel",
+      "standardExample": "Coast guard broadcast: MAYDAY RELAY. Fishing vessel SUNGJIN is sinking in position 34-10 North, 128-45 East.",
+      "exampleMeaning": "해양경찰 방송: 메이데이 릴레이. 어선 성진호가 북위 34도 10분, 동경 128도 45분 위치에서 침몰 중이다."
+    },
+    {
+      "id": 134,
+      "partOfSpeech": "통신문",
+      "topic": "urgency",
+      "word": "PAN PAN. Crew member sustained severe head injury and requires urgent medical evacuation.",
+      "meaning": [
+        "팬팬. 승무원이 심각한 두부 손상을 입어 긴급 항공 의료후송(메디백)이 필요하다."
+      ],
+      "distractors": [
+        "메이데이. 승무원이 바다로 추락하여 긴급 수색 구조 헬기를 요청한다.",
+        "팬팬. 승무원이 심각한 골절상을 입어 원격 의료 조언(TMAS)을 요청한다.",
+        "세퀴리테. 선내 응급 환자가 발생하여 인근 항만으로 비상 회항한다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Urgency Traffic - Medical evacuation",
+      "standardExample": "PAN PAN, PAN PAN, PAN PAN. Crew member sustained severe head injury and requires urgent medical evacuation.",
+      "exampleMeaning": "팬팬, 팬팬, 팬팬. 승무원이 심각한 두부 손상을 입어 긴급 항공 의료후송이 필요하다."
+    },
+    {
+      "id": 135,
+      "partOfSpeech": "통신문",
+      "topic": "safety",
+      "word": "SECURITE. Submerged rock reported uncharted near fairway buoy number four.",
+      "meaning": [
+        "세퀴리테. 4번 항로 부표 부근에 해도에 없는 암초(수중 암초)가 보고됨."
+      ],
+      "distractors": [
+        "세퀴리테. 4번 항로 부표의 등화가 꺼져 불빛이 식별되지 않음.",
+        "경고. 4번 항로 부표가 본래 위치에서 유실되어 표류 중임.",
+        "팬팬. 4번 항로 부표 부근에서 준설선이 항로 통항을 방해하고 있음."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Safety Traffic - Uncharted submerged rock",
+      "standardExample": "SECURITE, SECURITE, SECURITE. Submerged rock reported uncharted near fairway buoy number four.",
+      "exampleMeaning": "세퀴리테, 세퀴리테, 세퀴리테. 4번 항로 부표 부근에 해도에 없는 암초가 보고됨."
+    },
+    {
+      "id": 136,
+      "partOfSpeech": "통신문",
+      "topic": "security",
+      "word": "Security alert. Suspicious skiff with armed men approaching port quarter.",
+      "meaning": [
+        "보안 경보. 무장한 인원을 태운 의심스러운 소형 보트가 좌현 선미 사분도로 접근 중이다."
+      ],
+      "distractors": [
+        "보안 경보. 무장한 인원을 태운 의심스러운 소형 보트가 우현 선수 쪽으로 접근 중이다.",
+        "보안 점검. 해양경찰 경비정이 검문을 위해 좌현 선미로 접근 중이다.",
+        "보안 경보. 의심스러운 소형 보트가 본선과의 거리를 벌리며 이탈 중이다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP ISPS Security - Suspicious skiff approach",
+      "standardExample": "Bridge to citadel: Security alert. Suspicious skiff with armed men approaching port quarter.",
+      "exampleMeaning": "선교가 피난처에: 보안 경보. 무장한 인원을 태운 의심스러운 소형 보트가 좌현 선미 사분도로 접근 중이다."
+    },
+    {
+      "id": 137,
+      "partOfSpeech": "통신문",
+      "topic": "security",
+      "word": "Activate Ship Security Alert System and muster non-duty crew into the citadel.",
+      "meaning": [
+        "선박보안경보장치(SSAS)를 작동시키고 비당직 승무원을 피난처(시타델)로 집결시켜라."
+      ],
+      "distractors": [
+        "선박보안경보장치(SSAS)를 해제하고 전 승무원은 구명정 갑판으로 집결하라.",
+        "조난신호(EPIRB)를 작동시키고 당직 승무원을 포함한 전원을 피난처(시타델)로 집결시켜라.",
+        "소방 펌프를 가동하고 비당직 승무원은 거주 구역 복도에 대기하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP ISPS Security - Activate SSAS and enter citadel",
+      "standardExample": "Master ordered SSO: Activate Ship Security Alert System and muster non-duty crew into the citadel.",
+      "exampleMeaning": "선장이 선박보안책임자에게 지시했다: 선박보안경보장치를 작동시키고 비당직 승무원을 피난처로 집결시켜라."
+    },
+    {
+      "id": 138,
+      "partOfSpeech": "통신문",
+      "topic": "navigation",
+      "word": "I am unable to alter course to starboard due to an overtaking vessel on my starboard beam.",
+      "meaning": [
+        "우현 정횡에 추월선이 있어 본선은 우현으로 변침할 수 없다."
+      ],
+      "distractors": [
+        "좌현 정횡에 추월선이 있어 본선은 좌현으로 변침할 수 없다.",
+        "우현 정횡에 마주 오는 선박이 있어 본선은 우현으로 변침할 수 없다.",
+        "우현 선미에 어선이 있어 본선은 기관을 감속할 수 없다."
+      ],
+      "difficulty": "hard",
+      "englishDefinition": "IMO SMCP Navigation Traffic - Unable to alter starboard due to overtaking vessel",
+      "standardExample": "VHF call: I am unable to alter course to starboard due to an overtaking vessel on my starboard beam.",
+      "exampleMeaning": "VHF 통신: 우현 정횡에 추월선이 있어 본선은 우현으로 변침할 수 없다."
+    },
+    {
+      "id": 139,
+      "partOfSpeech": "통신문",
+      "topic": "sar",
+      "word": "I am proceeding to the distress position. My ETA is 0300 UTC.",
+      "meaning": [
+        "본선은 조난 위치로 진행 중이다. 본선의 도착 예정 시간은 UTC 03:00이다."
+      ],
+      "distractors": [
+        "본선은 조난 위치로부터 이탈 중이다. 본선의 기지 귀항 예정 시간은 UTC 03:00이다.",
+        "본선은 조난 선박을 예인 중이다. 정박지 도착 예정 시간은 UTC 03:00이다.",
+        "구조 본부가 조난 위치로 이동 중이다. 구조대 도착 예정 시간은 UTC 03:00이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP SAR - Proceeding to distress position",
+      "standardExample": "M/V HANJIN to MRCC: I am proceeding to the distress position. My ETA is 0300 UTC.",
+      "exampleMeaning": "한진호가 구조본부에: 본선은 조난 위치로 진행 중이다. 본선의 도착 예정 시간은 UTC 03:00이다."
+    },
+    {
+      "id": 140,
+      "partOfSpeech": "통신문",
+      "topic": "sar",
+      "word": "I have located the capsized liferaft. No survivors observed so far.",
+      "meaning": [
+        "본선은 전복된 구명벌을 발견했다. 현재까지 생존자는 관측되지 않는다."
+      ],
+      "distractors": [
+        "본선은 정상 팽창된 구명벌을 발견했다. 4명의 생존자를 구조 완료했다.",
+        "본선은 전복된 구명정을 인양했다. 선내 생존자 2명을 확인했다.",
+        "본선은 조난 신호 부이를 발견했으나 구명벌은 아직 발견하지 못했다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP SAR - Located capsized liferaft",
+      "standardExample": "Search unit report: I have located the capsized liferaft. No survivors observed so far.",
+      "exampleMeaning": "수색대 보고: 본선은 전복된 구명벌을 발견했다. 현재까지 생존자는 관측되지 않는다."
+    },
+    {
+      "id": 141,
+      "partOfSpeech": "통신문",
+      "topic": "sar",
+      "word": "Prepare the rescue boat for immediate launching. Crew get into immersion suits.",
+      "meaning": [
+        "즉각적인 진수를 위해 구조정을 준비하라. 승조원은 방한 구명복을 착용하라."
+      ],
+      "distractors": [
+        "즉각적인 진수를 위해 구조정을 준비하라. 승조원은 일반 작업복을 착용하라.",
+        "선미 구명정을 진수 준비하라. 전 승무원은 일반 구명조끼만 착용하라.",
+        "구조정 인양을 준비하라. 갑판 승조원은 헬멧과 안전벨트를 착용하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP SAR - Launch rescue boat and immersion suits",
+      "standardExample": "Bridge command: Prepare the rescue boat for immediate launching. Crew get into immersion suits.",
+      "exampleMeaning": "선교 명령: 즉각적인 진수를 위해 구조정을 준비하라. 승조원은 방한 구명복을 착용하라."
+    },
+    {
+      "id": 142,
+      "partOfSpeech": "통신문",
+      "topic": "navigation",
+      "word": "Do not overtake me on my port side. Narrow fairway ahead.",
+      "meaning": [
+        "본선의 좌현 쪽으로 본선을 추월하지 마라. 전방에 좁은 수로가 있다."
+      ],
+      "distractors": [
+        "본선의 우현 쪽으로 본선을 추월하지 마라. 전방에 좁은 수로가 있다.",
+        "본선의 좌현 쪽으로 신속히 추월하라. 전방 수로가 넓어진다.",
+        "본선의 좌현을 통과하여 항로 밖으로 진출하라. 전방에 천소가 있다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Navigation - Do not overtake on port",
+      "standardExample": "To following vessel: Do not overtake me on my port side. Narrow fairway ahead.",
+      "exampleMeaning": "후속 선박에: 본선의 좌현 쪽으로 본선을 추월하지 마라. 전방에 좁은 수로가 있다."
+    },
+    {
+      "id": 143,
+      "partOfSpeech": "통신문",
+      "topic": "navigation",
+      "word": "I agree to be overtaken on my starboard side. I will reduce speed.",
+      "meaning": [
+        "귀선이 본선의 우현 쪽으로 본선을 추월하는 것에 동의한다. 본선은 속력을 감속하겠다."
+      ],
+      "distractors": [
+        "귀선이 본선의 좌현 쪽으로 본선을 추월하는 것에 동의한다. 본선은 속력을 감속하겠다.",
+        "본선의 우현 추월을 허가하지 않는다. 귀선은 즉시 추월 기동을 중단하라.",
+        "귀선이 본선의 우현으로 추월하는 것에 동의한다. 본선은 현재 속력을 유지하겠다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Navigation - Agree to starboard overtaking",
+      "standardExample": "Radio reply: I agree to be overtaken on my starboard side. I will reduce speed.",
+      "exampleMeaning": "무선 응답: 귀선이 본선의 우현 쪽으로 본선을 추월하는 것에 동의한다. 본선은 속력을 감속하겠다."
+    },
+    {
+      "id": 144,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Say again your message. Words were distorted due to radio static.",
+      "meaning": [
+        "귀선의 메시지를 다시 말하라. 무선 잡음으로 인해 말이 왜곡되었다."
+      ],
+      "distractors": [
+        "귀선의 메시지를 명확히 수신했다. 무선 상태가 매우 양호하다.",
+        "다른 통신 채널로 즉시 변경하라. 무선 주파수 간섭이 심하다.",
+        "귀선의 전송 출력을 높여라. 음량이 너무 작아 들리지 않는다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Procedure - Say again message distorted",
+      "standardExample": "Bridge to VTS: Say again your message. Words were distorted due to radio static.",
+      "exampleMeaning": "선교가 VTS에: 귀선의 메시지를 다시 말하라. 무선 잡음으로 인해 말이 왜곡되었다."
+    },
+    {
+      "id": 145,
+      "partOfSpeech": "통신문",
+      "topic": "communication",
+      "word": "Correction. My present draft forward is 8.5 meters, aft 9.2 meters.",
+      "meaning": [
+        "정정한다. 본선의 현재 선수 흘수는 8.5미터, 선미 흘수는 9.2미터이다."
+      ],
+      "distractors": [
+        "정정한다. 본선의 현재 선수 흘수는 9.2미터, 선미 흘수는 8.5미터이다.",
+        "정정한다. 본선의 현재 만재 흘수는 8.5미터, 공선 흘수는 9.2미터이다.",
+        "통보한다. 본선은 트림 없이 선수와 선미 흘수가 모두 8.5미터이다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Procedure - Correction of draft report",
+      "standardExample": "Correction. My present draft forward is 8.5 meters, aft 9.2 meters.",
+      "exampleMeaning": "정정한다. 본선의 현재 선수 흘수는 8.5미터, 선미 흘수는 9.2미터이다."
+    },
+    {
+      "id": 146,
+      "partOfSpeech": "통신문",
+      "topic": "vts",
+      "word": "Keep clear of the TSS separation zone. Fishing is strictly prohibited.",
+      "meaning": [
+        "통항분리수역(TSS)의 분리대 구역에 접근하지 마라. 조업은 엄격히 금지된다."
+      ],
+      "distractors": [
+        "통항분리수역(TSS)의 연안통항대로에 접근하지 마라. 통항이 전면 차단된다.",
+        "통항분리수역(TSS)의 분리대 구역으로 진입하라. 비상 정박이 허용된다.",
+        "통항분리수역(TSS)을 가로질러 횡단하라. 어선의 통항 우선권이 인정된다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP VTS Warning - TSS separation zone clear",
+      "standardExample": "VTS broadcast to local boats: Keep clear of the TSS separation zone. Fishing is strictly prohibited.",
+      "exampleMeaning": "VTS가 지역 선박들에 방송: 통항분리수역의 분리대 구역에 접근하지 마라. 조업은 엄격히 금지된다."
+    },
+    {
+      "id": 147,
+      "partOfSpeech": "통신문",
+      "topic": "safety",
+      "word": "Fire in container hold extinguished. Boundary cooling is maintained.",
+      "meaning": [
+        "컨테이너 화물창의 화재가 진압되었다. 인접 구역 냉각(경계 냉각)이 유지되고 있다."
+      ],
+      "distractors": [
+        "기관실의 화재가 진압되었다. 탄산가스(CO2) 밀폐가 유지되고 있다.",
+        "컨테이너 화물창의 화재가 재발화되었다. 경계 냉각을 즉시 중단하라.",
+        "갑판 화재가 진압 완료되어 인접 구역 소화 호스를 모두 철거했다."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Firefighting - Fire extinguished and boundary cooling",
+      "standardExample": "Chief officer to master: Fire in container hold extinguished. Boundary cooling is maintained.",
+      "exampleMeaning": "일등항해사가 선장에게: 컨테이너 화물창의 화재가 진압되었다. 인접 구역 냉각이 유지되고 있다."
+    },
+    {
+      "id": 148,
+      "partOfSpeech": "통신문",
+      "topic": "anchoring",
+      "word": "You are dragging your anchor. Pay out more cable or heave up anchor.",
+      "meaning": [
+        "귀선은 주묘(닻이 끌림)되고 있다. 닻줄을 더 내어주거나 닻을 감아 올려라."
+      ],
+      "distractors": [
+        "귀선은 닻이 완전히 파지되었다. 닻줄을 더 감아올려 장력을 낮추어라.",
+        "귀선은 주묘(닻이 끌림)되고 있다. 즉시 양현 닻줄을 모두 절단하라.",
+        "귀선은 정박 구역을 안전하게 유지 중이다. 묘박 당직 인원을 축소하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Anchoring - Dragging anchor warning",
+      "standardExample": "VTS urgent call to anchored tanker: You are dragging your anchor. Pay out more cable or heave up anchor.",
+      "exampleMeaning": "VTS가 정박 중인 유조선에 긴급 호출: 귀선은 주묘되고 있다. 닻줄을 더 내어주거나 닻을 감아 올려라."
+    },
+    {
+      "id": 149,
+      "partOfSpeech": "통신문",
+      "topic": "berthing",
+      "word": "Prepare to unmoor. Single up to headlines and sternlines.",
+      "meaning": [
+        "이안(출항 계류 해제)을 준비하라. 헤드라인과 스턴라인만 남기고 홋줄을 줄여라(싱글업)."
+      ],
+      "distractors": [
+        "접안을 준비하라. 모든 스프링 라인과 브레스트 라인을 추가 연결하라.",
+        "이안을 준비하라. 선수와 선미의 스프링 라인만 남기고 홋줄을 줄여라(싱글업).",
+        "출항을 준비하라. 모든 홋줄을 일시에 벗겨내고(Cast off all) 즉시 이안하라."
+      ],
+      "difficulty": "medium",
+      "englishDefinition": "IMO SMCP Mooring - Single up for unmooring",
+      "standardExample": "Master ordered: Prepare to unmoor. Single up to headlines and sternlines.",
+      "exampleMeaning": "선장이 지시했다: 이안을 준비하라. 헤드라인과 스턴라인만 남기고 홋줄을 줄여라."
+    },
+    {
+      "id": 150,
+      "partOfSpeech": "통신문",
+      "topic": "navigation",
+      "word": "Understood. I will keep a sharp lookout and report passing the light beacon.",
+      "meaning": [
+        "이해했다. 본선은 철저한 경계를 유지할 것이며 등표 통과 시 보고하겠다."
+      ],
+      "distractors": [
+        "이해했다. 본선은 속력을 감속할 것이며 등표 전방 1마일에서 투묘하겠다.",
+        "재확인 요청. 본선은 등표 위치를 식별할 수 없어 레이더 지원을 요청한다.",
+        "거부한다. 본선은 기상 악화로 인해 등표를 통과하지 않고 변침하겠다."
+      ],
+      "difficulty": "low",
+      "englishDefinition": "IMO SMCP Navigation - Sharp lookout and passing report",
+      "standardExample": "Bridge acknowledged: Understood. I will keep a sharp lookout and report passing the light beacon.",
+      "exampleMeaning": "선교 수신 확인: 이해했다. 본선은 철저한 경계를 유지할 것이며 등표 통과 시 보고하겠다."
+    }
+  ]
+}

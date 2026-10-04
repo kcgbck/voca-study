@@ -61,20 +61,28 @@ export class UserService {
   }
 
   /**
-   * 미전송 점수 큐 가져오기
+   * 미전송 점수 큐 가져오기 (영어 및 일본어 분리 저장)
    */
-  private getPendingScore(): { correct: number; incorrect: number } {
+  private getPendingScore(): { correctEn: number; incorrectEn: number; correctJa: number; incorrectJa: number } {
     try {
       const data = localStorage.getItem(PENDING_SCORE_KEY);
-      if (data) return JSON.parse(data);
+      if (data) {
+        const parsed = JSON.parse(data);
+        return {
+          correctEn: parsed.correctEn ?? (parsed.lang !== 'ja' ? parsed.correct ?? 0 : 0),
+          incorrectEn: parsed.incorrectEn ?? (parsed.lang !== 'ja' ? parsed.incorrect ?? 0 : 0),
+          correctJa: parsed.correctJa ?? (parsed.lang === 'ja' ? parsed.correct ?? 0 : 0),
+          incorrectJa: parsed.incorrectJa ?? (parsed.lang === 'ja' ? parsed.incorrect ?? 0 : 0),
+        };
+      }
     } catch {}
-    return { correct: 0, incorrect: 0 };
+    return { correctEn: 0, incorrectEn: 0, correctJa: 0, incorrectJa: 0 };
   }
 
   /**
    * 미전송 점수 큐 저장
    */
-  private setPendingScore(score: { correct: number; incorrect: number }): void {
+  private setPendingScore(score: { correctEn: number; incorrectEn: number; correctJa: number; incorrectJa: number }): void {
     try {
       localStorage.setItem(PENDING_SCORE_KEY, JSON.stringify(score));
     } catch {}
@@ -116,6 +124,14 @@ export class UserService {
             incorrectCount: data.user.incorrectCount || 0,
             totalScore: data.user.totalScore || 0,
             accuracy: data.user.accuracy || 0,
+            totalScoreEn: data.user.totalScoreEn ?? 0,
+            totalScoreJa: data.user.totalScoreJa ?? 0,
+            correctCountEn: data.user.correctCountEn ?? 0,
+            incorrectCountEn: data.user.incorrectCountEn ?? 0,
+            correctCountJa: data.user.correctCountJa ?? 0,
+            incorrectCountJa: data.user.incorrectCountJa ?? 0,
+            attendanceStreak: data.user.attendanceStreak ?? 0,
+            lastAttendanceDate: data.user.lastAttendanceDate || undefined,
             lastActiveAt: data.user.lastActiveAt,
             createdAt: data.user.createdAt,
           };
@@ -139,6 +155,14 @@ export class UserService {
       incorrectCount: 0,
       totalScore: 0,
       accuracy: 0,
+      totalScoreEn: 0,
+      totalScoreJa: 0,
+      correctCountEn: 0,
+      incorrectCountEn: 0,
+      correctCountJa: 0,
+      incorrectCountJa: 0,
+      attendanceStreak: 0,
+      lastAttendanceDate: undefined,
       lastActiveAt: now,
       createdAt: now,
     };
@@ -177,6 +201,14 @@ export class UserService {
           incorrectCount: data.user.incorrectCount || 0,
           totalScore: data.user.totalScore || 0,
           accuracy: data.user.accuracy || 0,
+          totalScoreEn: data.user.totalScoreEn ?? 0,
+          totalScoreJa: data.user.totalScoreJa ?? 0,
+          correctCountEn: data.user.correctCountEn ?? 0,
+          incorrectCountEn: data.user.incorrectCountEn ?? 0,
+          correctCountJa: data.user.correctCountJa ?? 0,
+          incorrectCountJa: data.user.incorrectCountJa ?? 0,
+          attendanceStreak: data.user.attendanceStreak ?? 0,
+          lastAttendanceDate: data.user.lastAttendanceDate || undefined,
           lastActiveAt: data.user.lastActiveAt,
           createdAt: data.user.createdAt,
         };
@@ -247,13 +279,7 @@ export class UserService {
     const today = getKSTDateString();
 
     if (this.currentProfile) {
-      // 종합 성적
-      this.currentProfile.correctCount += cDelta;
-      this.currentProfile.incorrectCount += iDelta;
-      this.currentProfile.totalScore = calculateScore(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
-      this.currentProfile.accuracy = calculateAccuracy(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
-
-      // 언어별 세부 성적
+      // 언어별 세부 성적 누적
       if (lang === 'ja') {
         this.currentProfile.correctCountJa = (this.currentProfile.correctCountJa || 0) + cDelta;
         this.currentProfile.incorrectCountJa = (this.currentProfile.incorrectCountJa || 0) + iDelta;
@@ -264,6 +290,14 @@ export class UserService {
         this.currentProfile.totalScoreEn = calculateScore(this.currentProfile.correctCountEn, this.currentProfile.incorrectCountEn);
       }
 
+      // 종합 성적: 두 언어의 합계 또는 기존 누적 값 중 큰 값
+      const totalC = (this.currentProfile.correctCountEn || 0) + (this.currentProfile.correctCountJa || 0);
+      const totalI = (this.currentProfile.incorrectCountEn || 0) + (this.currentProfile.incorrectCountJa || 0);
+      this.currentProfile.correctCount = Math.max(this.currentProfile.correctCount + cDelta, totalC);
+      this.currentProfile.incorrectCount = Math.max(this.currentProfile.incorrectCount + iDelta, totalI);
+      this.currentProfile.totalScore = calculateScore(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
+      this.currentProfile.accuracy = calculateAccuracy(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
+
       // 출석 통계
       this.currentProfile.attendanceStreak = attResult.streak;
       this.currentProfile.lastAttendanceDate = today;
@@ -272,13 +306,18 @@ export class UserService {
       this.saveToStorage(this.currentProfile);
     }
 
-    // 미전송 큐 누적
+    // 미전송 큐에 언어별 델타 누적
     const pending = this.getPendingScore();
-    pending.correct += cDelta;
-    pending.incorrect += iDelta;
+    if (lang === 'ja') {
+      pending.correctJa += cDelta;
+      pending.incorrectJa += iDelta;
+    } else {
+      pending.correctEn += cDelta;
+      pending.incorrectEn += iDelta;
+    }
     this.setPendingScore(pending);
 
-    // 비동기 백그라운드 서버 동기화
+    // 백그라운드 서버 동기화 시작 (에러는 무시)
     this.flushPendingScore(lang).catch(() => {});
 
     return this.currentProfile!;
@@ -307,12 +346,14 @@ export class UserService {
   }
 
   /**
-   * 미전송 점수 서버 동기화
+   * 미전송 점수 서버 동기화 (영어 및 일본어 점수 동시 지원)
    */
   public async flushPendingScore(lang: 'en' | 'ja' = 'en'): Promise<void> {
     if (this.isSyncing || !this.currentProfile) return;
     const pending = this.getPendingScore();
-    if (pending.correct === 0 && pending.incorrect === 0) return;
+    const hasPendingEn = pending.correctEn > 0 || pending.incorrectEn > 0;
+    const hasPendingJa = pending.correctJa > 0 || pending.incorrectJa > 0;
+    if (!hasPendingEn && !hasPendingJa) return;
 
     this.isSyncing = true;
     try {
@@ -321,31 +362,54 @@ export class UserService {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           deviceCode: this.currentProfile.deviceCode,
-          correctDelta: pending.correct,
-          incorrectDelta: pending.incorrect,
-          lang,
-          totalCorrectEn: this.currentProfile.correctCountEn,
-          totalIncorrectEn: this.currentProfile.incorrectCountEn,
-          totalCorrectJa: this.currentProfile.correctCountJa,
-          totalIncorrectJa: this.currentProfile.incorrectCountJa,
+          correctDelta: hasPendingJa ? pending.correctJa : pending.correctEn,
+          incorrectDelta: hasPendingJa ? pending.incorrectJa : pending.incorrectEn,
+          lang: hasPendingJa && !hasPendingEn ? 'ja' : lang,
+          correctDeltaEn: pending.correctEn,
+          incorrectDeltaEn: pending.incorrectEn,
+          correctDeltaJa: pending.correctJa,
+          incorrectDeltaJa: pending.incorrectJa,
+          totalCorrectEn: this.currentProfile.correctCountEn || 0,
+          totalIncorrectEn: this.currentProfile.incorrectCountEn || 0,
+          totalCorrectJa: this.currentProfile.correctCountJa || 0,
+          totalIncorrectJa: this.currentProfile.incorrectCountJa || 0,
           attendanceStreak: this.currentProfile.attendanceStreak || 0,
+          lastAttendanceDate: this.currentProfile.lastAttendanceDate || null,
         }),
       });
 
       if (res.ok) {
         const data = await res.json();
         if (data.user) {
-          this.currentProfile.correctCount = data.user.correctCount;
-          this.currentProfile.incorrectCount = data.user.incorrectCount;
-          this.currentProfile.totalScore = data.user.totalScore;
-          this.currentProfile.accuracy = data.user.accuracy;
-          if (typeof data.user.totalScoreEn === 'number') this.currentProfile.totalScoreEn = data.user.totalScoreEn;
-          if (typeof data.user.totalScoreJa === 'number') this.currentProfile.totalScoreJa = data.user.totalScoreJa;
-          if (typeof data.user.attendanceStreak === 'number') this.currentProfile.attendanceStreak = data.user.attendanceStreak;
+          // 서버 응답으로 로컬 프로필 안전하게 최신화 (Math.max 및 calculateScore로 0 덮어쓰기 방지)
+          this.currentProfile.correctCount = Math.max(this.currentProfile.correctCount, data.user.correctCount || 0);
+          this.currentProfile.incorrectCount = Math.max(this.currentProfile.incorrectCount, data.user.incorrectCount || 0);
+          this.currentProfile.totalScore = calculateScore(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
+          this.currentProfile.accuracy = calculateAccuracy(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
+
+          if (typeof data.user.correctCountEn === 'number') {
+            this.currentProfile.correctCountEn = Math.max(this.currentProfile.correctCountEn || 0, data.user.correctCountEn);
+          }
+          if (typeof data.user.incorrectCountEn === 'number') {
+            this.currentProfile.incorrectCountEn = Math.max(this.currentProfile.incorrectCountEn || 0, data.user.incorrectCountEn);
+          }
+          this.currentProfile.totalScoreEn = calculateScore(this.currentProfile.correctCountEn || 0, this.currentProfile.incorrectCountEn || 0);
+
+          if (typeof data.user.correctCountJa === 'number') {
+            this.currentProfile.correctCountJa = Math.max(this.currentProfile.correctCountJa || 0, data.user.correctCountJa);
+          }
+          if (typeof data.user.incorrectCountJa === 'number') {
+            this.currentProfile.incorrectCountJa = Math.max(this.currentProfile.incorrectCountJa || 0, data.user.incorrectCountJa);
+          }
+          this.currentProfile.totalScoreJa = calculateScore(this.currentProfile.correctCountJa || 0, this.currentProfile.incorrectCountJa || 0);
+
+          if (typeof data.user.attendanceStreak === 'number') {
+            this.currentProfile.attendanceStreak = Math.max(this.currentProfile.attendanceStreak || 0, data.user.attendanceStreak);
+          }
           this.saveToStorage(this.currentProfile);
         }
         // 전송 성공 시 큐 비우기
-        this.setPendingScore({ correct: 0, incorrect: 0 });
+        this.setPendingScore({ correctEn: 0, incorrectEn: 0, correctJa: 0, incorrectJa: 0 });
       }
     } catch (err) {
       console.warn('점수 서버 동기화 보류 (네트워크 미연결):', err);
@@ -355,7 +419,7 @@ export class UserService {
   }
 
   /**
-   * 서버와 프로필 최신화
+   * 서버와 프로필 최신화 (0점 덮어쓰기 방지)
    */
   private async syncWithServer(deviceCode: string): Promise<void> {
     try {
@@ -372,9 +436,27 @@ export class UserService {
           this.currentProfile.incorrectCount = Math.max(this.currentProfile.incorrectCount, data.user.incorrectCount || 0);
           this.currentProfile.totalScore = calculateScore(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
           this.currentProfile.accuracy = calculateAccuracy(this.currentProfile.correctCount, this.currentProfile.incorrectCount);
-          if (typeof data.user.totalScoreEn === 'number') this.currentProfile.totalScoreEn = data.user.totalScoreEn;
-          if (typeof data.user.totalScoreJa === 'number') this.currentProfile.totalScoreJa = data.user.totalScoreJa;
-          if (typeof data.user.attendanceStreak === 'number') this.currentProfile.attendanceStreak = data.user.attendanceStreak;
+
+          if (typeof data.user.correctCountEn === 'number') {
+            this.currentProfile.correctCountEn = Math.max(this.currentProfile.correctCountEn || 0, data.user.correctCountEn);
+          }
+          if (typeof data.user.incorrectCountEn === 'number') {
+            this.currentProfile.incorrectCountEn = Math.max(this.currentProfile.incorrectCountEn || 0, data.user.incorrectCountEn);
+          }
+          this.currentProfile.totalScoreEn = calculateScore(this.currentProfile.correctCountEn || 0, this.currentProfile.incorrectCountEn || 0);
+
+          if (typeof data.user.correctCountJa === 'number') {
+            this.currentProfile.correctCountJa = Math.max(this.currentProfile.correctCountJa || 0, data.user.correctCountJa);
+          }
+          if (typeof data.user.incorrectCountJa === 'number') {
+            this.currentProfile.incorrectCountJa = Math.max(this.currentProfile.incorrectCountJa || 0, data.user.incorrectCountJa);
+          }
+          this.currentProfile.totalScoreJa = calculateScore(this.currentProfile.correctCountJa || 0, this.currentProfile.incorrectCountJa || 0);
+
+          if (typeof data.user.attendanceStreak === 'number') {
+            this.currentProfile.attendanceStreak = Math.max(this.currentProfile.attendanceStreak || 0, data.user.attendanceStreak);
+          }
+          if (data.user.lastAttendanceDate) this.currentProfile.lastAttendanceDate = data.user.lastAttendanceDate;
           this.saveToStorage(this.currentProfile);
         }
       }

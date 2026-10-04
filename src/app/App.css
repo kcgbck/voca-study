@@ -566,18 +566,19 @@ body {
   max-width: 550px;
   width: 100%;
   margin: 0 auto;
+  padding: 14px 16px 16px;
 }
 
-/* 스마트폰 2줄 깨짐 완벽 방지 반응형 툴바 */
+/* 스마트폰 2줄 깨짐 완벽 방지 반응형 툴바 (슬림 컴팩트) */
 .quiz-controls-toolbar {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 8px;
-  padding: 8px 10px;
+  gap: 4px;
+  margin-bottom: 6px;
+  padding: 6px 8px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 [data-theme="light"] .quiz-controls-toolbar {
@@ -862,8 +863,16 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 16px;
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-card);
+  z-index: 30;
+  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.35);
+  margin: 10px -16px -16px;
+  padding: 10px 16px 12px;
   border-top: 1px solid var(--border-color);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
 }
 
 .quiz-result-msg {

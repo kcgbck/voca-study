@@ -10,7 +10,8 @@ import { wrongNoteService, WrongWordItem } from '../../services/wrongNoteService
 interface Props {
   initialWords?: WordEntry[];
   bookTitle?: string;
-  sourceType?: 'builtin' | 'maritime' | 'japanese_exam' | 'japanese_life' | 'wrong_notes' | 'photo' | 'pdf';
+  sourceType?: 'builtin' | 'maritime' | 'maritime_comm' | 'japanese_exam' | 'japanese_life' | 'wrong_notes' | 'photo' | 'pdf';
+  languageMode?: 'en' | 'ja';
   instantGrading?: boolean;
   shuffleOrder?: boolean;
   onOpenRanking?: () => void;
@@ -19,7 +20,7 @@ interface Props {
 
 type SelectedDifficulty = 'all' | 'easy' | 'medium' | 'hard' | 'basic' | 'n5' | 'n4' | 'n3';
 type QuestionCountOption = 10 | 20 | 30 | 50 | 'all';
-export type BookCategory = 'builtin' | 'maritime' | 'japanese_exam' | 'japanese_life' | 'wrong_notes';
+export type BookCategory = 'builtin' | 'maritime' | 'maritime_comm' | 'japanese_exam' | 'japanese_life' | 'wrong_notes';
 
 
 // Fisher-Yates 배열 셔플 함수
@@ -43,6 +44,9 @@ function toWordEntry(w: any): WordEntry {
       partOfSpeech: w.partOfSpeech || '단어',
       difficulty: w.difficulty === 'high' ? 'high' : w.difficulty === 'low' ? 'low' : 'medium',
       topic: w.topic || 'maritime',
+      exampleSentence: w.standardExample || w.exampleSentence || w.example,
+      exampleTranslation: w.exampleMeaning || w.exampleTranslation || w.translation,
+      confusables: w.distractors || w.confusables,
     };
   }
 
@@ -56,8 +60,10 @@ function toWordEntry(w: any): WordEntry {
     partOfSpeech: w.partOfSpeech || '단어',
     difficulty: w.difficulty === 'easy' ? 'low' : w.difficulty === 'hard' ? 'high' : 'medium',
     topic: Array.isArray(w.topics) && w.topics.length > 0 ? w.topics[0] : (w.topic || 'general'),
-    confusables: w.confusableWords,
+    confusables: w.confusableWords || w.distractors,
     confidence: w.confidenceGrade === 'A' ? 'HIGH' : w.confidenceGrade === 'B' ? 'MEDIUM' : 'LOW',
+    exampleSentence: w.standardExample || w.exampleSentence || w.example,
+    exampleTranslation: w.exampleMeaning || w.exampleTranslation || w.translation,
   };
 }
 
@@ -89,13 +95,15 @@ export const QuizPreviewView: React.FC<Props> = ({
   initialWords,
   bookTitle,
   sourceType = 'builtin',
+  languageMode,
   instantGrading = false,
   shuffleOrder = true,
   onOpenRanking,
-  onBack,
+  onBack: _onBack,
 }) => {
   const [currentBook, setCurrentBook] = useState<BookCategory>(() => {
     if (sourceType === 'maritime') return 'maritime';
+    if (sourceType === 'maritime_comm') return 'maritime_comm';
     if (sourceType === 'japanese_exam') return 'japanese_exam';
     if (sourceType === 'japanese_life') return 'japanese_life';
     if (sourceType === 'wrong_notes') return 'wrong_notes';
@@ -113,6 +121,7 @@ export const QuizPreviewView: React.FC<Props> = ({
   const [score, setScore] = useState<{ correct: number; wrong: number }>({ correct: 0, wrong: 0 });
   const [syncedScore, setSyncedScore] = useState<number | null>(null);
   const hasSyncedRef = useRef(false);
+  const quizFooterRef = useRef<HTMLDivElement>(null);
 
   // 1. 이번 퀴즈 세션에서 틀린 단어들 (틀린 문제만 다시 풀기용)
   const [sessionWrongWords, setSessionWrongWords] = useState<WordEntry[]>([]);
@@ -122,11 +131,27 @@ export const QuizPreviewView: React.FC<Props> = ({
   // 2. 일본어 출제 모드 (한글뜻 맞추기 / 히라가나 맞추기 / 히라가나+뜻 같이 맞추기)
   const [japaneseMode, setJapaneseMode] = useState<JapaneseQuizMode>('meaning');
 
+  // 현재 모드: 언어 기준 (영어 en vs 일본어 ja)
+  const activeLangMode = useMemo<'en' | 'ja'>(() => {
+    if (languageMode) return languageMode;
+    if (currentBook === 'japanese_exam' || currentBook === 'japanese_life') return 'ja';
+    return 'en';
+  }, [languageMode, currentBook]);
 
   // 일본어 단어장 여부 감지
   const isJapanese = useMemo(() => {
     return currentBook === 'japanese_exam' || currentBook === 'japanese_life';
   }, [currentBook]);
+
+  // 문제 채점 완료 시(빈출 실전문장이 뜰 때) 화면을 최하단(다음 문제 버튼)으로 자동 스크롤
+  useEffect(() => {
+    if (isAnswered) {
+      const timer = setTimeout(() => {
+        quizFooterRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnswered]);
 
   // 3. 오답노트에 영구 누적 저장된 단어들 (틀린 문제 모음집)
   const [wrongNoteWords, setWrongNoteWords] = useState<WrongWordItem[]>([]);
@@ -152,7 +177,9 @@ export const QuizPreviewView: React.FC<Props> = ({
   const [activeBookTitle, setActiveBookTitle] = useState<string>(
     bookTitle || (
       sourceType === 'maritime'
-        ? '해사영어(451단어)'
+        ? '해사 핵심단어 (451어)'
+        : sourceType === 'maritime_comm'
+        ? '실전 통신문장 (150선)'
         : sourceType === 'japanese_exam'
         ? '일본어 자격증/기초(277단어)'
         : sourceType === 'japanese_life'
@@ -193,6 +220,8 @@ export const QuizPreviewView: React.FC<Props> = ({
   useEffect(() => {
     if (sourceType === 'maritime') {
       setCurrentBook('maritime');
+    } else if (sourceType === 'maritime_comm') {
+      setCurrentBook('maritime_comm');
     } else if (sourceType === 'japanese_exam') {
       setCurrentBook('japanese_exam');
     } else if (sourceType === 'japanese_life') {
@@ -419,7 +448,10 @@ export const QuizPreviewView: React.FC<Props> = ({
 
     if (currentBook === 'maritime') {
       targetUrl = '/data/maritime_smcp_v1.json';
-      defaultTitle = '해사영어(451단어)';
+      defaultTitle = '해사 핵심단어 (451어)';
+    } else if (currentBook === 'maritime_comm') {
+      targetUrl = '/data/maritime_communication_v1.json';
+      defaultTitle = '실전 통신문장 (150선)';
     } else if (currentBook === 'japanese_exam') {
       targetUrl = '/data/builtin_japanese_exam.json';
       defaultTitle = '일본어 자격증/기초(277단어)';
@@ -533,6 +565,7 @@ export const QuizPreviewView: React.FC<Props> = ({
     }
     setCurrentIndex(nextIdx);
     generateNextQuestion(wordListToUse, nextIdx);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const isCompleted = totalQuestions > 0 && currentIndex >= totalQuestions;
@@ -543,81 +576,103 @@ export const QuizPreviewView: React.FC<Props> = ({
       hasSyncedRef.current = true;
       const earned = Math.max(0, score.correct * 10 - score.wrong * 2);
       setSyncedScore(earned);
-      const isJapaneseBook = currentBook === 'japanese_exam' || currentBook === 'japanese_life' || (currentQuiz?.word && /[\u3040-\u309F\u30A0-\u30FF]/.test(currentQuiz.word));
+      const isJapaneseBook =
+        activeLangMode === 'ja' ||
+        languageMode === 'ja' ||
+        currentBook === 'japanese_exam' ||
+        currentBook === 'japanese_life' ||
+        (quizWords.some((w) => /[\u3040-\u309F\u30A0-\u30FF]/.test(w.word))) ||
+        Boolean(currentQuiz?.word && /[\u3040-\u309F\u30A0-\u30FF]/.test(currentQuiz.word));
       userService.addQuizResult(score.correct, score.wrong, isJapaneseBook ? 'ja' : 'en').catch(console.error);
     }
-  }, [isCompleted, totalQuestions, score.correct, score.wrong, currentBook, currentQuiz]);
+  }, [isCompleted, totalQuestions, score.correct, score.wrong, currentBook, currentQuiz, activeLangMode, languageMode, quizWords]);
 
   return (
     <div className="card quiz-card">
-      {/* 기본 어휘 / 해사영어 단어장 선택 탭 및 뒤로가기 */}
+      {/* 단어장 선택 탭 (영어/일본어 3개 체제 최적화) */}
       {!initialWords ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-          {onBack && (
-            <button
-              type="button"
-              className="ranking-back-btn"
-              onClick={onBack}
-              title="홈으로 돌아가기"
-              style={{ width: '34px', height: '34px', fontSize: '18px', flexShrink: 0 }}
-            >
-              ←
-            </button>
+        <div style={{ marginBottom: '8px' }}>
+          {activeLangMode === 'en' ? (
+            <div className="book-selector-tabs" style={{ width: '100%', margin: 0, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px' }}>
+              <button
+                type="button"
+                className={`book-tab-btn ${currentBook === 'builtin' ? 'active' : ''}`}
+                onClick={() => handleSwitchBook('builtin')}
+              >
+                <span>📖</span>
+                <span>토익</span>
+              </button>
+              <button
+                type="button"
+                className={`book-tab-btn ${(currentBook === 'maritime' || currentBook === 'maritime_comm') ? 'active' : ''}`}
+                onClick={() => handleSwitchBook(currentBook === 'maritime_comm' ? 'maritime_comm' : 'maritime')}
+              >
+                <span>⚓</span>
+                <span>해사영어</span>
+              </button>
+              <button
+                type="button"
+                className={`book-tab-btn ${currentBook === 'wrong_notes' ? 'active' : ''}`}
+                onClick={() => handleSwitchBook('wrong_notes')}
+              >
+                <span>📝</span>
+                <span>오답노트{wrongNoteCount > 0 ? `(${wrongNoteCount})` : ''}</span>
+              </button>
+            </div>
+          ) : (
+            <div className="book-selector-tabs" style={{ width: '100%', margin: 0, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px' }}>
+              <button
+                type="button"
+                className={`book-tab-btn ${currentBook === 'japanese_exam' ? 'active' : ''}`}
+                onClick={() => handleSwitchBook('japanese_exam')}
+              >
+                <span>📝</span>
+                <span>시험용(N5~N3)</span>
+              </button>
+              <button
+                type="button"
+                className={`book-tab-btn ${currentBook === 'japanese_life' ? 'active' : ''}`}
+                onClick={() => handleSwitchBook('japanese_life')}
+              >
+                <span>🍱</span>
+                <span>생활일본어</span>
+              </button>
+              <button
+                type="button"
+                className={`book-tab-btn ${currentBook === 'wrong_notes' ? 'active' : ''}`}
+                onClick={() => handleSwitchBook('wrong_notes')}
+              >
+                <span>📝</span>
+                <span>오답노트{wrongNoteCount > 0 ? `(${wrongNoteCount})` : ''}</span>
+              </button>
+            </div>
           )}
-          <div className="book-selector-tabs" style={{ flex: 1, margin: 0, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px' }}>
-            <button
-              type="button"
-              className={`book-tab-btn ${currentBook === 'builtin' ? 'active' : ''}`}
-              onClick={() => handleSwitchBook('builtin')}
-            >
-              <span>📖</span>
-              <span>TOEIC</span>
-            </button>
-            <button
-              type="button"
-              className={`book-tab-btn ${currentBook === 'maritime' ? 'active' : ''}`}
-              onClick={() => handleSwitchBook('maritime')}
-            >
-              <span>⚓</span>
-              <span>해사영어</span>
-            </button>
-            <button
-              type="button"
-              className={`book-tab-btn ${(currentBook === 'japanese_exam' || currentBook === 'japanese_life') ? 'active' : ''}`}
-              onClick={() => handleSwitchBook(currentBook === 'japanese_life' ? 'japanese_life' : 'japanese_exam')}
-            >
-              <span>🇯🇵</span>
-              <span>일본어</span>
-            </button>
-            <button
-              type="button"
-              className={`book-tab-btn ${currentBook === 'wrong_notes' ? 'active' : ''}`}
-              onClick={() => handleSwitchBook('wrong_notes')}
-            >
-              <span>📝</span>
-              <span>오답{wrongNoteCount > 0 ? `(${wrongNoteCount})` : ''}</span>
-            </button>
-          </div>
         </div>
-      ) : (
-        onBack && (
-          <div style={{ marginBottom: '12px' }}>
-            <button
-              type="button"
-              className="ranking-back-btn"
-              onClick={onBack}
-              title="홈으로 돌아가기"
-              style={{ width: '34px', height: '34px', fontSize: '18px' }}
-            >
-              ←
-            </button>
-          </div>
-        )
+      ) : null}
+
+      {/* 해사영어 선택 시 노출되는 2대 서브 탭 (핵심어휘 vs 실전 통신문장 150선) */}
+      {!initialWords && activeLangMode === 'en' && (currentBook === 'maritime' || currentBook === 'maritime_comm') && (
+        <div className="japanese-sub-tabs" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '8px' }}>
+          <button
+            type="button"
+            className={`japanese-sub-tab-btn ${currentBook === 'maritime' ? 'active' : ''}`}
+            onClick={() => handleSwitchBook('maritime')}
+          >
+            <span>⚓ 해사 핵심단어 (451어)</span>
+          </button>
+          <button
+            type="button"
+            className={`japanese-sub-tab-btn ${currentBook === 'maritime_comm' ? 'active' : ''}`}
+            onClick={() => handleSwitchBook('maritime_comm')}
+          >
+            <span>📻 실전 통신문장 (150선)</span>
+          </button>
+        </div>
       )}
 
       {/* 오답노트 모드일 때: 오답 목록 보기 툴바 */}
       {!initialWords && currentBook === 'wrong_notes' && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', background: 'rgba(239, 68, 68, 0.1)', padding: '8px 12px', borderRadius: '10px', border: '1px solid rgba(239, 68, 68, 0.25)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', background: 'rgba(239, 68, 68, 0.1)', padding: '6px 10px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.25)' }}>
           <span style={{ fontSize: '12px', color: '#fca5a5', fontWeight: 'bold' }}>
             📝 저장된 오답 {wrongNoteWords.length}개
           </span>
@@ -630,7 +685,7 @@ export const QuizPreviewView: React.FC<Props> = ({
                 color: '#fff',
                 border: 'none',
                 borderRadius: '6px',
-                padding: '5px 10px',
+                padding: '4px 8px',
                 fontSize: '11px',
                 fontWeight: 'bold',
                 cursor: 'pointer',
@@ -639,26 +694,6 @@ export const QuizPreviewView: React.FC<Props> = ({
               📋 오답 모음집 보기
             </button>
           )}
-        </div>
-      )}
-
-      {/* 일본어 선택 시 노출되는 2대 서브 탭 (시험용 vs 완전 생활일본어) */}
-      {!initialWords && (currentBook === 'japanese_exam' || currentBook === 'japanese_life') && (
-        <div className="japanese-sub-tabs" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '12px' }}>
-          <button
-            type="button"
-            className={`japanese-sub-tab-btn ${currentBook === 'japanese_exam' ? 'active' : ''}`}
-            onClick={() => handleSwitchBook('japanese_exam')}
-          >
-            <span>📝 시험용 (JLPT N5~N3)</span>
-          </button>
-          <button
-            type="button"
-            className={`japanese-sub-tab-btn ${currentBook === 'japanese_life' ? 'active' : ''}`}
-            onClick={() => handleSwitchBook('japanese_life')}
-          >
-            <span>🍱 완전 생활일본어</span>
-          </button>
         </div>
       )}
 
@@ -881,7 +916,14 @@ export const QuizPreviewView: React.FC<Props> = ({
             )}
 
             <div className="quiz-headword-row">
-              <h2 className="quiz-headword">
+              <h2
+                className="quiz-headword"
+                style={
+                  (currentQuiz.word.length > 35 || (currentQuiz.displayWord && currentQuiz.displayWord.length > 35))
+                    ? { fontSize: 'clamp(16px, 4.5vw, 21px)', lineHeight: 1.35, textAlign: 'center' }
+                    : undefined
+                }
+              >
                 {isAnswered ? currentQuiz.word : (currentQuiz.displayWord || currentQuiz.word)}
               </h2>
               <button
@@ -974,7 +1016,7 @@ export const QuizPreviewView: React.FC<Props> = ({
           )}
 
           {/* 하단 버튼: 즉시 채점 모드가 아닐 때 답 선택 후 [정답 확인] -> 채점 후 [다음 문제] */}
-          <div className="quiz-footer">
+          <div className="quiz-footer" ref={quizFooterRef}>
             {!isAnswered && !instantGrading ? (
               <button
                 type="button"

@@ -914,9 +914,10 @@ export function buildMaritimePhase3Database() {
     wordCount: combinedList.length,
     words: combinedList,
   };
-
   fs.writeFileSync(pPath, JSON.stringify(database, null, 2), 'utf-8');
   console.log(`[Success] ${pPath} 파일 갱신 완료! 총 어휘 수: ${combinedList.length}개`);
 }
 
-buildMaritimePhase3Database();
+if (process.argv[1] && process.argv[1].includes('generateMaritimePhase3.ts')) {
+  buildMaritimePhase3Database();
+}
