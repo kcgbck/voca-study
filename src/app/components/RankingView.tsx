@@ -266,13 +266,13 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack: _onBack }) => 
               <div className="my-stat-box">
                 <span className="my-stat-label">총 점수</span>
                 <span className="my-stat-value score">
-                  {profile?.totalScore || 0}점
+                  {(profile?.totalScore || 0).toLocaleString()}점
                 </span>
               </div>
               <div className="my-stat-box">
                 <span className="my-stat-label">맞춘 문제</span>
                 <span className="my-stat-value correct">
-                  +{profile?.correctCount || 0}
+                  +{(profile?.correctCount || 0).toLocaleString()}
                 </span>
               </div>
               <div className="my-stat-box">
@@ -287,24 +287,24 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack: _onBack }) => 
               <div className="my-stat-box">
                 <span className="my-stat-label">총 점수</span>
                 <span className="my-stat-value score">
-                  {profile?.totalScore || 0}점
+                  {(profile?.totalScore || 0).toLocaleString()}점
                 </span>
                 {((profile?.totalScoreEn || 0) > 0 || (profile?.totalScoreJa || 0) > 0) && (
-                  <span style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px', fontWeight: '500' }}>
-                    영 {profile?.totalScoreEn || 0}점 + 일 {profile?.totalScoreJa || 0}점
+                  <span style={{ fontSize: '9px', color: '#94a3b8', marginTop: '2px', fontWeight: '500', whiteSpace: 'nowrap' }}>
+                    영 {(profile?.totalScoreEn || 0).toLocaleString()} + 일 {(profile?.totalScoreJa || 0).toLocaleString()}
                   </span>
                 )}
               </div>
               <div className="my-stat-box">
                 <span className="my-stat-label">맞춘 문제</span>
                 <span className="my-stat-value correct">
-                  +{profile?.correctCount || 0}
+                  +{(profile?.correctCount || 0).toLocaleString()}
                 </span>
               </div>
               <div className="my-stat-box">
                 <span className="my-stat-label">틀린 문제</span>
                 <span className="my-stat-value incorrect">
-                  -{profile?.incorrectCount || 0}
+                  -{(profile?.incorrectCount || 0).toLocaleString()}
                 </span>
               </div>
               <div className="my-stat-box">
@@ -379,8 +379,6 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack: _onBack }) => 
                         )}
                       </div>
                       <div className="rank-meta-line">
-                        <span>#{item.shortDeviceCode}</span>
-                        <span>•</span>
                         <span className="rank-meta-accuracy">
                           {selectedCategory === 'streak'
                             ? `총 ${item.totalScore.toLocaleString()}점`
@@ -388,8 +386,8 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack: _onBack }) => 
                         </span>
                         {selectedCategory === 'all' && ((item.totalScoreEn || 0) > 0 || (item.totalScoreJa || 0) > 0) && (
                           <>
-                            <span>•</span>
-                            <span style={{ color: '#38bdf8', fontSize: '11px', fontWeight: '600' }}>
+                            <span className="rank-meta-sep">•</span>
+                            <span className="rank-meta-breakdown">
                               영 {(item.totalScoreEn || 0).toLocaleString()} + 일 {(item.totalScoreJa || 0).toLocaleString()}
                             </span>
                           </>
@@ -403,7 +401,7 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack: _onBack }) => 
                     {selectedCategory === 'streak' ? (
                       <>
                         <span className="rank-item-score" style={{ color: '#f59e0b' }}>
-                          🔥 {item.attendanceStreak || 0}일
+                          🔥 {(item.attendanceStreak || 0).toLocaleString()}일
                         </span>
                         <span className="rank-item-sub">
                           연속 출석
@@ -415,7 +413,7 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack: _onBack }) => 
                           {item.totalScore.toLocaleString()}점
                         </span>
                         <span className="rank-item-sub">
-                          맞춤 {item.correctCount} / 틀림 {item.incorrectCount}
+                          맞춤 {item.correctCount.toLocaleString()} / 틀림 {item.incorrectCount.toLocaleString()}
                         </span>
                       </>
                     )}

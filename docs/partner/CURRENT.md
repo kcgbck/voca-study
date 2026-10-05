@@ -119,11 +119,21 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
       - 모달(출석체크, 설정) 열림 상태에서 뒤로가기 시 모달만 깔끔하게 닫힘.
       - 어디서든 뒤로가기 1회 누르면 바로 직전 상위 메뉴인 `홈`으로 복귀하며, 홈에서 뒤로가기 1회 더 누르면 무한 히스토리 루프 없이 바로 어플이 깔끔하게 종료됨.
 
+11. **종합 랭킹 줄깨짐 현상 완전 해결 및 불필요한 기기코드(#HJ28 등) 삭제**:
+    - **불필요한 기기코드 태그 제거**:
+      - 랭킹 리스트의 각 행에서 불필요하게 공간을 차지하고 줄바꿈을 유발하던 `#{item.shortDeviceCode}` (예: `#HJ28`, `#AJXT`) 및 구분자 불릿(`•`)을 전면 삭제.
+      - 홈 상단 요약 배너에서도 닉네임 옆에 붙어 있던 `#{deviceCode}` 태그를 제거하여 닉네임과 연속 출석일만 깔끔하게 노출.
+    - **숫자가 커져도 줄깨짐이 없는 견고한 레이아웃 구축**:
+      - `rank-item-right`: `white-space: nowrap; flex-shrink: 0;` 적용으로 점수(12,345점)와 맞춤/틀림 수가 절대 2줄로 쪼개지지 않도록 고정.
+      - `rank-nickname`: 긴 닉네임 입력 시에도 우측 점수를 침범하지 않도록 `text-overflow: ellipsis; max-width: 140px;` 설정.
+      - `rank-meta-line`: 정답률(`85% 정답`)과 종합 랭킹 언어별 세부 합산 점수(`영 966 + 일 268`)에 `white-space: nowrap; overflow: hidden; text-overflow: ellipsis;` 적용.
+      - 모든 점수 및 문항 수에 `.toLocaleString()` 적용으로 만점/십만점 단위에서도 가독성과 정렬 유지.
+      - 내 요약 카드(`my-stat-box`)의 분리 점수도 `white-space: nowrap;`으로 정돈.
+
 ## 검증
 - `npm run typecheck`: 통과 (0 errors)
 - `npm test`: 통과 (35개 테스트 파일 / 158개 테스트 100% PASS)
-  - `tests/maritimeCommunication.test.ts`: 대칭 함정 문구 생성 및 150문항 4지선다 Hard Gate 100% 통과
-  - `tests/navigationAndHistory.test.ts`: 계층형 히스토리 스택 제어 및 1스텝 홈 복귀, 앱 종료 검증 통과
 - `npm run build`: 통과 (Vite v6.4.3 프로덕션 번들 생성 완료)
-- `npx wrangler pages deploy`: 통과 (`https://21f41240.voca-study-akf.pages.dev` 실시간 배포 완료)
+- `npx wrangler pages deploy`: 통과 (`https://db2e10fb.voca-study-akf.pages.dev` 실시간 배포 완료)
+
 

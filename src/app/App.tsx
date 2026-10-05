@@ -332,17 +332,14 @@ export const App: React.FC = () => {
                   <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#c7d2fe' }}>
                     {currentUser?.nickname || '학습자'}
                   </span>
-                  <span style={{ fontSize: '10px', background: 'rgba(255,255,255,0.2)', padding: '1px 5px', borderRadius: '4px' }}>
-                    #{currentUser?.deviceCode?.split('-').pop() || 'ID'}
-                  </span>
                   <span style={{ fontSize: '10px', background: 'rgba(245, 158, 11, 0.3)', color: '#fef3c7', padding: '1px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
-                    🔥 {currentUser?.attendanceStreak || 0}일 연속
+                    🔥 {(currentUser?.attendanceStreak || 0).toLocaleString()}일 연속
                   </span>
                 </div>
                 <div style={{ fontSize: '18px', fontWeight: '900', color: '#fde047' }}>
-                  {currentUser?.totalScore || 0}점
+                  {(currentUser?.totalScore || 0).toLocaleString()}점
                   <span style={{ fontSize: '11px', fontWeight: 'normal', color: '#e0e7ff', marginLeft: '6px' }}>
-                    (맞춤 {currentUser?.correctCount || 0} / 틀림 {currentUser?.incorrectCount || 0})
+                    (맞춤 {(currentUser?.correctCount || 0).toLocaleString()} / 틀림 {(currentUser?.incorrectCount || 0).toLocaleString()})
                   </span>
                 </div>
               </div>
