@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import { createQuizQuestion } from '../src/quiz/quizEngine';
+import { createQuizQuestion, generateMaritimeTrapSentence } from '../src/quiz/quizEngine';
 import type { WordEntry } from '../src/types/word';
 
 describe('해사 통신 문장 문제집 (maritime_communication_v1.json) 검증', () => {
@@ -67,4 +67,13 @@ describe('해사 통신 문장 문제집 (maritime_communication_v1.json) 검증
       expect(new Set(question!.options).size).toBe(4);
     }
   });
+
+  it('해사 대칭 함정 문구 생성기(generateMaritimeTrapSentence)가 의도한 대칭 문장을 생성해야 한다', () => {
+    expect(generateMaritimeTrapSentence('우현 대 우현 통과에 동의하는가?')).toBe('좌현 대 좌현 통과에 동의하는가?');
+    expect(generateMaritimeTrapSentence('좌현 대 좌현 통과에 동의하는가?')).toBe('우현 대 우현 통과에 동의하는가?');
+    expect(generateMaritimeTrapSentence('선수에 예인선을 연결하라.')).toBe('선미에 예인선을 연결하라.');
+    expect(generateMaritimeTrapSentence('메이데이. 본선은 침수 중이다.')).toBe('팬팬. 본선은 침수 중이다.');
+    expect(generateMaritimeTrapSentence('전진 미속으로 항행하라.')).toBe('후진 미속으로 항행하라.');
+  });
 });
+

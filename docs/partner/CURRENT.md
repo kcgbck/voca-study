@@ -81,13 +81,49 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
      - `/api/score/sync`: 클라이언트로부터 언어별 델타(`correctDeltaJa`, `incorrectDeltaJa`)를 정확히 수신하여 `correct_count_ja`, `total_score_ja` 및 종합 점수(`total_score`)에 누실 없이 가산.
      - `/api/ranking`: `category === 'ja'` 쿼리 시, 과거에 `total_score_ja`가 미계산(0) 상태인 행도 `MAX(0, correct_count_ja * 10 - incorrect_count_ja * 2)`로 실시간 보정 계산하여 랭킹 및 내 순위에 즉시 노출.
      - `ensureD1Columns`: `total_score_ja` 자동 계산 보정 마이그레이션 쿼리 추가.
+9. **기존 1등 기록자 종합 랭킹과 (영어 + 일어) 랭킹 불일치 완전 해결**:
+   - 현상 원인 규명: 실서비스 1위 `주차뿌까` (`HJ28`)의 종합 점수(1,234점, 128정답/23오답)와 영어 점수(966점, 99정답/12오답) 사이에 과거 일본어 분리 전 풀었던 29정답/11오답(268점)이 `correct_count_ja` 컬럼에 기록되지 못하고 0점으로 남아 있던 문제.
+   - D1 데이터베이스 안전 마이그레이션:
+     - `functions/api/[[route]].ts`의 `ensureD1Columns` 및 `performDatabaseCleanup`에 누락된 일본어 갭(29문제, 268점)을 안전하게 복원하는 SQL 마이그레이션 실행.
+     - D1 원격 실행 결과: `주차뿌까`의 `total_score_ja: 268`, `correct_count_ja: 29`, `incorrect_count_ja: 11` 정상 갱신.
+     - 수학적 검증: 종합 1,234점 = 영어 966점 + 일어 268점, 총 128문제 = 영어 99문제 + 일어 29문제 100% 완벽 일치!
+   - 랭킹 API 3중 방어 보정:
+     - `functions/api/[[route]].ts`: `category === 'ja'` 조회 시 누락 사용자 포함, `topRankers` 및 `myRank`에서 `totalScoreEn` + `totalScoreJa` = `totalScore` 항등식 보장.
+     - `device-login` 및 `score/sync`: 잔여 정답 수 갭 발견 시 일본어로 자동 할당하여 DB 즉시 갱신.
+   - 클라이언트 세션 정합성 보장 (`userService.ts`):
+     - `reconcileProfileGap` 헬퍼를 신설하여 `loadFromStorage`, `initSession`, `linkDeviceCode`, `flushPendingScore`, `syncWithServer` 전 구간에서 종합 = 영어 + 일어 정합성을 자동 유지.
+   - UI 투명성 강화 (`RankingView.tsx`):
+     - 종합 탭 진입 시 내 통계 카드에 `영 966점 + 일 268점` 합산 내역 표기.
+     - 랭킹 리스트 메타 라인에 `#HJ28 • 85% 정답 • 영 966 + 일 268` 직관적 표기.
+     - 일본어 랭킹 탭에서도 `주차뿌까`가 1위(268점, 29개 맞춤)로 정상 노출.
+
+10. **홈 UI 개편, 실전 통신문장 함정 보기, 버튼 라벨 괄호 제거, 화면 고정 및 계층형 뒤로가기 완비**:
+    - **홈 UI 재배치**:
+      - 랭킹 요약 배너를 홈 최상단 1번째로 이동.
+      - 출석체크 버튼을 랭킹 바로 아래 2번째로 배치하고, `오늘 출석체크 하기` -> `출석체크 (연속 N일 출석 중 🔥)` 1줄 슬림 카드로 개편. 하단 보조 설명문구(`매일 출석 도장 찍고~`) 완전 삭제.
+    - **실전 통신문장 고난도 대칭 함정 보기 생성 엔진**:
+      - `MARITIME_OPPOSITE_PAIRS` 및 `generateMaritimeTrapSentence` 신설.
+      - 우현 대 우현 ↔ 좌현 대 좌현, 선수 ↔ 선미, 전진 ↔ 후진, 투묘 ↔ 양묘, 메이데이 ↔ 팬팬 등 해사 실무 대칭 반의어 쌍을 약 50% 확률로 1개씩 선별 투입하여 난이도 자연스럽게 조절.
+      - 사전에 정의된 고품질 실전 통신문장 전용 오답(`confusables`/`distractors`)을 우선 배치하여 4개 보기가 모두 실무 상황에 밀접하도록 고도화.
+    - **버튼 UI 괄호 개수/등급 표시 삭제**:
+      - 해사영어: `해사 핵심단어 (451어)` -> `해사 핵심단어`, `실전 통신문장 (150선)` -> `실전 통신문장`.
+      - 일본어: `시험용(N5~N3)` -> `시험용`.
+      - 오답노트: `오답노트(n)` -> `오답노트` (영어/일본어 공통).
+      - 홈 메뉴 카드에서도 괄호 단어 수 및 등급 표기 일제 정돈.
+    - **문제 풀이 중 화면 고정 (사진 3장 기준 무스크롤 집중 뷰)**:
+      - 문제 풀이 시 자동 스크롤되던 `scrollIntoView` 및 다음 문제 전환 시 `window.scrollTo` 전면 제거.
+      - 문제 풀이 및 정답 확인, 다음 문제 이동 전 과정에서 뷰포트가 상하로 전혀 움직이지 않고 상단 탭부터 문제 카드, 보기 4개, 하단 버튼까지 사진 3장(Photo 3)과 동일하게 정적으로 완벽 고정.
+    - **스마트폰 뒤로가기(popstate) 계층형 로직 개편 (빠른 앱 종료 보장)**:
+      - 루트 홈(Level 0), 하위 탭(Level 1), 모달(Level 2) 2계층 구조 확립.
+      - 홈에서 하위 화면 진입 시에만 1회 `pushState`를 수행하고, 하위 화면 간(토익, 해사영어, 일본어, 랭킹 등) 이동 시에는 `replaceState`로 히스토리 스택 누적을 원천 차단.
+      - 모달(출석체크, 설정) 열림 상태에서 뒤로가기 시 모달만 깔끔하게 닫힘.
+      - 어디서든 뒤로가기 1회 누르면 바로 직전 상위 메뉴인 `홈`으로 복귀하며, 홈에서 뒤로가기 1회 더 누르면 무한 히스토리 루프 없이 바로 어플이 깔끔하게 종료됨.
 
 ## 검증
 - `npm run typecheck`: 통과 (0 errors)
-- `npm test`: 통과 (35개 테스트 파일 / 155개 테스트 100% PASS, 일본어 점수 분리 누적 및 랭킹 정렬 테스트 통과)
+- `npm test`: 통과 (35개 테스트 파일 / 158개 테스트 100% PASS)
+  - `tests/maritimeCommunication.test.ts`: 대칭 함정 문구 생성 및 150문항 4지선다 Hard Gate 100% 통과
+  - `tests/navigationAndHistory.test.ts`: 계층형 히스토리 스택 제어 및 1스텝 홈 복귀, 앱 종료 검증 통과
 - `npm run build`: 통과 (Vite v6.4.3 프로덕션 번들 생성 완료)
-- `npx wrangler pages deploy`: 통과 (`https://voca-study-akf.pages.dev` 실시간 배포 완료)
-
-
-
+- `npx wrangler pages deploy`: 통과 (`https://21f41240.voca-study-akf.pages.dev` 실시간 배포 완료)
 

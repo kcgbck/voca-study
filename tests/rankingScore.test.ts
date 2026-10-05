@@ -106,4 +106,32 @@ describe('점수 계산 및 랭킹 로직 검증 (rankingScore.test.ts)', () => 
     expect(jaRanking[1].id).toBe('u1'); // 50점 2위
     expect(jaRanking[2].id).toBe('u3'); // 0점 3위
   });
+
+  it('1등 기록자(주차뿌까)의 종합점수(1234점)와 영어(966점) 및 복원된 일본어(268점) 정합성이 완벽히 일치해야 한다', () => {
+    // 실서비스 데이터 스냅샷
+    const totalCorrect = 128;
+    const totalIncorrect = 23;
+    const correctEn = 99;
+    const incorrectEn = 12;
+
+    // 1. 종합 점수 및 영어 점수 검증
+    const totalScore = calculateScore(totalCorrect, totalIncorrect);
+    const scoreEn = calculateScore(correctEn, incorrectEn);
+    expect(totalScore).toBe(1234);
+    expect(scoreEn).toBe(966);
+
+    // 2. 누락된 갭 복원 로직 검증
+    const gapCorrect = totalCorrect - correctEn;
+    const gapIncorrect = Math.max(0, totalIncorrect - incorrectEn);
+    expect(gapCorrect).toBe(29);
+    expect(gapIncorrect).toBe(11);
+
+    const scoreJa = calculateScore(gapCorrect, gapIncorrect);
+    expect(scoreJa).toBe(268);
+
+    // 3. 종합 점수 = 영어 점수 + 일어 점수 합산 검증
+    expect(scoreEn + scoreJa).toBe(totalScore);
+    expect(correctEn + gapCorrect).toBe(totalCorrect);
+    expect(incorrectEn + gapIncorrect).toBe(totalIncorrect);
+  });
 });

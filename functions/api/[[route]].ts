@@ -80,6 +80,27 @@ async function ensureD1Columns(db: D1Database): Promise<void> {
     console.error('Score migration error:', err);
   }
 
+  // 과거 누락된 일본어 점수(총 점수와 영어 점수 간의 정답 수 차이) 자동 복원 마이그레이션
+  try {
+    await db.prepare(`
+      UPDATE users 
+      SET correct_count_ja = (correct_count - COALESCE(correct_count_en, 0)),
+          incorrect_count_ja = CASE 
+            WHEN incorrect_count > COALESCE(incorrect_count_en, 0) THEN (incorrect_count - COALESCE(incorrect_count_en, 0)) 
+            ELSE 0 
+          END,
+          total_score_ja = CASE 
+            WHEN ((correct_count - COALESCE(correct_count_en, 0)) * 10 - CASE WHEN incorrect_count > COALESCE(incorrect_count_en, 0) THEN (incorrect_count - COALESCE(incorrect_count_en, 0)) ELSE 0 END * 2) > 0 
+            THEN ((correct_count - COALESCE(correct_count_en, 0)) * 10 - CASE WHEN incorrect_count > COALESCE(incorrect_count_en, 0) THEN (incorrect_count - COALESCE(incorrect_count_en, 0)) ELSE 0 END * 2)
+            ELSE 0 
+          END
+      WHERE correct_count > (COALESCE(correct_count_en, 0) + COALESCE(correct_count_ja, 0))
+        AND correct_count > COALESCE(correct_count_en, 0)
+    `).run();
+  } catch (err) {
+    console.error('Score gap JA migration error:', err);
+  }
+
   // 일본어 정답 기록이 있으나 점수가 0/NULL인 경우 자동 계산 갱신
   try {
     await db.prepare(`
@@ -96,8 +117,26 @@ async function ensureD1Columns(db: D1Database): Promise<void> {
 }
 
 let cleanupExecuted = false;
-async function performDatabaseCleanup(db: D1Database): Promise<{ deletedSpecial: number; deletedDummies: number }> {
+async function performDatabaseCleanup(db: D1Database): Promise<{ deletedSpecial: number; deletedDummies: number; migratedGap: number }> {
   try {
+    // 0. 과거 누락된 일본어 점수 갭 복원
+    const gapRes = await db.prepare(`
+      UPDATE users 
+      SET correct_count_ja = (correct_count - COALESCE(correct_count_en, 0)),
+          incorrect_count_ja = CASE 
+            WHEN incorrect_count > COALESCE(incorrect_count_en, 0) THEN (incorrect_count - COALESCE(incorrect_count_en, 0)) 
+            ELSE 0 
+          END,
+          total_score_ja = CASE 
+            WHEN ((correct_count - COALESCE(correct_count_en, 0)) * 10 - CASE WHEN incorrect_count > COALESCE(incorrect_count_en, 0) THEN (incorrect_count - COALESCE(incorrect_count_en, 0)) ELSE 0 END * 2) > 0 
+            THEN ((correct_count - COALESCE(correct_count_en, 0)) * 10 - CASE WHEN incorrect_count > COALESCE(incorrect_count_en, 0) THEN (incorrect_count - COALESCE(incorrect_count_en, 0)) ELSE 0 END * 2)
+            ELSE 0 
+          END
+      WHERE correct_count > (COALESCE(correct_count_en, 0) + COALESCE(correct_count_ja, 0))
+        AND correct_count > COALESCE(correct_count_en, 0)
+    `).run();
+    const migratedGap = gapRes.meta?.changes ?? 0;
+
     // 1. 요청된 특정 사용자 계정 삭제: "토익찍고1탈해경"
     const delTarget = await db.prepare("DELETE FROM users WHERE nickname = '토익찍고1탈해경'").run();
     const deletedSpecial = delTarget.meta?.changes ?? 0;
@@ -113,10 +152,10 @@ async function performDatabaseCleanup(db: D1Database): Promise<{ deletedSpecial:
     const deletedDummies = delDummy.meta?.changes ?? 0;
 
     cleanupExecuted = true;
-    return { deletedSpecial, deletedDummies };
+    return { deletedSpecial, deletedDummies, migratedGap };
   } catch (err) {
     console.error('Database cleanup error:', err);
-    return { deletedSpecial: 0, deletedDummies: 0 };
+    return { deletedSpecial: 0, deletedDummies: 0, migratedGap: 0 };
   }
 }
 
@@ -204,6 +243,27 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         ).bind(targetCode).first<any>();
 
         if (existing) {
+          let cEn = existing.correct_count_en ?? 0;
+          let iEn = existing.incorrect_count_en ?? 0;
+          let cJa = existing.correct_count_ja ?? 0;
+          let iJa = existing.incorrect_count_ja ?? 0;
+          let sEn = (existing.total_score_en ?? 0) > 0 ? existing.total_score_en : calculateScore(cEn, iEn);
+          let sJa = (existing.total_score_ja ?? 0) > 0 ? existing.total_score_ja : calculateScore(cJa, iJa);
+
+          if (existing.correct_count > (cEn + cJa)) {
+            const gapC = existing.correct_count - (cEn + cJa);
+            const gapI = Math.max(0, existing.incorrect_count - (iEn + iJa));
+            cJa += gapC;
+            iJa += gapI;
+            sJa = calculateScore(cJa, iJa);
+            sEn = sEn > 0 ? sEn : calculateScore(cEn, iEn);
+            try {
+              await env.DB.prepare(
+                'UPDATE users SET correct_count_ja = ?, incorrect_count_ja = ?, total_score_ja = ?, total_score_en = ? WHERE id = ?'
+              ).bind(cJa, iJa, sJa, sEn, existing.id).run();
+            } catch {}
+          }
+
           await env.DB.prepare(
             'UPDATE users SET last_active_at = ? WHERE id = ?'
           ).bind(now, existing.id).run();
@@ -218,12 +278,12 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
               incorrectCount: existing.incorrect_count,
               totalScore: existing.total_score,
               accuracy: calculateAccuracy(existing.correct_count, existing.incorrect_count),
-              totalScoreEn: existing.total_score_en ?? 0,
-              totalScoreJa: existing.total_score_ja ?? 0,
-              correctCountEn: existing.correct_count_en ?? 0,
-              incorrectCountEn: existing.incorrect_count_en ?? 0,
-              correctCountJa: existing.correct_count_ja ?? 0,
-              incorrectCountJa: existing.incorrect_count_ja ?? 0,
+              totalScoreEn: sEn,
+              totalScoreJa: sJa,
+              correctCountEn: cEn,
+              incorrectCountEn: iEn,
+              correctCountJa: cJa,
+              incorrectCountJa: iJa,
               attendanceStreak: existing.attendance_streak ?? 0,
               lastAttendanceDate: existing.last_attendance_date || null,
               lastActiveAt: now,
@@ -359,10 +419,23 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
       const cDeltaJa = typeof (body as any).correctDeltaJa === 'number' ? Math.max(0, (body as any).correctDeltaJa) : (body.lang === 'ja' ? cDelta : 0);
       const iDeltaJa = typeof (body as any).incorrectDeltaJa === 'number' ? Math.max(0, (body as any).incorrectDeltaJa) : (body.lang === 'ja' ? iDelta : 0);
 
-      let newCorrectEn = (user.correct_count_en ?? 0) + cDeltaEn;
-      let newIncorrectEn = (user.incorrect_count_en ?? 0) + iDeltaEn;
-      let newCorrectJa = (user.correct_count_ja ?? 0) + cDeltaJa;
-      let newIncorrectJa = (user.incorrect_count_ja ?? 0) + iDeltaJa;
+      let currentCorrectEn = user.correct_count_en ?? 0;
+      let currentIncorrectEn = user.incorrect_count_en ?? 0;
+      let currentCorrectJa = user.correct_count_ja ?? 0;
+      let currentIncorrectJa = user.incorrect_count_ja ?? 0;
+
+      // 과거 누락된 갭이 있다면 ja로 자동 보정
+      if ((user.correct_count || 0) > (currentCorrectEn + currentCorrectJa)) {
+        const gapCorrect = (user.correct_count || 0) - (currentCorrectEn + currentCorrectJa);
+        const gapIncorrect = Math.max(0, (user.incorrect_count || 0) - (currentIncorrectEn + currentIncorrectJa));
+        currentCorrectJa += gapCorrect;
+        currentIncorrectJa += gapIncorrect;
+      }
+
+      let newCorrectEn = currentCorrectEn + cDeltaEn;
+      let newIncorrectEn = currentIncorrectEn + iDeltaEn;
+      let newCorrectJa = currentCorrectJa + cDeltaJa;
+      let newIncorrectJa = currentIncorrectJa + iDeltaJa;
 
       if (typeof body.totalCorrectEn === 'number') {
         newCorrectEn = Math.max(newCorrectEn, body.totalCorrectEn);
@@ -447,7 +520,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         whereClause = 'WHERE (COALESCE(total_score_en, 0) > 0 OR COALESCE(correct_count_en, 0) > 0 OR COALESCE(incorrect_count_en, 0) > 0)';
         orderByClause = 'ORDER BY COALESCE(total_score_en, 0) DESC, COALESCE(correct_count_en, 0) DESC, last_active_at DESC';
       } else if (category === 'ja') {
-        whereClause = 'WHERE (COALESCE(total_score_ja, 0) > 0 OR COALESCE(correct_count_ja, 0) > 0 OR COALESCE(incorrect_count_ja, 0) > 0)';
+        whereClause = 'WHERE (COALESCE(total_score_ja, 0) > 0 OR COALESCE(correct_count_ja, 0) > 0 OR COALESCE(incorrect_count_ja, 0) > 0 OR (correct_count > COALESCE(correct_count_en, 0)))';
         orderByClause = 'ORDER BY COALESCE(total_score_ja, 0) DESC, COALESCE(correct_count_ja, 0) DESC, last_active_at DESC';
       } else if (category === 'streak') {
         whereClause = 'WHERE COALESCE(attendance_streak, 0) > 0';
@@ -475,14 +548,32 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         let displayCorrect = row.correct_count;
         let displayIncorrect = row.incorrect_count;
 
+        let cEn = row.correct_count_en ?? 0;
+        let iEn = row.incorrect_count_en ?? 0;
+        let cJa = row.correct_count_ja ?? 0;
+        let iJa = row.incorrect_count_ja ?? 0;
+
+        // 정합성 보정: 총 정답수가 (영어+일어) 합보다 큰 경우 잔여분을 일어로 귀속
+        if (row.correct_count > (cEn + cJa)) {
+          const gapC = row.correct_count - (cEn + cJa);
+          const gapI = Math.max(0, row.incorrect_count - (iEn + iJa));
+          cJa += gapC;
+          iJa += gapI;
+        }
+
+        const sEn = row.total_score_en > 0 ? row.total_score_en : calculateScore(cEn, iEn);
+        const sJa = (row.total_score_ja > 0 && row.correct_count <= (row.correct_count_en ?? 0) + (row.correct_count_ja ?? 0))
+          ? row.total_score_ja
+          : calculateScore(cJa, iJa);
+
         if (category === 'en') {
-          displayCorrect = row.correct_count_en;
-          displayIncorrect = row.incorrect_count_en;
-          displayScore = row.total_score_en > 0 ? row.total_score_en : calculateScore(displayCorrect, displayIncorrect);
+          displayCorrect = cEn;
+          displayIncorrect = iEn;
+          displayScore = sEn;
         } else if (category === 'ja') {
-          displayCorrect = row.correct_count_ja;
-          displayIncorrect = row.incorrect_count_ja;
-          displayScore = row.total_score_ja > 0 ? row.total_score_ja : calculateScore(displayCorrect, displayIncorrect);
+          displayCorrect = cJa;
+          displayIncorrect = iJa;
+          displayScore = sJa;
         }
 
         return {
@@ -494,8 +585,8 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
           correctCount: displayCorrect,
           incorrectCount: displayIncorrect,
           accuracy: calculateAccuracy(displayCorrect, displayIncorrect),
-          totalScoreEn: row.total_score_en > 0 ? row.total_score_en : calculateScore(row.correct_count_en, row.incorrect_count_en),
-          totalScoreJa: row.total_score_ja > 0 ? row.total_score_ja : calculateScore(row.correct_count_ja, row.incorrect_count_ja),
+          totalScoreEn: sEn,
+          totalScoreJa: sJa,
           attendanceStreak: row.attendance_streak,
           lastActiveAt: row.last_active_at,
         };
@@ -522,14 +613,28 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         ).bind(deviceCode).first<any>();
 
         if (me) {
-          const myEnScore = me.total_score_en > 0 ? me.total_score_en : calculateScore(me.correct_count_en, me.incorrect_count_en);
-          const myJaScore = me.total_score_ja > 0 ? me.total_score_ja : calculateScore(me.correct_count_ja, me.incorrect_count_ja);
+          let cEn = me.correct_count_en ?? 0;
+          let iEn = me.incorrect_count_en ?? 0;
+          let cJa = me.correct_count_ja ?? 0;
+          let iJa = me.incorrect_count_ja ?? 0;
+
+          if (me.correct_count > (cEn + cJa)) {
+            const gapC = me.correct_count - (cEn + cJa);
+            const gapI = Math.max(0, me.incorrect_count - (iEn + iJa));
+            cJa += gapC;
+            iJa += gapI;
+          }
+
+          const myEnScore = me.total_score_en > 0 ? me.total_score_en : calculateScore(cEn, iEn);
+          const myJaScore = (me.total_score_ja > 0 && me.correct_count <= (me.correct_count_en ?? 0) + (me.correct_count_ja ?? 0))
+            ? me.total_score_ja
+            : calculateScore(cJa, iJa);
 
           let hasParticipated = false;
           if (category === 'en') {
-            hasParticipated = (myEnScore > 0 || me.correct_count_en > 0 || me.incorrect_count_en > 0);
+            hasParticipated = (myEnScore > 0 || cEn > 0 || iEn > 0);
           } else if (category === 'ja') {
-            hasParticipated = (myJaScore > 0 || me.correct_count_ja > 0 || me.incorrect_count_ja > 0);
+            hasParticipated = (myJaScore > 0 || cJa > 0 || iJa > 0);
           } else if (category === 'streak') {
             hasParticipated = (me.attendance_streak > 0);
           } else {
@@ -544,14 +649,14 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
                 `SELECT COUNT(*) + 1 as rank FROM users 
                  WHERE ${cleanWhere} 
                    AND (COALESCE(total_score_en, 0) > ? OR (COALESCE(total_score_en, 0) = ? AND COALESCE(correct_count_en, 0) > ?))`
-              ).bind(myEnScore, myEnScore, me.correct_count_en).first<{ rank: number }>();
+              ).bind(myEnScore, myEnScore, cEn).first<{ rank: number }>();
               rankNumber = rRes?.rank || 1;
             } else if (category === 'ja') {
               const rRes = await env.DB.prepare(
                 `SELECT COUNT(*) + 1 as rank FROM users 
                  WHERE ${cleanWhere}
                    AND (COALESCE(total_score_ja, 0) > ? OR (COALESCE(total_score_ja, 0) = ? AND COALESCE(correct_count_ja, 0) > ?))`
-              ).bind(myJaScore, myJaScore, me.correct_count_ja).first<{ rank: number }>();
+              ).bind(myJaScore, myJaScore, cJa).first<{ rank: number }>();
               rankNumber = rRes?.rank || 1;
             } else if (category === 'streak') {
               const rRes = await env.DB.prepare(
@@ -576,12 +681,12 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
 
           if (category === 'en') {
             displayScore = myEnScore;
-            displayCorrect = me.correct_count_en;
-            displayIncorrect = me.incorrect_count_en;
+            displayCorrect = cEn;
+            displayIncorrect = iEn;
           } else if (category === 'ja') {
             displayScore = myJaScore;
-            displayCorrect = me.correct_count_ja;
-            displayIncorrect = me.incorrect_count_ja;
+            displayCorrect = cJa;
+            displayIncorrect = iJa;
           }
 
           myRank = {
@@ -593,8 +698,8 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
             correctCount: displayCorrect,
             incorrectCount: displayIncorrect,
             accuracy: calculateAccuracy(displayCorrect, displayIncorrect),
-            totalScoreEn: me.total_score_en,
-            totalScoreJa: me.total_score_ja,
+            totalScoreEn: myEnScore,
+            totalScoreJa: myJaScore,
             attendanceStreak: me.attendance_streak,
             lastActiveAt: me.last_active_at,
           };

@@ -74,18 +74,27 @@ export const App: React.FC = () => {
     }
   }, [themeMode]);
 
-  // 스마트폰 물리/제스처 뒤로가기 키(popstate) 및 히스토리 연동
+  // 스마트폰 물리/제스처 뒤로가기 키(popstate) 및 계층형 히스토리 연동
   useEffect(() => {
-    // 최초 진입 시 홈 상태를 history에 기록
-    if (!window.history.state) {
+    // 최초 진입 시 루트 홈 상태를 history에 기록
+    if (!window.history.state || !window.history.state.tab) {
       window.history.replaceState({ tab: 'home' }, '', window.location.pathname);
     }
 
     const handlePopState = (event: PopStateEvent) => {
+      // 1. 모달이 열려있다면 모달 닫기 우선 처리
+      if (isAttendanceOpen || isSettingsOpen) {
+        setIsAttendanceOpen(false);
+        setIsSettingsOpen(false);
+        return;
+      }
+
       const state = event.state as {
         tab?: ActiveTab;
         quizSource?: 'builtin' | 'maritime' | 'maritime_comm' | 'japanese_exam' | 'japanese_life' | 'wrong_notes';
+        modal?: string;
       } | null;
+
       if (state && state.tab) {
         if (state.quizSource) {
           setCustomSourceType(state.quizSource);
@@ -94,16 +103,16 @@ export const App: React.FC = () => {
         }
         setActiveTab(state.tab);
       } else {
-        // 히스토리의 시작점이거나 상태가 없으면 메인 홈 대시보드로 이동
+        // 히스토리의 시작점이거나 상태가 없으면 메인 홈 대시보드로 복귀
         setActiveTab('home');
       }
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  }, [isAttendanceOpen, isSettingsOpen]);
 
-  // 화면 전환 및 히스토리 푸시 헬퍼
+  // 화면 전환 및 히스토리 푸시 헬퍼 (계층형 내비게이션: 홈 = Level 0, 하위 탭 = Level 1)
   const navigateToTab = (
     tab: ActiveTab,
     pushHistory = true,
@@ -117,21 +126,61 @@ export const App: React.FC = () => {
     if (tab === activeTab && (!quizSource || quizSource === customSourceType)) return;
 
     setActiveTab(tab);
+
     if (pushHistory) {
-      window.history.pushState(
-        { tab, quizSource: quizSource || ((tab === 'quiz_en' || tab === 'quiz_ja') ? customSourceType : undefined) },
-        '',
-        window.location.pathname
-      );
+      const targetState = {
+        tab,
+        quizSource: quizSource || ((tab === 'quiz_en' || tab === 'quiz_ja') ? customSourceType : undefined),
+      };
+
+      if (tab === 'home') {
+        // 홈으로 복귀 시: 히스토리 스택을 비우고 루트 홈으로 replace
+        window.history.replaceState({ tab: 'home' }, '', window.location.pathname);
+      } else if (activeTab === 'home') {
+        // 홈에서 하위 화면으로 진입할 때만 1회 pushState
+        window.history.pushState(targetState, '', window.location.pathname);
+      } else {
+        // 이미 하위 화면에 있는 상태에서 다른 하위 화면으로 전환할 때는 히스토리를 누적하지 않고 replaceState
+        window.history.replaceState(targetState, '', window.location.pathname);
+      }
     }
   };
 
-  // 공통 뒤로가기 처리: 히스토리가 있으면 이전으로, 없으면 홈 대시보드로 복귀
-  const handleGoBack = () => {
-    if (window.history.state && window.history.state.tab !== 'home') {
+  // 출석체크 모달 열기/닫기 (히스토리 연동)
+  const openAttendanceModal = () => {
+    setIsAttendanceOpen(true);
+    window.history.pushState({ modal: 'attendance', tab: activeTab }, '', window.location.pathname);
+  };
+
+  const closeAttendanceModal = () => {
+    setIsAttendanceOpen(false);
+    if (window.history.state?.modal === 'attendance') {
       window.history.back();
-    } else {
-      navigateToTab('home', false);
+    }
+  };
+
+  // 설정 모달 열기/닫기 (히스토리 연동)
+  const openSettingsModal = () => {
+    setIsSettingsOpen(true);
+    window.history.pushState({ modal: 'settings', tab: activeTab }, '', window.location.pathname);
+  };
+
+  const closeSettingsModal = () => {
+    setIsSettingsOpen(false);
+    if (window.history.state?.modal === 'settings') {
+      window.history.back();
+    }
+  };
+
+  // 공통 뒤로가기 처리: 직전 상위 메뉴(홈)로 즉시 이동
+  const handleGoBack = () => {
+    if (isAttendanceOpen || isSettingsOpen) {
+      setIsAttendanceOpen(false);
+      setIsSettingsOpen(false);
+      return;
+    }
+    if (activeTab !== 'home') {
+      navigateToTab('home');
     }
   };
 
@@ -225,7 +274,7 @@ export const App: React.FC = () => {
             </button>
             <button
               className="header-btn header-btn-icon"
-              onClick={() => setIsSettingsOpen(true)}
+              onClick={openSettingsModal}
               aria-label="설정"
               title="설정"
             >
@@ -261,29 +310,7 @@ export const App: React.FC = () => {
       <main className="app-main">
         {activeTab === 'home' && (
           <div className="home-dashboard">
-            {/* 1. 홈 최상단: 출석체크 캘린더 대형 진입 버튼 */}
-            <button
-              className="menu-card"
-              style={{
-                borderLeft: '4px solid #f59e0b',
-                background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(217, 119, 6, 0.1))',
-                marginBottom: '10px',
-                padding: '14px 16px',
-              }}
-              onClick={() => setIsAttendanceOpen(true)}
-            >
-              <div className="menu-header-line">
-                <span className="menu-icon" style={{ fontSize: '18px' }}>📅</span>
-                <span className="menu-title" style={{ color: '#fbbf24', fontSize: '16px' }}>
-                  오늘 출석체크 하기 (연속 {currentUser?.attendanceStreak || 0}일 출석 중 🔥)
-                </span>
-              </div>
-              <span className="menu-sub" style={{ color: '#fde68a' }}>
-                매일 출석 도장 찍고 연속 출석 랭킹 상위권에 도전하세요!
-              </span>
-            </button>
-
-            {/* 2. 상단 모바일 핏 내 학습 랭킹 요약 배너 */}
+            {/* 1. 홈 최상단: 내 학습 랭킹 요약 배너 */}
             <div
               onClick={() => navigateToTab('ranking')}
               style={{
@@ -292,7 +319,7 @@ export const App: React.FC = () => {
                 padding: '12px 14px',
                 color: '#ffffff',
                 cursor: 'pointer',
-                marginBottom: '12px',
+                marginBottom: '10px',
                 boxShadow: '0 4px 12px rgba(79, 70, 229, 0.25)',
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -327,6 +354,29 @@ export const App: React.FC = () => {
               </div>
             </div>
 
+            {/* 2. 랭킹 바로 아래: 1줄 슬림 출석체크 버튼 */}
+            <button
+              className="menu-card"
+              style={{
+                borderLeft: '4px solid #f59e0b',
+                background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(217, 119, 6, 0.1))',
+                marginBottom: '12px',
+                padding: '12px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+              onClick={openAttendanceModal}
+            >
+              <div className="menu-header-line" style={{ margin: 0 }}>
+                <span className="menu-icon" style={{ fontSize: '18px' }}>📅</span>
+                <span className="menu-title" style={{ color: '#fbbf24', fontSize: '15px' }}>
+                  출석체크 (연속 {currentUser?.attendanceStreak || 0}일 출석 중 🔥)
+                </span>
+              </div>
+              <span style={{ color: '#fde68a', fontSize: '12px', fontWeight: 'bold' }}>출석하기 →</span>
+            </button>
+
             {/* 홈 핵심 메뉴 그리드 (이모지와 제목을 동일 크기 한 줄로 배치) */}
             <div className="action-menu-grid">
               {/* 1번째: TOEIC 문제풀이 */}
@@ -342,7 +392,7 @@ export const App: React.FC = () => {
               <button className="menu-card maritime" onClick={() => navigateToTab('quiz_en', true, 'maritime')}>
                 <div className="menu-header-line">
                   <span className="menu-icon">⚓</span>
-                  <span className="menu-title">해사영어(451단어) 문제풀이</span>
+                  <span className="menu-title">해사영어 문제풀이</span>
                 </div>
                 <span className="menu-sub">SMCP · 해기사 3·4급 · 국제협약(COLREGs/SOLAS/MARPOL)</span>
               </button>
@@ -355,9 +405,9 @@ export const App: React.FC = () => {
               >
                 <div className="menu-header-line">
                   <span className="menu-icon">📻</span>
-                  <span className="menu-title">실전 해사 통신 문장 (150선)</span>
+                  <span className="menu-title">실전 해사 통신 문장</span>
                 </div>
-                <span className="menu-sub">VHF 무선통신 · VTS 관제 · 조난/긴급/도선/조타 지령 150선 4지선다</span>
+                <span className="menu-sub">VHF 무선통신 · VTS 관제 · 조난/긴급/도선/조타 지령 4지선다</span>
               </button>
 
               {/* 4번째: 일본어 단어 문제집 (시험용 vs 생활일본어) */}
@@ -461,7 +511,7 @@ export const App: React.FC = () => {
       {/* 설정 모달 */}
       <SettingsModal
         isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
+        onClose={closeSettingsModal}
         themeMode={themeMode}
         onThemeChange={setThemeMode}
         instantGrading={instantGrading}
@@ -469,7 +519,7 @@ export const App: React.FC = () => {
         shuffleOrder={shuffleOrder}
         onShuffleOrderChange={handleShuffleOrderChange}
         onOpenRanking={() => {
-          setIsSettingsOpen(false);
+          closeSettingsModal();
           navigateToTab('ranking');
         }}
       />
@@ -478,12 +528,12 @@ export const App: React.FC = () => {
       <AttendanceModal
         isOpen={isAttendanceOpen}
         onClose={() => {
-          setIsAttendanceOpen(false);
+          closeAttendanceModal();
           const p = userService.getProfile();
           if (p) setCurrentUser({ ...p });
         }}
         onOpenRanking={() => {
-          setIsAttendanceOpen(false);
+          closeAttendanceModal();
           navigateToTab('ranking');
         }}
       />

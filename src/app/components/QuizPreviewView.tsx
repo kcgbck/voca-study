@@ -143,19 +143,8 @@ export const QuizPreviewView: React.FC<Props> = ({
     return currentBook === 'japanese_exam' || currentBook === 'japanese_life';
   }, [currentBook]);
 
-  // 문제 채점 완료 시(빈출 실전문장이 뜰 때) 화면을 최하단(다음 문제 버튼)으로 자동 스크롤
-  useEffect(() => {
-    if (isAnswered) {
-      const timer = setTimeout(() => {
-        quizFooterRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }, 60);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnswered]);
-
   // 3. 오답노트에 영구 누적 저장된 단어들 (틀린 문제 모음집)
   const [wrongNoteWords, setWrongNoteWords] = useState<WrongWordItem[]>([]);
-  const [wrongNoteCount, setWrongNoteCount] = useState<number>(0);
   const [showWrongNoteModal, setShowWrongNoteModal] = useState<boolean>(false);
 
   // 오답노트 최신 목록 갱신
@@ -163,7 +152,6 @@ export const QuizPreviewView: React.FC<Props> = ({
     try {
       const list = await wrongNoteService.getWrongWords();
       setWrongNoteWords(list);
-      setWrongNoteCount(list.length);
       return list;
     } catch (_) {
       return [];
@@ -177,13 +165,13 @@ export const QuizPreviewView: React.FC<Props> = ({
   const [activeBookTitle, setActiveBookTitle] = useState<string>(
     bookTitle || (
       sourceType === 'maritime'
-        ? '해사 핵심단어 (451어)'
+        ? '해사 핵심단어'
         : sourceType === 'maritime_comm'
-        ? '실전 통신문장 (150선)'
+        ? '실전 통신문장'
         : sourceType === 'japanese_exam'
-        ? '일본어 자격증/기초(277단어)'
+        ? '일본어 시험용'
         : sourceType === 'japanese_life'
-        ? '완전 생활일본어(160단어)'
+        ? '생활일본어'
         : sourceType === 'wrong_notes'
         ? '오답노트'
         : 'TOEIC(1800단어)'
@@ -210,7 +198,7 @@ export const QuizPreviewView: React.FC<Props> = ({
     if (book === 'wrong_notes') {
       refreshWrongNotes().then((list) => {
         setAllLoadedWords(list);
-        setActiveBookTitle(`오답노트 (${list.length}단어)`);
+        setActiveBookTitle('오답노트');
       });
     }
   };
@@ -438,7 +426,7 @@ export const QuizPreviewView: React.FC<Props> = ({
     if (currentBook === 'wrong_notes') {
       refreshWrongNotes().then((list) => {
         setAllLoadedWords(list);
-        setActiveBookTitle(`오답노트 (${list.length}단어)`);
+        setActiveBookTitle('오답노트');
       });
       return;
     }
@@ -448,16 +436,16 @@ export const QuizPreviewView: React.FC<Props> = ({
 
     if (currentBook === 'maritime') {
       targetUrl = '/data/maritime_smcp_v1.json';
-      defaultTitle = '해사 핵심단어 (451어)';
+      defaultTitle = '해사 핵심단어';
     } else if (currentBook === 'maritime_comm') {
       targetUrl = '/data/maritime_communication_v1.json';
-      defaultTitle = '실전 통신문장 (150선)';
+      defaultTitle = '실전 통신문장';
     } else if (currentBook === 'japanese_exam') {
       targetUrl = '/data/builtin_japanese_exam.json';
-      defaultTitle = '일본어 자격증/기초(277단어)';
+      defaultTitle = '일본어 시험용';
     } else if (currentBook === 'japanese_life') {
       targetUrl = '/data/builtin_japanese_life.json';
-      defaultTitle = '완전 생활일본어(160단어)';
+      defaultTitle = '생활일본어';
     }
 
     fetch(targetUrl)
@@ -565,7 +553,6 @@ export const QuizPreviewView: React.FC<Props> = ({
     }
     setCurrentIndex(nextIdx);
     generateNextQuestion(wordListToUse, nextIdx);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const isCompleted = totalQuestions > 0 && currentIndex >= totalQuestions;
@@ -616,7 +603,7 @@ export const QuizPreviewView: React.FC<Props> = ({
                 onClick={() => handleSwitchBook('wrong_notes')}
               >
                 <span>📝</span>
-                <span>오답노트{wrongNoteCount > 0 ? `(${wrongNoteCount})` : ''}</span>
+                <span>오답노트</span>
               </button>
             </div>
           ) : (
@@ -627,7 +614,7 @@ export const QuizPreviewView: React.FC<Props> = ({
                 onClick={() => handleSwitchBook('japanese_exam')}
               >
                 <span>📝</span>
-                <span>시험용(N5~N3)</span>
+                <span>시험용</span>
               </button>
               <button
                 type="button"
@@ -643,14 +630,14 @@ export const QuizPreviewView: React.FC<Props> = ({
                 onClick={() => handleSwitchBook('wrong_notes')}
               >
                 <span>📝</span>
-                <span>오답노트{wrongNoteCount > 0 ? `(${wrongNoteCount})` : ''}</span>
+                <span>오답노트</span>
               </button>
             </div>
           )}
         </div>
       ) : null}
 
-      {/* 해사영어 선택 시 노출되는 2대 서브 탭 (핵심어휘 vs 실전 통신문장 150선) */}
+      {/* 해사영어 선택 시 노출되는 2대 서브 탭 (핵심단어 vs 실전 통신문장) */}
       {!initialWords && activeLangMode === 'en' && (currentBook === 'maritime' || currentBook === 'maritime_comm') && (
         <div className="japanese-sub-tabs" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '8px' }}>
           <button
@@ -658,14 +645,14 @@ export const QuizPreviewView: React.FC<Props> = ({
             className={`japanese-sub-tab-btn ${currentBook === 'maritime' ? 'active' : ''}`}
             onClick={() => handleSwitchBook('maritime')}
           >
-            <span>⚓ 해사 핵심단어 (451어)</span>
+            <span>⚓ 해사 핵심단어</span>
           </button>
           <button
             type="button"
             className={`japanese-sub-tab-btn ${currentBook === 'maritime_comm' ? 'active' : ''}`}
             onClick={() => handleSwitchBook('maritime_comm')}
           >
-            <span>📻 실전 통신문장 (150선)</span>
+            <span>📻 실전 통신문장</span>
           </button>
         </div>
       )}

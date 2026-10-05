@@ -133,6 +133,45 @@ export function validateQuestionUniqueness(
 }
 
 /**
+ * 해사 대칭 쌍 목록 (함정 보기 생성용)
+ */
+export const MARITIME_OPPOSITE_PAIRS: [string, string][] = [
+  ['우현 대 우현', '좌현 대 좌현'],
+  ['우현', '좌현'],
+  ['선수', '선미'],
+  ['전진', '후진'],
+  ['투묘', '양묘'],
+  ['정박', '항행'],
+  ['출항', '입항'],
+  ['증속', '감속'],
+  ['동의하는가', '거부하는가'],
+  ['동의한다', '동의하지 않는다'],
+  ['허가한다', '허가하지 않는다'],
+  ['메이데이', '팬팬'],
+  ['조난', '긴급'],
+  ['요청한다', '요청하지 않는다'],
+  ['확인했다', '확인할 수 없다'],
+  ['가능하다', '불가능하다'],
+  ['있다', '없다'],
+];
+
+/**
+ * 해사 통신 문장 정답 기반 대칭 함정 문구 생성
+ */
+export function generateMaritimeTrapSentence(sentence: string): string | null {
+  if (!sentence) return null;
+  for (const [a, b] of MARITIME_OPPOSITE_PAIRS) {
+    if (sentence.includes(a)) {
+      return sentence.replace(a, b);
+    }
+    if (sentence.includes(b)) {
+      return sentence.replace(b, a);
+    }
+  }
+  return null;
+}
+
+/**
  * 안전한 4지선다 문제 생성기 (지시서 21, 26항 및 일본어 등급/출제 모드 지원)
  */
 export function createQuizQuestion(
@@ -279,6 +318,47 @@ export function createQuizQuestion(
   const correctOption = targetMeaningList[0];
   if (!correctOption) return null;
 
+  const isCommQuestion = targetWord.topic === 'communication' || targetWord.partOfSpeech === '통신문';
+
+  const selectedDistractors: string[] = [];
+  const chosenNorm = new Set<string>();
+  chosenNorm.add(normalizeMeaning(correctOption));
+
+  // 1. 실전 통신문장: 약 50% 확률로 어렵고 헷갈리는 대칭 함정 문구 1개 추가 (예: 우현 대 우현 -> 좌현 대 좌현)
+  if (isCommQuestion && prng.next() < 0.5) {
+    const trap = generateMaritimeTrapSentence(correctOption);
+    if (trap && trap !== correctOption) {
+      const norm = normalizeMeaning(trap);
+      if (!chosenNorm.has(norm) && evaluateDistractorSafety(targetMeaningList, trap) === 'SAFE') {
+        selectedDistractors.push(trap);
+        chosenNorm.add(norm);
+      }
+    }
+  }
+
+  // 2. 사전에 정의된 고품질 전용 오답(confusables/distractors)이 있는 경우 우선 채택
+  if (targetWord.confusables && targetWord.confusables.length > 0) {
+    const shuffledConfusables = prng.shuffle(targetWord.confusables);
+    for (const conf of shuffledConfusables) {
+      if (selectedDistractors.length >= 3) break;
+      const norm = normalizeMeaning(conf);
+      if (chosenNorm.has(norm)) continue;
+      if (evaluateDistractorSafety(targetMeaningList, conf) !== 'SAFE') continue;
+
+      let conflictWithChosen = false;
+      for (const existing of selectedDistractors) {
+        if (evaluateDistractorSafety([existing], conf) === 'BLOCK') {
+          conflictWithChosen = true;
+          break;
+        }
+      }
+      if (conflictWithChosen) continue;
+
+      selectedDistractors.push(conf);
+      chosenNorm.add(norm);
+    }
+  }
+
   // 오답 후보 풀 생성: targetWord가 아니고 의미상 SAFE인 단어들만 선별
   const candidatePool: { word: WordEntry; meaning: string }[] = [];
   for (const w of wordList) {
@@ -308,18 +388,17 @@ export function createQuizQuestion(
     });
   };
 
-  const tryPickDistractors = (pool: { meaning: string }[]): string[] => {
+  const tryPickDistractors = (pool: { meaning: string }[]): void => {
     const shuffled = prng.shuffle(pool);
-    const chosen: string[] = [];
-    const chosenNorm = new Set<string>();
-    chosenNorm.add(normalizeMeaning(correctOption));
 
     for (const item of shuffled) {
+      if (selectedDistractors.length >= 3) break;
+
       const norm = normalizeMeaning(item.meaning);
       if (chosenNorm.has(norm)) continue;
 
       let conflictWithChosen = false;
-      for (const existing of chosen) {
+      for (const existing of selectedDistractors) {
         if (evaluateDistractorSafety([existing], item.meaning) === 'BLOCK') {
           conflictWithChosen = true;
           break;
@@ -327,32 +406,29 @@ export function createQuizQuestion(
       }
       if (conflictWithChosen) continue;
 
-      chosen.push(item.meaning);
+      selectedDistractors.push(item.meaning);
       chosenNorm.add(norm);
-
-      if (chosen.length === 3) break;
     }
-
-    return chosen;
   };
 
-  let selectedDistractors: string[] = [];
-
-  // 1단계 시도 (조건 엄격)
-  if (options.matchPartOfSpeech || options.matchDifficulty) {
-    selectedDistractors = tryPickDistractors(
-      filterPool(!!options.matchPartOfSpeech, !!options.matchDifficulty)
-    );
-  }
-
-  // 2단계 시도 (난이도 완화: 지시서 26항)
-  if (selectedDistractors.length < 3 && options.matchPartOfSpeech) {
-    selectedDistractors = tryPickDistractors(filterPool(true, false));
-  }
-
-  // 3단계 시도 (전체 풀 완화)
+  // 3. 부족한 오답이 있으면 후보 풀에서 보충
   if (selectedDistractors.length < 3) {
-    selectedDistractors = tryPickDistractors(candidatePool);
+    // 1단계 시도 (조건 엄격)
+    if (options.matchPartOfSpeech || options.matchDifficulty) {
+      tryPickDistractors(
+        filterPool(!!options.matchPartOfSpeech, !!options.matchDifficulty)
+      );
+    }
+
+    // 2단계 시도 (난이도 완화: 지시서 26항)
+    if (selectedDistractors.length < 3 && options.matchPartOfSpeech) {
+      tryPickDistractors(filterPool(true, false));
+    }
+
+    // 3단계 시도 (전체 풀 완화)
+    if (selectedDistractors.length < 3) {
+      tryPickDistractors(candidatePool);
+    }
   }
 
   if (selectedDistractors.length < 3) {
@@ -363,11 +439,15 @@ export function createQuizQuestion(
   const shuffledOptions = prng.shuffle(rawOptions);
   const correctIndex = shuffledOptions.indexOf(correctOption);
 
+  const prompt = isCommQuestion
+    ? '실전 통신문장의 알맞은 한글 뜻을 고르세요'
+    : '단어의 알맞은 한글 뜻을 고르세요';
+
   const question: QuizQuestion = {
     wordId: targetWord.id || targetWord.word,
     word: targetWord.word,
     displayWord: targetWord.word,
-    prompt: '단어의 알맞은 한글 뜻을 고르세요',
+    prompt,
     quizMode: 'meaning',
     options: shuffledOptions,
     correctIndex,

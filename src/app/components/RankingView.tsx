@@ -289,6 +289,11 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack: _onBack }) => 
                 <span className="my-stat-value score">
                   {profile?.totalScore || 0}점
                 </span>
+                {((profile?.totalScoreEn || 0) > 0 || (profile?.totalScoreJa || 0) > 0) && (
+                  <span style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px', fontWeight: '500' }}>
+                    영 {profile?.totalScoreEn || 0}점 + 일 {profile?.totalScoreJa || 0}점
+                  </span>
+                )}
               </div>
               <div className="my-stat-box">
                 <span className="my-stat-label">맞춘 문제</span>
@@ -381,6 +386,14 @@ export const RankingView: React.FC<RankingViewProps> = ({ onBack: _onBack }) => 
                             ? `총 ${item.totalScore.toLocaleString()}점`
                             : `${item.accuracy}% 정답`}
                         </span>
+                        {selectedCategory === 'all' && ((item.totalScoreEn || 0) > 0 || (item.totalScoreJa || 0) > 0) && (
+                          <>
+                            <span>•</span>
+                            <span style={{ color: '#38bdf8', fontSize: '11px', fontWeight: '600' }}>
+                              영 {(item.totalScoreEn || 0).toLocaleString()} + 일 {(item.totalScoreJa || 0).toLocaleString()}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -35,6 +35,34 @@ export class UserService {
   }
 
   /**
+   * 영어/일어 분리 정합성 보정 (총 정답수가 언어별 합보다 클 경우 누락 갭을 일본어로 할당)
+   */
+  private reconcileProfileGap(profile: UserProfile): UserProfile {
+    const cEn = profile.correctCountEn || 0;
+    const cJa = profile.correctCountJa || 0;
+    const iEn = profile.incorrectCountEn || 0;
+    const iJa = profile.incorrectCountJa || 0;
+    const totalC = profile.correctCount || 0;
+    const totalI = profile.incorrectCount || 0;
+
+    if (totalC > (cEn + cJa)) {
+      const gapC = totalC - (cEn + cJa);
+      const gapI = Math.max(0, totalI - (iEn + iJa));
+      profile.correctCountJa = cJa + gapC;
+      profile.incorrectCountJa = iJa + gapI;
+    }
+
+    profile.totalScoreEn = profile.totalScoreEn && profile.totalScoreEn > 0 
+      ? profile.totalScoreEn 
+      : calculateScore(profile.correctCountEn || 0, profile.incorrectCountEn || 0);
+    profile.totalScoreJa = calculateScore(profile.correctCountJa || 0, profile.incorrectCountJa || 0);
+    profile.totalScore = calculateScore(profile.correctCount || 0, profile.incorrectCount || 0);
+    profile.accuracy = calculateAccuracy(profile.correctCount || 0, profile.incorrectCount || 0);
+
+    return profile;
+  }
+
+  /**
    * 로컬 스토리지에서 프로필 로드
    */
   private loadFromStorage(): void {
@@ -42,6 +70,9 @@ export class UserService {
       const data = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (data) {
         this.currentProfile = JSON.parse(data);
+        if (this.currentProfile) {
+          this.reconcileProfileGap(this.currentProfile);
+        }
       }
     } catch (err) {
       console.warn('로컬 프로필 로드 실패:', err);
@@ -116,7 +147,7 @@ export class UserService {
       if (res.ok) {
         const data = await res.json();
         if (data.user) {
-          const profile: UserProfile = {
+          const profile: UserProfile = this.reconcileProfileGap({
             id: data.user.id,
             deviceCode: data.user.deviceCode,
             nickname: data.user.nickname,
@@ -134,7 +165,7 @@ export class UserService {
             lastAttendanceDate: data.user.lastAttendanceDate || undefined,
             lastActiveAt: data.user.lastActiveAt,
             createdAt: data.user.createdAt,
-          };
+          });
           this.saveToStorage(profile);
           return profile;
         }
@@ -193,7 +224,7 @@ export class UserService {
 
       const data = await res.json();
       if (data.user) {
-        const profile: UserProfile = {
+        const profile: UserProfile = this.reconcileProfileGap({
           id: data.user.id,
           deviceCode: data.user.deviceCode,
           nickname: data.user.nickname,
@@ -211,7 +242,7 @@ export class UserService {
           lastAttendanceDate: data.user.lastAttendanceDate || undefined,
           lastActiveAt: data.user.lastActiveAt,
           createdAt: data.user.createdAt,
-        };
+        });
         this.saveToStorage(profile);
         return { success: true, profile };
       }
@@ -406,6 +437,7 @@ export class UserService {
           if (typeof data.user.attendanceStreak === 'number') {
             this.currentProfile.attendanceStreak = Math.max(this.currentProfile.attendanceStreak || 0, data.user.attendanceStreak);
           }
+          this.reconcileProfileGap(this.currentProfile);
           this.saveToStorage(this.currentProfile);
         }
         // 전송 성공 시 큐 비우기
@@ -457,6 +489,7 @@ export class UserService {
             this.currentProfile.attendanceStreak = Math.max(this.currentProfile.attendanceStreak || 0, data.user.attendanceStreak);
           }
           if (data.user.lastAttendanceDate) this.currentProfile.lastAttendanceDate = data.user.lastAttendanceDate;
+          this.reconcileProfileGap(this.currentProfile);
           this.saveToStorage(this.currentProfile);
         }
       }
