@@ -127,13 +127,32 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
       - `rank-item-right`: `white-space: nowrap; flex-shrink: 0;` 적용으로 점수(12,345점)와 맞춤/틀림 수가 절대 2줄로 쪼개지지 않도록 고정.
       - `rank-nickname`: 긴 닉네임 입력 시에도 우측 점수를 침범하지 않도록 `text-overflow: ellipsis; max-width: 140px;` 설정.
       - `rank-meta-line`: 정답률(`85% 정답`)과 종합 랭킹 언어별 세부 합산 점수(`영 966 + 일 268`)에 `white-space: nowrap; overflow: hidden; text-overflow: ellipsis;` 적용.
-      - 모든 점수 및 문항 수에 `.toLocaleString()` 적용으로 만점/십만점 단위에서도 가독성과 정렬 유지.
-      - 내 요약 카드(`my-stat-box`)의 분리 점수도 `white-space: nowrap;`으로 정돈.
+12. **불필요한 파일 및 시험용/일회성 스크립트 안전 정리 완료**:
+    - **미사용 POC 컴포넌트 및 스토리지 유틸 정리**:
+      - `src/app/components/StoragePocView.tsx` (완전 미사용 컴포넌트 안전 삭제)
+      - `src/storage/storagePoc.ts` (초기 IndexedDB 연결 테스트용 유틸 삭제, `SettingsModal.tsx`의 로컬 초기화 로직을 `db.words.clear()` 직접 호출로 단순화)
+      - ※ 검증 확인: `CustomVocabularyUnifiedView`, `FileImportPocView`, `PdfImportPocView`는 "영단어장 제작(사진/PDF)"의 실서비스 핵심 컴포넌트이므로 정상 보존.
+    - **일회성/시험용 생성 스크립트 11종 안전 삭제**:
+      - `scripts/distractors_part1.py`, `scripts/distractors_part2.py`, `scripts/distractors_part3.py`
+      - `scripts/apply_all_distractors.py`, `scripts/dump_comm.py`, `scripts/append_maritime_communication.py`
+      - `scripts/generate_all_maritime.py`, `scripts/build_maritime_complete.ts`
+      - `scripts/analyze_sample_ocr.mjs`, `scripts/analyze_step_c.mjs`
+      - `scripts/generate_japanese_wordbooks.cjs`
+    - **과거 디버그 로그 및 테스트 캡처 디렉터리 정리**:
+      - `docs/ocr_debug_raw.json` (과거 OCR 디버그 원시 로그)
+      - `docs/9. 29/` (과거 9월 29일 OCR 실험용 카카오톡 캡처 이미지 5장)
+      - `reports/worddb-1800-review-queue.json`, `reports/worddb-1800-semantic-audit.md`
+    - **프로젝트 무결성 유지**:
+      - `public/data/*.json` 실서비스 어휘 데이터 100% 무손실 보존
+      - `docs/smcp (1)-1.pdf` 사용자 제공 기준 문서 보존
+      - 35개 테스트 스위트 (158개 테스트) 100% PASS 확인
+      - TypeScript 타입체크 0 errors, Vite 프로덕션 빌드 성공
 
 ## 검증
 - `npm run typecheck`: 통과 (0 errors)
 - `npm test`: 통과 (35개 테스트 파일 / 158개 테스트 100% PASS)
 - `npm run build`: 통과 (Vite v6.4.3 프로덕션 번들 생성 완료)
-- `npx wrangler pages deploy`: 통과 (`https://db2e10fb.voca-study-akf.pages.dev` 실시간 배포 완료)
+- `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
+
 
 

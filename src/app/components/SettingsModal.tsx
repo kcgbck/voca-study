@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../../storage/db';
 import { downloadBackupFile, validateBackupFile, restoreBackupData, type BackupFileStructure } from '../../storage/backupService';
-import { clearPocWords } from '../../storage/storagePoc';
 import { userService } from '../../services/userService';
 import type { UserProfile } from '../../types/user';
 
@@ -183,7 +182,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const handleStorageClear = async () => {
     if (!window.confirm('로컬에 저장된 모든 단어장과 학습 기록을 초기화하시겠습니까? (기본 1,800단어는 유지됩니다)')) return;
     try {
-      await clearPocWords();
+      await db.words.clear();
       await db.wordBooks.clear();
       await db.studyHistory.clear();
       setStorageMsg('✓ 로컬 데이터가 초기화되었습니다.');
