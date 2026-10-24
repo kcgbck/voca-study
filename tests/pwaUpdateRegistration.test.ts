@@ -1,0 +1,20 @@
+import {expect,it,vi} from 'vitest';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+const flush=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
+it('installed app checks updates on load, return and reconnect without reloading or clearing learning data',async()=>{
+ const windowEvents:Record<string,()=>void>={};const documentEvents:Record<string,()=>void>={};
+ const update=vi.fn().mockResolvedValue(undefined);const register=vi.fn().mockResolvedValue({scope:'/',update});const reload=vi.fn();
+ const doc={visibilityState:'visible',addEventListener:(n:string,fn:()=>void)=>{documentEvents[n]=fn;}};
+ const nav={onLine:true,serviceWorker:{register}};
+ const clear=vi.fn();const deleteDatabase=vi.fn();
+ const html=readFileSync('index.html','utf8');const inline=html.match(/<script>([\s\S]*?)<\/script>/)![1];
+ vm.runInNewContext(inline,{window:{location:{protocol:'https:',reload},addEventListener:(n:string,fn:()=>void)=>{windowEvents[n]=fn;}},document:doc,navigator:nav,console,caches:{delete:clear},localStorage:{clear},indexedDB:{deleteDatabase}});
+ windowEvents.load();await flush();expect(register).toHaveBeenCalledWith('/sw.js',{updateViaCache:'none'});expect(update).toHaveBeenCalledOnce();
+ doc.visibilityState='hidden';documentEvents.visibilitychange();await flush();expect(update).toHaveBeenCalledOnce();
+ doc.visibilityState='visible';documentEvents.visibilitychange();await flush();expect(update).toHaveBeenCalledTimes(2);
+ nav.onLine=false;documentEvents.visibilitychange();await flush();expect(update).toHaveBeenCalledTimes(2);
+ nav.onLine=true;windowEvents.online();await flush();expect(update).toHaveBeenCalledTimes(3);
+ update.mockRejectedValueOnce(new Error('offline'));documentEvents.visibilitychange();await flush();
+ expect(reload).not.toHaveBeenCalled();expect(clear).not.toHaveBeenCalled();expect(deleteDatabase).not.toHaveBeenCalled();
+});

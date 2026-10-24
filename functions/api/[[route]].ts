@@ -1,6 +1,6 @@
 // Cloudflare Pages Functions 엔트리포인트 (/api/* 모든 요청 처리)
 import { validateNickname, generateCleanNickname } from '../../src/utils/profanityFilter';
-import { calculateScore, calculateAccuracy, RankingItem, RankingResponse, RankingCategory } from '../../src/types/user';
+import { calculateScore, calculateAccuracy, RankingItem, RankingCategory } from '../../src/types/user';
 
 interface D1PreparedStatement {
   bind: (...values: any[]) => D1PreparedStatement;
@@ -116,49 +116,6 @@ async function ensureD1Columns(db: D1Database): Promise<void> {
   columnsChecked = true;
 }
 
-let cleanupExecuted = false;
-async function performDatabaseCleanup(db: D1Database): Promise<{ deletedSpecial: number; deletedDummies: number; migratedGap: number }> {
-  try {
-    // 0. 과거 누락된 일본어 점수 갭 복원
-    const gapRes = await db.prepare(`
-      UPDATE users 
-      SET correct_count_ja = (correct_count - COALESCE(correct_count_en, 0)),
-          incorrect_count_ja = CASE 
-            WHEN incorrect_count > COALESCE(incorrect_count_en, 0) THEN (incorrect_count - COALESCE(incorrect_count_en, 0)) 
-            ELSE 0 
-          END,
-          total_score_ja = CASE 
-            WHEN ((correct_count - COALESCE(correct_count_en, 0)) * 10 - CASE WHEN incorrect_count > COALESCE(incorrect_count_en, 0) THEN (incorrect_count - COALESCE(incorrect_count_en, 0)) ELSE 0 END * 2) > 0 
-            THEN ((correct_count - COALESCE(correct_count_en, 0)) * 10 - CASE WHEN incorrect_count > COALESCE(incorrect_count_en, 0) THEN (incorrect_count - COALESCE(incorrect_count_en, 0)) ELSE 0 END * 2)
-            ELSE 0 
-          END
-      WHERE correct_count > (COALESCE(correct_count_en, 0) + COALESCE(correct_count_ja, 0))
-        AND correct_count > COALESCE(correct_count_en, 0)
-    `).run();
-    const migratedGap = gapRes.meta?.changes ?? 0;
-
-    // 1. 요청된 특정 사용자 계정 삭제: "토익찍고1탈해경"
-    const delTarget = await db.prepare("DELETE FROM users WHERE nickname = '토익찍고1탈해경'").run();
-    const deletedSpecial = delTarget.meta?.changes ?? 0;
-
-    // 2. 문제를 한 문제도 풀지 않고 점수/출석이 0인 더미/단순접속 계정 삭제
-    const delDummy = await db.prepare(`
-      DELETE FROM users 
-      WHERE (correct_count = 0 OR correct_count IS NULL)
-        AND (incorrect_count = 0 OR incorrect_count IS NULL)
-        AND (total_score = 0 OR total_score IS NULL)
-        AND (attendance_streak = 0 OR attendance_streak IS NULL)
-    `).run();
-    const deletedDummies = delDummy.meta?.changes ?? 0;
-
-    cleanupExecuted = true;
-    return { deletedSpecial, deletedDummies, migratedGap };
-  } catch (err) {
-    console.error('Database cleanup error:', err);
-    return { deletedSpecial: 0, deletedDummies: 0, migratedGap: 0 };
-  }
-}
-
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
   const { request, env } = context;
   const url = new URL(request.url);
@@ -203,6 +160,16 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
     }
   }
 
+  // 0-1. 데이터베이스 정리 엔드포인트 (/api/admin/cleanup - DB 조회 전 토큰 검증 및 영구 비활성화)
+  if (url.pathname === '/api/admin/cleanup') {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ') || authHeader.slice(7).trim().length === 0) {
+      return jsonResponse({ error: '접근이 거부되었습니다. (인증 토큰 필요)' }, 403);
+    }
+    // 관리자 토큰이 있더라도 사용자 데이터 안전을 위해 삭제 실행 차단
+    return jsonResponse({ error: '데이터베이스 임의 삭제 기능은 보안 정책에 의해 영구 비활성화되었습니다.' }, 403);
+  }
+
   if (!env.DB) {
     return jsonResponse({
       error: 'D1 database binding is not configured in this environment.',
@@ -211,24 +178,10 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
   }
 
   try {
-    // 0-1. 데이터베이스 수동 정리 엔드포인트 (/api/admin/cleanup)
-    if (url.pathname === '/api/admin/cleanup') {
-      await ensureD1Columns(env.DB);
-      const res = await performDatabaseCleanup(env.DB);
-      return jsonResponse({
-        success: true,
-        message: '더미 계정 및 요청된 계정 삭제 완료',
-        ...res,
-      });
-    }
-
     // 1. 기기 코드 기반 로그인 또는 자동 회원가입
     // POST /api/auth/device-login
     if (url.pathname === '/api/auth/device-login' && request.method === 'POST') {
       await ensureD1Columns(env.DB);
-      if (!cleanupExecuted) {
-        await performDatabaseCleanup(env.DB);
-      }
       const body = (await request.json().catch(() => ({}))) as {
         deviceCode?: string;
         nickname?: string;
@@ -507,9 +460,6 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
     // GET /api/ranking?category=all|en|ja|streak&deviceCode=...
     if (url.pathname === '/api/ranking' && request.method === 'GET') {
       await ensureD1Columns(env.DB);
-      if (!cleanupExecuted) {
-        await performDatabaseCleanup(env.DB);
-      }
       const deviceCode = url.searchParams.get('deviceCode')?.trim().toUpperCase();
       const category = (url.searchParams.get('category')?.trim() || 'all') as RankingCategory;
 

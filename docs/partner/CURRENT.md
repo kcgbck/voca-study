@@ -154,5 +154,11 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npm run build`: 통과 (Vite v6.4.3 프로덕션 번들 생성 완료)
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
+<!-- CODING_PARTNER_V2_STATE_START -->
+## 현재: 단일 메인 시험 운영
+기본 주소 하나로 홈 → AI 영어 회화. 별도 시험 진입점 폐지, SW v8 갱신 확인. 사용자 승인에 따라 기존 개발 결과 전체를 저장·커밋·main 푸시하고 같은 코드를 운영 배포한다. 75파일 729시험 및 타입/린트/빌드 통과. 내장 단어 DB 보존. 실제 기기·사람 검수 관문은 유지한다. 상세: docs/FOLLOWUP-26_MAIN_RELEASE_VALIDATION.md.
 
-
+Operation: followup26-main-release-final-20261024
+Parent HEAD: 8248697cb4702719dfe7191195bccba5851a9cd4
+Attribution: baseline-compared
+<!-- CODING_PARTNER_V2_STATE_END -->

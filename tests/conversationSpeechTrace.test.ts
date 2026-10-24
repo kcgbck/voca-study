@@ -1,0 +1,24 @@
+import {afterEach,expect,it,vi} from 'vitest';
+import {BrowserSpeechInputService} from '../src/features/conversation/services/browserSpeechInput';
+function harness(){const instances:any[]=[];class Native{onstart:any;onresult:any;onend:any;onerror:any;start=vi.fn();stop=vi.fn();abort=vi.fn();constructor(){instances.push(this);}}return{instances,Native};}
+const result=(text:string,final=false)=>({resultIndex:0,results:[Object.assign([{transcript:text}],{isFinal:final})]});
+afterEach(()=>vi.useRealTimers());
+it('valid cumulative interim snapshots never concatenate into the reported repeated-prefix sentence',async()=>{
+ vi.useFakeTimers();const h=harness();const partial=vi.fn();const service=new BrowserSpeechInputService(h.Native);const pending=service.start('en-US',{windowMs:6000,onPartial:partial});const rec=h.instances[0];rec.onstart();
+ rec.onresult(result('mine'));rec.onresult(result('mine is'));rec.onresult(result('mine is Alex.',true));expect(partial.mock.calls.map(c=>c[0])).toEqual(['mine','mine is','mine is Alex.']);await vi.advanceTimersByTimeAsync(6000);rec.onend();expect(await pending).toBe('mine is Alex.');
+});
+it('optional diagnostic distinguishes native result lists and recognizer restarts without correcting words',async()=>{
+ vi.useFakeTimers();const h=harness();const trace=vi.fn();const service=new BrowserSpeechInputService(h.Native);const pending=service.start('en-US',{windowMs:6000,onTrace:trace} as any);let rec=h.instances[0];rec.onstart();rec.onresult(result('mine',true));await vi.advanceTimersByTimeAsync(1000);rec.onend();await vi.advanceTimersByTimeAsync(100);rec=h.instances[1];rec.onstart();rec.onresult(result('mine is',true));await vi.advanceTimersByTimeAsync(1000);rec.onend();await vi.advanceTimersByTimeAsync(100);rec=h.instances[2];rec.onstart();rec.onresult(result('mine is Alex.',true));await vi.advanceTimersByTimeAsync(3800);rec.onend();
+ expect(await pending).toBe('mine mine is mine is Alex.');const records=trace.mock.calls.map(c=>c[0]);const results=records.filter(x=>x.event==='result');expect(results).toHaveLength(3);expect(results[0].session).not.toBe(results[1].session);expect(results[0].results).toEqual([{index:0,text:'mine',final:true}]);expect(results[1].results).toEqual([{index:0,text:'mine is',final:true}]);expect(results[2].results).toEqual([{index:0,text:'mine is Alex.',final:true}]);expect(records.at(-1)).toMatchObject({event:'settled',text:'mine mine is mine is Alex.'});
+});
+it('diagnostic preserves actual repetitions and raw native result segmentation',async()=>{
+ vi.useFakeTimers();const h=harness();const trace=vi.fn();const service=new BrowserSpeechInputService(h.Native);const pending=service.start('en-US',{windowMs:6000,onTrace:trace} as any);const rec=h.instances[0];rec.onstart();rec.onresult({resultIndex:0,results:[Object.assign([{transcript:'very very'}],{isFinal:true}),Object.assign([{transcript:'good'}],{isFinal:true})]});await vi.advanceTimersByTimeAsync(6000);rec.onend();expect(await pending).toBe('very very good');expect(trace.mock.calls.map(c=>c[0]).find(x=>x.event==='result').results).toEqual([{index:0,text:'very very',final:true},{index:1,text:'good',final:true}]);
+});
+it('diagnostics are bounded, callback exceptions cannot break capture, and stale events cannot emit',async()=>{
+ vi.useFakeTimers();const h=harness();const trace=vi.fn();const service=new BrowserSpeechInputService(h.Native);const pending=service.start('en-US',{windowMs:6000,onTrace:trace} as any).catch(e=>e);const rec=h.instances[0];rec.onstart();const stale=rec.onresult;for(let i=0;i<200;i++)rec.onresult(result('x'.repeat(1000)));expect(trace.mock.calls.length).toBeGreaterThan(0);expect(trace.mock.calls.length).toBeLessThanOrEqual(40);for(const [entry] of trace.mock.calls)if(entry.results)expect(entry.results[0].text.length).toBeLessThanOrEqual(160);service.cancel();const count=trace.mock.calls.length;stale(result('late'));expect(trace.mock.calls.length).toBe(count);expect(await pending).toBeInstanceOf(Error);
+ const next=service.start('en-US',{windowMs:6000,onTrace:()=>{throw new Error('UI failure');}} as any);const second=h.instances[1];expect(()=>second.onstart()).not.toThrow();expect(()=>second.onresult(result('Alex',true))).not.toThrow();await vi.advanceTimersByTimeAsync(6000);second.onend();expect(await next).toBe('Alex');
+});
+
+it('start trace reports the actual native configuration for identifying old versus corrected capture mode',async()=>{
+ vi.useFakeTimers();const h=harness();const onTrace=vi.fn();const service=new BrowserSpeechInputService(h.Native);const pending=service.start('en-US',{windowMs:6000,onTrace});const observed=pending.catch(e=>e);const rec=h.instances[0];rec.onstart();expect(onTrace).toHaveBeenCalledWith({session:1,event:'start',continuous:false,interimResults:true,maxAlternatives:3});service.cancel();expect(await observed).toBeInstanceOf(Error);
+});

@@ -1,0 +1,46 @@
+{
+  "status": "PROPOSAL_NOT_APPLIED",
+  "callerRpm": null,
+  "providerLimits": {
+    "gemini-3.5-flash-lite": {
+      "rpm": 15,
+      "tpm": 250000,
+      "rpd": 500
+    },
+    "gemini-3.5-transcribe": {
+      "rpm": 3,
+      "tpm": 10000,
+      "rpd": 25
+    },
+    "gemini-3.8-flash-lite-tts": {
+      "rpm": 3,
+      "tpm": 10000,
+      "rpd": 10
+    }
+  },
+  "currentModelLimits90Percent": {
+    "gemini-3.5-flash-lite": {
+      "rpm": 13,
+      "tpm": 225000,
+      "rpd": 450,
+      "callerRpm": null
+    },
+    "gemini-3.5-transcribe": {
+      "rpm": 2,
+      "tpm": 9000,
+      "rpd": 22,
+      "callerRpm": null
+    },
+    "gemini-3.8-flash-lite-tts": {
+      "rpm": 2,
+      "tpm": 9000,
+      "rpd": 9,
+      "callerRpm": null
+    }
+  },
+  "notes": {
+    "calculation": "Floor integer applied (90% of providerLimits). Decimals 2.7 rpm and 22.5 rpd rounded DOWN to 2 and 22 to guarantee not exceeding 90%.",
+    "callerRpmPolicy": "User did not specify callerRpm. Kept null to prevent unverified defaults and maintain fail-closed posture.",
+    "compatibilityWarning": "Current calculateConservativeEstimatedUnits allocates 16 KiB (16384 bytes) fixed overhead to all actions, exceeding STT/TTS 9000 TPM limit. Code modification is required before this proposal can be activated."
+  }
+}

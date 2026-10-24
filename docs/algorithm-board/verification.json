@@ -1,0 +1,650 @@
+{
+  "dateKST": "2026-10-22",
+  "branch": "main",
+  "head": "8248697cb4702719dfe7191195bccba5851a9cd4",
+  "stagedCount": 0,
+  "full": {
+    "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1",
+    "testFiles": 53,
+    "tests": 496,
+    "pass": 496,
+    "fail": 0,
+    "skip": 0,
+    "typecheck": "PASS",
+    "lint": "PASS (tsc alias)",
+    "build": "PASS",
+    "protectedPaths": "PASS",
+    "diffWhitespace": "PASS",
+    "evidence": ".agy-work/039_full_verify.log"
+  },
+  "board": {
+    "tabs": 18,
+    "nodes": 125,
+    "edges": 52,
+    "p0Severity": 32,
+    "tests": 12,
+    "pass": 12,
+    "originalIdsPreserved": 98,
+    "conflictsReassessed": 17,
+    "orphanTabRelationsCorrected": 3,
+    "htmlHash": "87731fef25a816bb073ea04cb9627723e1b7a62e5fb967929ac31ac258e36b06",
+    "mdHash": "b5e2e8503a61fbc41bf3ce6a8450fa1e22d8e370a33726b4f4124c60ce772dd4",
+    "gates": [
+      {
+        "id": "BOARD-01",
+        "status": "NOT_VERIFIED",
+        "note": "첨부 비교본 부재. 로컬 기준선 98ID·원본 바이트 보존은 PASS."
+      },
+      {
+        "id": "BOARD-02",
+        "status": "PASS",
+        "note": "18탭·125노드·52간선 고유성/참조/조건 오류0. 고아 탭 관계3개 이력 보존 후 교정."
+      },
+      {
+        "id": "BOARD-03",
+        "status": "PASS",
+        "note": "27개 신규 노드 각각 canonical 제목·15개 상세·구현/미검증 근거 완비."
+      },
+      {
+        "id": "BOARD-04",
+        "status": "PASS",
+        "note": "실제 HTML 배열과 실제 MD를 파싱하여 메타데이터·15상세·전체 간선 필드 비교."
+      },
+      {
+        "id": "BOARD-05",
+        "status": "PASS",
+        "note": "헤더125/18/52/P032와 확인 수준·보류관문5를 데이터 계산. 검색·필터 결과11/2 실제 일치."
+      },
+      {
+        "id": "BOARD-06",
+        "status": "PASS",
+        "note": "Chrome 클릭·탭·전역검색·범주/위험 필터·드로어·상하 연결·Enter·ESC·포커스 복귀 확인."
+      },
+      {
+        "id": "BOARD-07",
+        "status": "PASS",
+        "note": "정상/오류/교정/힌트/전사 재확인/권한/429/오프라인/중단재개/복원/보안차단 연결 실재."
+      },
+      {
+        "id": "BOARD-08",
+        "status": "PASS",
+        "note": "충돌17개를 설계단계(코드 존재)·실행 미검증으로 분리. 원문 근거와 이전값 보존."
+      },
+      {
+        "id": "BOARD-09",
+        "status": "PASS",
+        "note": "신규 소스·심벌·테스트 실제 존재 확인. 기존 없는 경로는 과거 근거·미확인 계층으로 표시."
+      },
+      {
+        "id": "BOARD-10",
+        "status": "PASS",
+        "note": "기본 차단·서버 키·동의·인증/예산 어댑터 미구성·cleanup 로컬403 설명 대조."
+      },
+      {
+        "id": "BOARD-11",
+        "status": "PASS",
+        "note": "기존98개 ID·제목·15상세 보존(17개 확인 수준/근거 보충만 예외), 기존158시험 포함 전체388 PASS."
+      },
+      {
+        "id": "BOARD-12",
+        "status": "NOT_VERIFIED",
+        "note": "BOARD-12B PASS: marked17.0.5 전용 GFM 렌더러에서 Chrome 데스크톱/360px 헤더·125노드·53행 표·코드·상대링크5 확인. Mermaid는 코드 표시. BOARD-12A file 직접열람은 도구 정책상 미실행으로 NOT_VERIFIED 유지."
+      }
+    ],
+    "followup02": "Metadata and generated artifact synchronization verified twice; prior browser evidence remains historical. No fresh visual verification.",
+    "subGates": [
+      {
+        "id": "BOARD-12A",
+        "status": "NOT_VERIFIED",
+        "reason": "file 직접열람 도구 정책 제한; HTTP로 대체하지 않음"
+      },
+      {
+        "id": "BOARD-12B",
+        "status": "PASS",
+        "scope": "marked17.0.5 GFM 렌더러, desktop1920/mobile360, 링크는 표시·대상경로 확인이며 클릭이동 미시험",
+        "evidence": ".agy-work/031_board_md_browser_final.json"
+      }
+    ]
+  },
+  "pages": {
+    "compiled": true,
+    "cases": [
+      {
+        "path": "/api/conversation/chat",
+        "method": "POST",
+        "expected": 403,
+        "status": 403,
+        "body": "{\"success\":false,\"fallbackToRuleEngine\":true,\"errorMessage\":\"외부 Gemini API 호출이 비활성화되어 있습니다. 로컬 규칙 엔진으로 대체됩니다.\"}"
+      },
+      {
+        "path": "/api/conversation/transcribe",
+        "method": "POST",
+        "expected": 403,
+        "status": 403,
+        "body": "{\"success\":false,\"fallbackToRuleEngine\":true,\"errorMessage\":\"외부 Gemini API 호출이 비활성화되어 있습니다. 로컬 규칙 엔진으로 대체됩니다.\"}"
+      },
+      {
+        "path": "/api/conversation/tts",
+        "method": "POST",
+        "expected": 403,
+        "status": 403,
+        "body": "{\"success\":false,\"fallbackToRuleEngine\":true,\"errorMessage\":\"외부 Gemini API 호출이 비활성화되어 있습니다. 로컬 규칙 엔진으로 대체됩니다.\"}"
+      },
+      {
+        "path": "/api/conversation/chat",
+        "method": "GET",
+        "expected": 405,
+        "status": 405,
+        "body": "{\"success\":false,\"errorMessage\":\"POST 요청만 지원됩니다.\"}"
+      },
+      {
+        "path": "/api/admin/cleanup",
+        "method": "GET",
+        "expected": 403,
+        "status": 403,
+        "body": "{\"error\":\"접근이 거부되었습니다. (인증 토큰 필요)\"}"
+      },
+      {
+        "path": "/api/admin/cleanup",
+        "method": "POST",
+        "expected": 403,
+        "status": 403,
+        "body": "{\"error\":\"접근이 거부되었습니다. (인증 토큰 필요)\"}"
+      },
+      {
+        "path": "/api/tts",
+        "method": "GET",
+        "expected": 400,
+        "status": 400,
+        "body": "{\"error\":\"Text parameter is required\"}"
+      }
+    ]
+  },
+  "localStatus": "PASS_WITH_LIMITATIONS",
+  "boardStatus": "PASS_WITH_LIMITATIONS",
+  "combinedStatus": "PASS_WITH_LIMITATIONS",
+  "publicRelease": "NOT_APPROVED",
+  "realGoogleCalls": "FOLLOWUP-04: two synthetic full client/Pages/signed-fixture/SQLite/new-model calls succeeded at 1206ms and1182ms. Not operating auth/quota verification or long-term availability proof.",
+  "humanReview": "HUMAN_CURRICULUM_REVIEW_PENDING",
+  "externalReview": "EXTERNAL_REVIEW_PENDING",
+  "initialIntegratedSnapshot": {
+    "full": {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1",
+      "testFiles": 48,
+      "tests": 389,
+      "pass": 389,
+      "fail": 0,
+      "skip": 0,
+      "typecheck": "PASS",
+      "lint": "PASS (tsc alias)",
+      "build": "PASS",
+      "protectedPaths": "PASS",
+      "diffWhitespace": "PASS",
+      "priorVerificationScriptTestCount": 388,
+      "finalTestCommand": "npm test -- --reporter=json --outputFile=.agy-work/010_final_all_tests.json"
+    },
+    "boardHashes": {
+      "html": "c052736fe646975bd3c4afd2bcd064c9ad654badcb2355a433a11ec4de3a97f7",
+      "md": "47bcbc94afc5ec0d9fc9419290b919adf7beccff76324b274b7abecb21ad86d7"
+    },
+    "realGoogleCalls": "NOT_VERIFIED (not executed)"
+  },
+  "followup02": {
+    "status": "LOCAL_CODE_VERIFIED_REAL_PROVIDER_UNSTABLE",
+    "pagesRuntime": [
+      {
+        "path": "/api/conversation/chat",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/transcribe",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/tts",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/chat",
+        "method": "GET",
+        "status": 405,
+        "expected": 405,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/unknown",
+        "method": "POST",
+        "status": 404,
+        "expected": 404,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/chat",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/chat",
+        "method": "OPTIONS",
+        "status": 204,
+        "expected": 204,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/admin/cleanup",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "*"
+      },
+      {
+        "path": "/api/tts",
+        "method": "GET",
+        "status": 400,
+        "expected": 400,
+        "pass": true,
+        "corsOrigin": "*"
+      }
+    ],
+    "pagesBuild": "PASS",
+    "d1NativeTypeCompatibility": "PASS",
+    "generationAttempts": 7,
+    "automaticRetries": 0,
+    "operatingAuthBudget": "CONFIGURATION_REQUIRED",
+    "evidence": [
+      ".agy-work/023_final_live_smoke.json",
+      ".agy-work/024_full_verify.log",
+      ".agy-work/024_board_hashes.json"
+    ],
+    "report": "docs/FOLLOWUP-02_RESULT.md",
+    "fullVerification": {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1",
+      "testFiles": 51,
+      "tests": 462,
+      "pass": 462,
+      "fail": 0,
+      "skip": 0,
+      "typecheck": "PASS",
+      "lint": "PASS (tsc alias)",
+      "build": "PASS",
+      "protectedPaths": "PASS",
+      "diffWhitespace": "PASS",
+      "evidence": ".agy-work/024_full_verify.log"
+    }
+  },
+  "followup04": {
+    "status": "NEW_MODEL_SYNTHETIC_INTEGRATION_PASS",
+    "chatModel": "gemini-3.5-flash-lite",
+    "live": {
+      "kind": "local_signed_access_sqlite_budget_real_google_chat",
+      "productionConfigChanged": false,
+      "authAndQuotaConfig": "synthetic_local_fixture_only",
+      "realGoogleCalls": 2,
+      "maxGoogleCalls": 2,
+      "jwksCalls": 4,
+      "automaticRetries": 0,
+      "personalDataSent": false,
+      "samples": [
+        {
+          "lessonId": "intro-u01-l01",
+          "success": true,
+          "evaluation": "ACCEPT",
+          "hasTutorText": true,
+          "elapsedMs": 1206
+        },
+        {
+          "check": "duplicate",
+          "httpStatus": 429,
+          "googleCalls": 1
+        },
+        {
+          "lessonId": "advanced-u01-l01",
+          "success": true,
+          "evaluation": "ACCEPT",
+          "hasTutorText": true,
+          "elapsedMs": 1182
+        }
+      ],
+      "postCapHttpStatus": 429,
+      "reservations": [
+        {
+          "state": "consumed",
+          "units": 21111,
+          "model": "gemini-3.5-flash-lite"
+        },
+        {
+          "state": "consumed",
+          "units": 23143,
+          "model": "gemini-3.5-flash-lite"
+        }
+      ]
+    },
+    "pagesRuntime": [
+      {
+        "path": "/api/conversation/chat",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/transcribe",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/tts",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/chat",
+        "method": "GET",
+        "status": 405,
+        "expected": 405,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/unknown",
+        "method": "POST",
+        "status": 404,
+        "expected": 404,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/chat",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/chat",
+        "method": "OPTIONS",
+        "status": 204,
+        "expected": 204,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/admin/cleanup",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "*"
+      },
+      {
+        "path": "/api/tts",
+        "method": "GET",
+        "status": 400,
+        "expected": 400,
+        "pass": true,
+        "corsOrigin": "*"
+      }
+    ],
+    "pagesBuild": "PASS",
+    "sourceOfEvidence": ".agy-work/026_full_verify.log",
+    "report": "docs/FOLLOWUP-04_MODEL_SWITCH_RESULT.md",
+    "operatingConfig": "NOT_CONFIGURED",
+    "publicRelease": "NOT_APPROVED"
+  },
+  "priorFullVerification": {
+    "followup04": {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1",
+      "testFiles": 51,
+      "tests": 464,
+      "pass": 464,
+      "fail": 0,
+      "skip": 0,
+      "typecheck": "PASS",
+      "lint": "PASS (tsc alias)",
+      "build": "PASS",
+      "protectedPaths": "PASS",
+      "diffWhitespace": "PASS",
+      "evidence": ".agy-work/026_full_verify.log"
+    }
+  },
+  "followup08": {
+    "status": "METERING_AND_SYNTHETIC_STABILITY_VERIFIED",
+    "report": "docs/FOLLOWUP-08_RESULT.md",
+    "limitsProfile": "docs/CONVERSATION_MODEL_LIMITS_90_PERCENT.json",
+    "live": {
+      "mode": "LIVE",
+      "totalAttempts": 12,
+      "completed": 12,
+      "transportSuccess": 12,
+      "qualityMatches": 12,
+      "localFallbacks": 2,
+      "aiDirectSuccesses": 10,
+      "quotaExhausted": false,
+      "upstreamCalls": {
+        "chat": 12,
+        "voice": 2,
+        "total": 14,
+        "maxAllowed": 14,
+        "realGoogle": {
+          "chat": 12,
+          "tts": 1,
+          "stt": 1,
+          "total": 14
+        },
+        "dryMock": {
+          "chat": 0,
+          "tts": 0,
+          "stt": 0,
+          "total": 0
+        }
+      },
+      "latencyMs": {
+        "p50": 1345,
+        "p95": 1596,
+        "max": 1596
+      },
+      "voiceVerification": {
+        "attempted": true,
+        "ttsSuccess": true,
+        "ttsHttpStatus": 200,
+        "ttsErrorCode": null,
+        "ttsDurationSeconds": 1.88,
+        "sttSuccess": true,
+        "sttHttpStatus": 200,
+        "sttErrorCode": null,
+        "sttMatchesExpected": true,
+        "sttTextLength": 11
+      },
+      "caveat": "N=12 chat (+2 voice) bench for immediate regression check. Does NOT guarantee long-term quota or production availability."
+    },
+    "audioBrowser": {
+      "beforeMime": "audio/webm;codecs=opus",
+      "beforeBytes": 16709,
+      "afterMime": "audio/wav",
+      "afterBytes": 32684,
+      "verifiedDuration": 1.02,
+      "sampleRate": 16000,
+      "channels": 1,
+      "units": 1090,
+      "unitsWithinCap": true,
+      "pass": true
+    },
+    "pagesRuntime": [
+      {
+        "path": "/api/conversation/chat",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/transcribe",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/tts",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/chat",
+        "method": "GET",
+        "status": 405,
+        "expected": 405,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/unknown",
+        "method": "POST",
+        "status": 404,
+        "expected": 404,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/chat",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/conversation/chat",
+        "method": "OPTIONS",
+        "status": 204,
+        "expected": 204,
+        "pass": true,
+        "corsOrigin": "http://127.0.0.1:8788"
+      },
+      {
+        "path": "/api/admin/cleanup",
+        "method": "POST",
+        "status": 403,
+        "expected": 403,
+        "pass": true,
+        "corsOrigin": "*"
+      },
+      {
+        "path": "/api/tts",
+        "method": "GET",
+        "status": 400,
+        "expected": 400,
+        "pass": true,
+        "corsOrigin": "*"
+      }
+    ],
+    "generationDeterministic": true,
+    "fullVerification": {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1",
+      "testFiles": 53,
+      "tests": 496,
+      "pass": 496,
+      "fail": 0,
+      "skip": 0,
+      "typecheck": "PASS",
+      "lint": "PASS (tsc alias)",
+      "build": "PASS",
+      "protectedPaths": "PASS",
+      "diffWhitespace": "PASS",
+      "evidence": ".agy-work/035_full_verify.log"
+    },
+    "operatingConfig": "NOT_CONFIGURED",
+    "publicRelease": "NOT_APPROVED"
+  },
+  "followup09": {
+    "report": "docs/FOLLOWUP-09_RESULT.md",
+    "setupGuide": "docs/CONVERSATION_OPERATING_SETUP.md",
+    "localNativeD1": {
+      "pass": true,
+      "overallPASS": true,
+      "cases": [
+        {
+          "name": "first allowed",
+          "pass": true
+        },
+        {
+          "name": "duplicate denied",
+          "pass": true
+        },
+        {
+          "name": "concurrentonly1",
+          "pass": true
+        },
+        {
+          "name": "globalothercallerdenied",
+          "pass": true
+        },
+        {
+          "name": "consumeidempotent",
+          "pass": true
+        },
+        {
+          "name": "releasenorefund",
+          "pass": true
+        },
+        {
+          "name": "nativerowsstatecounts",
+          "pass": true
+        },
+        {
+          "name": "missingschemafailclosed",
+          "pass": true
+        }
+      ],
+      "counts": {
+        "nativeRows": 2,
+        "concurrentAllowed": 1
+      },
+      "nativeRows": 2,
+      "concurrentAllowed": 1,
+      "missingSchemaDenied": true,
+      "realGoogleCalls0": true,
+      "realGoogleCalls": 0,
+      "productionAccessVerified": false,
+      "productionD1Verified": false
+    },
+    "sourceChanges": 0,
+    "fullTests": 496,
+    "productionAccess": "NOT_VERIFIED",
+    "productionD1": "NOT_VERIFIED",
+    "boardGeneratedArtifacts": "UNCHANGED",
+    "publicRelease": "NOT_APPROVED"
+  }
+}

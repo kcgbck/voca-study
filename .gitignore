@@ -28,6 +28,12 @@ dist-ssr
 
 # Agent State
 .agent-state
+.agy-work/
+
+# Local API credentials (server only)
+.env
+.env.*
+!.env.example
 
 # OCR Models
 *.traineddata

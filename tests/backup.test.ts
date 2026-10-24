@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import {
   validateBackupFile,
   BACKUP_FORMAT_IDENTIFIER,
-  CURRENT_BACKUP_VERSION,
   type BackupFileStructure,
 } from '../src/storage/backupService';
 import { checkStorageHealth } from '../src/storage/storageHealth';
@@ -11,7 +10,7 @@ describe('데이터 백업 및 저장소 안정성 (지시서 Section 7, 8, 9)',
   it('유효한 v1 백업 파일을 올바르게 검증해야 한다', () => {
     const validBackup: BackupFileStructure = {
       format: BACKUP_FORMAT_IDENTIFIER,
-      version: CURRENT_BACKUP_VERSION,
+      version: 1,
       exportedAt: new Date().toISOString(),
       metadata: {
         wordBooksCount: 1,

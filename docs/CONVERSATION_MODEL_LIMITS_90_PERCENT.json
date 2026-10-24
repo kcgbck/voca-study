@@ -1,0 +1,20 @@
+{
+  "gemini-3.5-flash-lite": {
+    "rpm": 13,
+    "tpm": 225000,
+    "rpd": 450,
+    "callerRpm": 13
+  },
+  "gemini-3.5-transcribe": {
+    "rpm": 2,
+    "tpm": 9000,
+    "rpd": 22,
+    "callerRpm": 2
+  },
+  "gemini-3.8-flash-lite-tts": {
+    "rpm": 2,
+    "tpm": 9000,
+    "rpd": 9,
+    "callerRpm": 2
+  }
+}

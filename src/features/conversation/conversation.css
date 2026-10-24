@@ -1,0 +1,638 @@
+/* src/features/conversation/conversation.css */
+/* 보카 스터디 AI 회화 서브시스템 전용 스타일 시트 */
+/* 모바일 최적화(최소 360px), 가로 스크롤 없음, 터치 타겟 최소 44px, 다크/라이트 모드 지원 */
+
+:root {
+  --conv-bg-main: var(--bg-primary, #0f172a);
+  --conv-bg-card: var(--bg-secondary, #1e293b);
+  --conv-bg-subtle: rgba(255, 255, 255, 0.05);
+  --conv-text-primary: var(--text-primary, #f8fafc);
+  --conv-text-secondary: var(--text-secondary, #94a3b8);
+  --conv-text-muted: #64748b;
+  --conv-border: var(--border-color, #334155);
+  --conv-accent: #6366f1;
+  --conv-accent-hover: #4f46e5;
+  --conv-success: #10b981;
+  --conv-success-bg: rgba(16, 185, 129, 0.15);
+  --conv-warning: #f59e0b;
+  --conv-warning-bg: rgba(245, 158, 11, 0.15);
+  --conv-error: #ef4444;
+  --conv-error-bg: rgba(239, 68, 68, 0.15);
+  --conv-info: #0ea5e9;
+  --conv-tutor-bubble: #1e1b4b;
+  --conv-user-bubble: #1e3a5f;
+  --conv-radius: 12px;
+  --conv-touch-min: 44px;
+}
+
+[data-theme='light'] {
+  --conv-bg-main: #f8fafc;
+  --conv-bg-card: #ffffff;
+  --conv-bg-subtle: #f1f5f9;
+  --conv-text-primary: #0f172a;
+  --conv-text-secondary: #475569;
+  --conv-text-muted: #94a3b8;
+  --conv-border: #cbd5e1;
+  --conv-tutor-bubble: #e0e7ff;
+  --conv-user-bubble: #e0f2fe;
+}
+
+/* 컨테이너 기본 */
+.conv-container {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 12px 14px 40px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  color: var(--conv-text-primary);
+  font-family: inherit;
+}
+
+/* 터치 타겟 44px 준수 */
+.conv-btn,
+.conv-input,
+.conv-touch-target {
+  min-height: var(--conv-touch-min);
+  min-width: var(--conv-touch-min);
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.conv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--conv-radius);
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.conv-btn:focus-visible {
+  outline: 2px solid var(--conv-accent);
+  outline-offset: 2px;
+}
+
+.conv-btn-primary {
+  background: var(--conv-accent);
+  color: #ffffff;
+}
+
+.conv-btn-primary:hover:not(:disabled) {
+  background: var(--conv-accent-hover);
+}
+
+.conv-btn-secondary {
+  background: var(--conv-bg-card);
+  color: var(--conv-text-primary);
+  border-color: var(--conv-border);
+}
+
+.conv-btn-secondary:hover:not(:disabled) {
+  background: var(--conv-bg-subtle);
+}
+
+.conv-btn-success {
+  background: var(--conv-success);
+  color: #ffffff;
+}
+
+.conv-btn-danger {
+  background: var(--conv-error);
+  color: #ffffff;
+}
+
+.conv-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 상단 내비게이션 바 */
+.conv-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--conv-border);
+  gap: 8px;
+}
+
+.conv-top-bar h2 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--conv-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.conv-back-btn {
+  background: transparent;
+  border: none;
+  color: var(--conv-text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.conv-back-btn:hover {
+  background: var(--conv-bg-subtle);
+  color: var(--conv-text-primary);
+}
+
+/* 대시보드 요약 배너 */
+.conv-summary-banner {
+  background: linear-gradient(135deg, #1e1b4b, #312e81);
+  border: 1px solid #4338ca;
+  border-radius: var(--conv-radius);
+  padding: 16px;
+  color: #ffffff;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.2);
+}
+
+[data-theme='light'] .conv-summary-banner {
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+}
+
+.conv-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: center;
+}
+
+.conv-stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fde047;
+}
+
+.conv-stat-label {
+  font-size: 11px;
+  color: #c7d2fe;
+}
+
+/* 안전 모드 알림 카드 */
+.conv-notice-card {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--conv-radius);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--conv-text-secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.conv-notice-card strong {
+  color: var(--conv-success);
+}
+
+/* 레벨 카드 그리드 */
+.conv-level-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 480px) {
+  .conv-level-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.conv-level-card {
+  background: var(--conv-bg-card);
+  border: 1px solid var(--conv-border);
+  border-radius: var(--conv-radius);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.conv-level-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--conv-accent);
+}
+
+.conv-level-card:focus-visible {
+  outline: 2px solid var(--conv-accent);
+  outline-offset: 2px;
+}
+
+.conv-level-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.conv-level-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--conv-text-primary);
+}
+
+.conv-level-cefr {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--conv-bg-subtle);
+  color: var(--conv-accent);
+}
+
+.conv-level-desc {
+  font-size: 12px;
+  color: var(--conv-text-secondary);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.conv-level-meta {
+  font-size: 11px;
+  color: var(--conv-text-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 커리큘럼 단원 및 차시 목록 */
+.conv-unit-card {
+  background: var(--conv-bg-card);
+  border: 1px solid var(--conv-border);
+  border-radius: var(--conv-radius);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.conv-unit-header {
+  padding: 12px 14px;
+  background: var(--conv-bg-subtle);
+  border-bottom: 1px solid var(--conv-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.conv-unit-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--conv-text-primary);
+}
+
+.conv-lesson-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.conv-lesson-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--conv-border);
+  cursor: pointer;
+  background: transparent;
+  text-align: left;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  width: 100%;
+}
+
+.conv-lesson-item:last-child {
+  border-bottom: none;
+}
+
+.conv-lesson-item:hover:not(:disabled) {
+  background: var(--conv-bg-subtle);
+}
+
+.conv-lesson-item:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.conv-lesson-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.conv-lesson-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--conv-text-primary);
+}
+
+.conv-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.conv-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.conv-badge-review-pending {
+  background: var(--conv-warning-bg);
+  color: var(--conv-warning);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.conv-badge-preparing {
+  background: var(--conv-bg-subtle);
+  color: var(--conv-text-muted);
+  border: 1px solid var(--conv-border);
+}
+
+.conv-badge-type {
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+}
+
+[data-theme='light'] .conv-badge-type {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.conv-badge-mastered {
+  background: var(--conv-success-bg);
+  color: var(--conv-success);
+}
+
+/* 수업 진행 화면 (Phase Player) */
+.conv-phase-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding: 8px 10px;
+  background: var(--conv-bg-subtle);
+  border-radius: 8px;
+  overflow-x: auto;
+  gap: 4px;
+}
+
+.conv-phase-step {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--conv-text-muted);
+  padding: 4px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.conv-phase-step.active {
+  background: var(--conv-accent);
+  color: #ffffff;
+}
+
+.conv-phase-step.done {
+  color: var(--conv-success);
+}
+
+/* 대화 말풍선 */
+.conv-dialogue-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.conv-bubble-row {
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+}
+
+.conv-bubble-row.tutor {
+  align-self: flex-start;
+}
+
+.conv-bubble-row.user {
+  align-self: flex-end;
+}
+
+.conv-speaker-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--conv-text-muted);
+  margin-bottom: 4px;
+}
+
+.conv-bubble {
+  padding: 12px 14px;
+  border-radius: var(--conv-radius);
+  font-size: 14px;
+  line-height: 1.5;
+  box-sizing: border-box;
+  word-break: break-word;
+}
+
+.conv-bubble-row.tutor .conv-bubble {
+  background: var(--conv-tutor-bubble);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: var(--conv-text-primary);
+  border-bottom-left-radius: 4px;
+}
+
+.conv-bubble-row.user .conv-bubble {
+  background: var(--conv-user-bubble);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  color: var(--conv-text-primary);
+  border-bottom-right-radius: 4px;
+}
+
+.conv-bubble-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* 입력 바 (Text & Voice) */
+.conv-input-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--conv-bg-card);
+  border: 1px solid var(--conv-border);
+  border-radius: var(--conv-radius);
+  padding: 10px;
+  margin-top: 14px;
+}
+
+.conv-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.conv-text-input {
+  flex: 1 1 100%;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--conv-border);
+  background: var(--conv-bg-main);
+  color: var(--conv-text-primary);
+  font-size: 14px;
+}
+
+.conv-text-input:focus {
+  outline: 2px solid var(--conv-accent);
+}
+
+/* 마이크 버튼 및 녹음 펄스 */
+.conv-mic-btn {
+  border-radius: 50%;
+  width: var(--conv-touch-min);
+  height: var(--conv-touch-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--conv-border);
+  background: var(--conv-bg-subtle);
+  color: var(--conv-text-primary);
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.conv-mic-btn.recording {
+  background: var(--conv-error);
+  color: #ffffff;
+  border-color: var(--conv-error);
+  animation: conv-pulse 1.2s infinite;
+}
+
+@keyframes conv-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* 피드백 박스 */
+.conv-feedback-box {
+  border-radius: var(--conv-radius);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.conv-feedback-box.accept {
+  background: var(--conv-success-bg);
+  border: 1px solid var(--conv-success);
+  color: var(--conv-text-primary);
+}
+
+.conv-feedback-box.correction {
+  background: var(--conv-warning-bg);
+  border: 1px solid var(--conv-warning);
+  color: var(--conv-text-primary);
+}
+
+.conv-feedback-box.uncertain {
+  background: var(--conv-bg-subtle);
+  border: 1px solid var(--conv-border);
+  color: var(--conv-text-secondary);
+}
+
+/* 모달 레이아웃 */
+.conv-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.conv-modal-content {
+  background: var(--conv-bg-card);
+  border: 1px solid var(--conv-border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  color: var(--conv-text-primary);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.conv-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--conv-border);
+}
+
+.conv-modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.conv-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.conv-checkbox-label input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--conv-accent);
+}

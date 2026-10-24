@@ -1,0 +1,6 @@
+# Cloudflare Pages Headers for Cache Control
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/manifest.webmanifest
+  Cache-Control: no-cache, must-revalidate

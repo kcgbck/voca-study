@@ -6,14 +6,17 @@ import { RankingView } from './components/RankingView';
 import { SettingsModal, ThemeMode } from './components/SettingsModal';
 import { AttendanceModal } from './components/AttendanceModal';
 import { userService } from '../services/userService';
+import { registeredFeatures } from './featureRegistry';
 import type { WordEntry } from '../types/word';
 import type { UserProfile } from '../types/user';
 import './App.css';
 
-type ActiveTab = 'home' | 'quiz_en' | 'quiz_ja' | 'custom_maker' | 'general_quiz' | 'ranking';
+type ActiveTab = 'home' | 'quiz_en' | 'quiz_ja' | 'custom_maker' | 'general_quiz' | 'ranking' | 'ai_conversation';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('home');
+  const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
+    return (typeof window !== 'undefined' && window.history.state?.tab) || 'home';
+  });
   const [selectedQuestionBookId, setSelectedQuestionBookId] = useState<string | null>(null);
   const [customWords, setCustomWords] = useState<WordEntry[] | undefined>(undefined);
   const [customTitle, setCustomTitle] = useState<string | undefined>(undefined);
@@ -445,6 +448,39 @@ export const App: React.FC = () => {
                 </div>
                 <span className="menu-sub">틀렸던 단어만 모아서 집중 복습 및 4지선다 다시 풀기</span>
               </button>
+
+              {/* 7번째 및 신규 등록 모듈 맵 렌더링 (featureRegistry 기반 확장) */}
+              {registeredFeatures
+                .filter((feature) => feature.isVisible())
+                .map((feature) => (
+                  <button
+                    key={feature.id}
+                    className={feature.cardClassName || 'menu-card'}
+                    style={feature.cardStyle}
+                    onClick={() => navigateToTab(feature.tabKey as ActiveTab)}
+                  >
+                    <div className="menu-header-line">
+                      <span className="menu-icon">{feature.menuIcon}</span>
+                      <span className="menu-title">{feature.menuTitle}</span>
+                      {feature.badge && (
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            fontWeight: 'bold',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            background: 'rgba(16, 185, 129, 0.25)',
+                            color: '#10b981',
+                            marginLeft: '6px',
+                          }}
+                        >
+                          {feature.badge}
+                        </span>
+                      )}
+                    </div>
+                    <span className="menu-sub">{feature.menuSubtitle}</span>
+                  </button>
+                ))}
             </div>
           </div>
         )}
@@ -503,6 +539,21 @@ export const App: React.FC = () => {
             onOpenRanking={() => navigateToTab('ranking')}
           />
         )}
+
+        {/* 신규 등록 모듈 뷰 맵 렌더링 */}
+        {registeredFeatures.map((feature) => {
+          if (activeTab === feature.tabKey) {
+            const FeatureComponent = feature.Component;
+            return (
+              <FeatureComponent
+                key={feature.id}
+                onBack={handleGoBack}
+                onOpenRanking={() => navigateToTab('ranking')}
+              />
+            );
+          }
+          return null;
+        })}
       </main>
 
       {/* 설정 모달 */}

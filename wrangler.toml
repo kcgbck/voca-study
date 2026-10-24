@@ -16,3 +16,15 @@ compatibility_flags = [ "nodejs_compat" ]
 binding = "DB"
 database_name = "voca-study-db"
 database_id = "44a2ee68-01f4-4960-865e-455ed0c958ba"
+
+[[env.production.d1_databases]]
+binding = "CONVERSATION_BUDGET_DB"
+database_name = "voca-conversation-budget"
+database_id = "d412c53a-7137-446b-8d1d-24358cec2dd3"
+
+[env.production.vars]
+PUBLIC_CONVERSATION_ENABLED = "true"
+ALLOW_EXTERNAL_GEMINI_CALLS = "true"
+CONVERSATION_FREE_TIER_CONFIRMED = "true"
+CONVERSATION_ADULT_TESTERS_CONFIRMED = "true"
+CONVERSATION_MODEL_LIMITS_JSON = '{"gemini-3.5-flash-lite":{"rpm":13,"tpm":225000,"rpd":450,"callerRpm":13},"gemini-3.5-transcribe":{"rpm":2,"tpm":9000,"rpd":22,"callerRpm":2},"gemini-3.8-flash-lite-tts":{"rpm":2,"tpm":9000,"rpd":9,"callerRpm":2}}'
