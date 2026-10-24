@@ -155,10 +155,10 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: Gemini 부정 의미 반전 차단 검증
-중복 제거 후 coffee 복구/2회 반복 평가 확인. 실제 부정 탈락 반례를 Gemini가 서버 불확실 처리로 차단. Codex 전체77파일781시험 PASS. 누적50호출=D1 50소비, STT/TTS0. 커밋·main 푸시·운영 배포 후 최종 실제 합성 재검증 진행. 실물 인식률은 미측정.
+## 현재: Gemini 개선·Codex 실제 대조 완료
+77파일781시험 PASS. 최종 합성12시나리오13요청 통과: coffee 등 후보 구제·부정 반전 차단·원문 보존·반복2회 평가·텍스트 경로. 이번35요청=D1 35소비579170단위, STT/TTS0. 무료90%와 사용자 데이터 보존. 최종 기록 커밋·main 푸시·운영 배포 정리 진행. 실제 S25 인식률/장기/사람·외부·보드 관문 미검증 유지.
 
-Operation: followup30-negation-guard-20261024
-Parent HEAD: 8fcc9a64c88d0df2287ae117fc895dd42ec246a1
+Operation: followup30-live-evidence-20261024
+Parent HEAD: 8a5c6af06e3086b5df702b413c5cf1c05291edae
 Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->
