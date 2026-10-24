@@ -49,10 +49,10 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: 음성 후보 입력 중복 제거
-f4956e1 main 푸시·운영 배포 후 구조화 응답10호출 중8사례 통과, coffee 오선택 및 그에 따른 원문 캐시 문제2사례는 실패로 기록했다. D1은 누적38소비/628944단위, STT/TTS0. 응답 순서만으로 정확도 문제가 해결되지 않음을 확인했다. Gemini가 후보 존재 시 업스트림의 중복 사용자 답변 필드를 생략하고 실제 후보 목록만 전달하도록 최소 보완했다. 수신 원문과 화면, 후보0의 실제 원문은 보존하며 후보가 없으면 기존 답변 필드를 유지한다. Codex 독립 실패1개 재현 후 전체77파일769시험·타입·린트·빌드·보호 경로·공백 검사 PASS. 민감값294파일 일치0. 저장·커밋·main 푸시·운영 재배포 후 합성 재대조 진행. 모델·예산·출력·시간 제한과 단어 데이터 무변경.
+## 현재: 실제 후보 복구와 부정 의미 반전 차단
+중복 제거 운영12호출에서 coffee 구제 및 동일 왜곡 원문 반복2AI평가가 정상 동작했다. jam·tennis·bread·한국식 가명·숫자·cup·불명확 입력·텍스트도 통과했지만 부정 탈락 후보 선택1건을 발견해 실패로 기록했다. Gemini가 원문과 선택 대안의 명시적 부정어 유무가 다르면 불확실 판정·진도0·한국어 재발화 요청으로 처리하는 서버 검사를 구현했다. Codex가 부정 양방향, 축약형, 부분 단어 오탐, 동일 부정, 긴 원문12시험 추가. 전체77파일781시험·타입·린트·빌드·보호 경로·공백 검사 PASS. 민감값295파일 일치0, 단어 DB/저장소 무변경. 현재 누적50호출=D1 50소비827501단위, STT/TTS0. 저장·커밋·main 푸시·운영 재배포 후 최종 합성 확인 진행. 모델·무료90%·추가 확인 없는 흐름 유지. 실물 인식률 미측정.
 
-Operation: followup30-native-list-20261024
-Parent HEAD: f4956e1a2dbfff127ae0ab8eb04f183229c53789
+Operation: followup30-negation-guard-20261024
+Parent HEAD: 8fcc9a64c88d0df2287ae117fc895dd42ec246a1
 Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->

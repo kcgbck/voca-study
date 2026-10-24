@@ -586,6 +586,37 @@ JSON: {"recognizedCandidateIndex":0|1|2,"meaning":"relevant"|"needs_help"|"uncer
       );
     }
 
+    // 결정론적 부정어 충돌 가드 (Deterministic Negation-Conflict Guard):
+    // non-top 후보 선택(index > 0) 시 원본 발화(index 0)와 채택 후보 간 명시적 부정어 유무가 상충하면,
+    // 긍정/부정 의도가 뒤바뀌는 의미 왜곡을 차단하고 uncertain으로 안전하게 재발화를 유도한다.
+    if (
+      validatedCandidates &&
+      recognizedCandidateIndex !== undefined &&
+      recognizedCandidateIndex > 0
+    ) {
+      const negationPattern = /\b(no|not|never|neither|nor|without|cannot)\b|\b\w+(?:n't|n’t)\b/i;
+      const rawHasNegation = negationPattern.test(trimmedAnswer);
+      const selectedHasNegation = negationPattern.test(validatedCandidates[recognizedCandidateIndex]);
+
+      if (rawHasNegation !== selectedHasNegation) {
+        const isRawValidEnglish =
+          trimmedAnswer.length <= 200 &&
+          /[a-zA-Z]/.test(trimmedAnswer) &&
+          !/[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(trimmedAnswer);
+        const safeModelAnswerEn = isRawValidEnglish ? trimmedAnswer : 'Please say that again.';
+
+        const negationEvaluation: CoachEvaluation = {
+          meaning: 'uncertain',
+          sentenceComplete: false,
+          feedbackKo: '긍정과 부정 표현이 엇갈려 정확한 의미를 파악하기 어려워요. 다시 한번 말씀해 주세요!',
+          modelAnswerEn: safeModelAnswerEn,
+          recognizedCandidateIndex: 0,
+        };
+
+        return createJsonResponse({ success: true, evaluation: negationEvaluation }, 200, targetOrigin);
+      }
+    }
+
     // 결정론적 안전 가드 (Deterministic Server Guard):
     // 1. 채택된 실제 문장 결정 (후보군 인덱스 선택 결과 또는 원본 답변)
     const selectedSentence =

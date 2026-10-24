@@ -79,6 +79,11 @@
   - 유효한 후보군(`validatedCandidates`)이 존재할 때는 `contents` 페이로드에 `userAnswerEn`을 생략하고 오직 동일 발화의 대안 가설 목록인 `candidates`만 전송. (후보군 부재/텍스트 입력 시에는 기존대로 `userAnswerEn` 전송).
   - 프롬프트에 `candidates`는 동일 발화의 대안 가설 목록이며 질문 문맥에 일관되게 맞는 후보를 선택하고 index 0이 문맥상 틀렸을 때 index 0을 특권화(우선)하지 말 것을 명시.
   - 본 조치 역시 모델 평가 앵커링을 검증하기 위한 가설적 접근이며, 정확도 보장으로 단정하지 않고 **Codex 실측 재검증 대기(pending retest)** 상태로 관리.
+- **결정론적 부정어 충돌 가드 (Deterministic Negation-Conflict Guard):**
+  - 원본 발화(`trimmedAnswer`)와 non-top 채택 후보(`index > 0`) 간 명시적 부정어(`no`, `not`, `never`, `neither`, `nor`, `without`, `cannot` 및 `n't`/`n’t` 축약형) 유무가 불일치하는 경우, 긍정/부정이 반전되는 의미 왜곡을 원천 방어.
+  - 단어 경계(`\b`) 기반 매칭으로 `noodles` 등의 부분 문자열 오탐 차단.
+  - 불일치 시 `meaning: 'uncertain'`, `sentenceComplete: false`, `recognizedCandidateIndex: 0`, 한국어 재발화 요청 문구(`긍정과 부정 표현이 엇갈려 정확한 의미를 파악하기 어려워요. 다시 한번 말씀해 주세요!`)로 즉시 안전 응답 (크레딧/캐시 0).
+  - 모범답안은 원본 답변이 영문 유효 조건(<=200자, 영문 포함, 한글 부재) 충족 시 원본을 보존하며, 미충족 시 안전 문구(`Please say that again.`)를 반환. (동일 부정어를 가진 대안 후보 채택이나 0순위 채택, 텍스트 입력은 기존 로직 유지).
 - **결정론적 서버 안전 가드 (Deterministic Server Guard):**
   - AI 반환 JSON 파싱 및 인덱스 유효성 검증 직후 서버 레벨에서 결정론적 교정 적용:
   - 1) `meaning === 'relevant'`이고 `sentenceComplete === true`일 때: 채택된 문장이 200자 이하이며 영문 알파벳 포함(`/[a-zA-Z]/`) 및 한글 부재(`!/[가-힣ㄱ-ㅎㅏ-ㅣ]/`) 조건을 모두 만족하는 경우에만 `modelAnswerEn`을 해당 채택 문장 원본으로 확정 (한글 직접 입력 등 미충족 시 검증된 기존 AI 모범답안 유지).
@@ -112,5 +117,6 @@
 - **coffee 구제 안정성 미달**: 같은 후보 묶음에서도 coffee를 선택하거나 uncertain으로 재발화를 요청하는 차이가 남았다. 최신 시험에서는 uncertain으로 정지하고 진도 0을 유지했다. 완전 해결 또는 높은 실기기 인식률로 보고하지 않는다.
 - 최신 묶음의 불명확 발화 1회는 **20초 504 시간 초과**였다. 자동 재호출 없이 예산 1건이 소비되었다. 해당 응답을 성공으로 세지 않았다.
 - 후보 번호가 출력 JSON 맨 마지막인 구조를 먼저 생성하는 방식으로 바꾸기 위해, `recognizedCandidateIndex`를 첫 번째로 배치하고 `responseSchema`의 `propertyOrdering`을 적용했으나 스키마 적용 후 10호출 실측에서 coffee 앵커링이 여전히 잔존했다.
-- 이에 따라 0순위 중복 특권화를 제거하고 `candidates` 단일 목록만 전달하는 2차 구조적 가설을 반영했으며, 이는 Codex 실측 재검증 대상이며 정확도 완전 보장으로 보지 않는다.
+- 이에 따라 0순위 중복 특권화를 제거하고 `candidates` 단일 목록만 전달하는 2차 구조적 가설을 반영했다. 중복 제거 후 합성 12호출 실측 결과 coffee 구제 및 2회 AI 연속 호출은 정상 통과하였으나, 원본 'I do not like swimming.'에서 candidates[1] 'I like swimming.'을 선택하여 부정이 탈락하는 P1 의미 왜곡 반례가 확인되었다.
+- 이에 대한 방어책으로 결정론적 부정어 충돌 가드를 추가 구현하였으며, 이는 Codex 실측 재검증 대상(pending retest)이다.
 - S25 실제 발음, 후보가 하나만 반환되거나 전부 틀린 경우, 장기 안정성은 미검증이다. 기존 사람·외부·보드 수동 관문도 유지한다.

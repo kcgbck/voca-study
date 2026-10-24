@@ -80,6 +80,26 @@ it('preserves plausible top candidate wording without inventing the alternative 
  const h=server({...good,recognizedCandidateIndex:0});const r=await handlePublicCoach(h.request({answer:'I would like a cup.',candidates:['I would like a cup.','I would like coffee.']}),h.env,{fetchFn:h.fetchFn});
  expect((await r.json()).evaluation.modelAnswerEn).toBe('I would like a cup.');
 });
+it.each([
+ ['I do not like swimming.','I like swimming.'],['I like swimming.','I do not like swimming.'],
+ ["I don't like swimming.",'I like swimming.'],['I don’t like swimming.','I like swimming.'],
+ ['I cannot swim.','I can swim.'],['I never swim.','I swim.'],['I want no sugar.','I want sugar.'],
+ ['I would like coffee without sugar.','I would like coffee with sugar.'],['I like neither coffee nor tea.','I like coffee and tea.'],
+])('never approves an alternative that reverses explicit negation: %s -> %s',async(raw,selected)=>{
+ const h=server({...good,recognizedCandidateIndex:1});const r=await handlePublicCoach(h.request({answer:raw,candidates:[raw,selected]}),h.env,{fetchFn:h.fetchFn});expect(r.status).toBe(200);const ev=(await r.json()).evaluation;
+ expect(ev).toMatchObject({meaning:'uncertain',sentenceComplete:false,recognizedCandidateIndex:0,modelAnswerEn:raw});expect(ev.feedbackKo).toMatch(/[가-힣]/);expect(h.fetchFn).toHaveBeenCalledOnce();
+});
+it.each([
+ ['I like noodles.','I like coffee.'],["I don't like couple.",'I do not like coffee.'],
+])('does not mistake a word fragment or unchanged negation for polarity reversal: %s',async(raw,selected)=>{
+ const h=server({...good,recognizedCandidateIndex:1});const r=await handlePublicCoach(h.request({answer:raw,candidates:[raw,selected]}),h.env,{fetchFn:h.fetchFn});
+ expect((await r.json()).evaluation).toMatchObject({meaning:'relevant',recognizedCandidateIndex:1,modelAnswerEn:selected});
+});
+it('negation-conflict fallback remains bounded without truncating a long raw sentence',async()=>{
+ const raw='I do not like swimming. '.repeat(10).trim();const selected='I like swimming. '.repeat(10).trim();const h=server({...good,recognizedCandidateIndex:1});
+ const r=await handlePublicCoach(h.request({answer:raw,candidates:[raw,selected]}),h.env,{fetchFn:h.fetchFn});expect(r.status).toBe(200);const ev=(await r.json()).evaluation;
+ expect(ev.meaning).toBe('uncertain');expect(ev.modelAnswerEn).toBe('Please say that again.');expect(ev.recognizedCandidateIndex).toBe(0);
+});
 it('incomplete recovery keeps the AI grammar example but never blames an unused native word',async()=>{
  const h=server({...good,recognizedCandidateIndex:1,sentenceComplete:false,feedbackKo:'copy 대신 coffee를 말하세요.'});const r=await handlePublicCoach(h.request({answer:'copy please',candidates:['copy please','coffee please']}),h.env,{fetchFn:h.fetchFn});const ev=(await r.json()).evaluation;
  expect(ev.modelAnswerEn).toBe(good.modelAnswerEn);expect(ev.sentenceComplete).toBe(false);expect(ev.feedbackKo).not.toMatch(/copy|대신/);expect(ev.feedbackKo).toMatch(/[가-힣]/);expect(ev.feedbackKo).not.toMatch(/[a-zA-Z]/);
