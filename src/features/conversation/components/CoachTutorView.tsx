@@ -31,6 +31,7 @@ import {
   CoachDiagnosticStore,
   type CoachDiagnosticRecord,
 } from '../coach/coachDiagnostics';
+import { WhisperBenchmarkPanel } from './WhisperBenchmarkPanel';
 
 export interface CoachTutorViewProps {
   onBack: () => void;
@@ -91,6 +92,15 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
   const [diagRecords, setDiagRecords] = useState<CoachDiagnosticRecord[]>([]);
   const [diagCopyStatus, setDiagCopyStatus] = useState<string>('');
   const [manualReportText, setManualReportText] = useState<string>('');
+
+  // 벤치마크 패널 실행 중 코칭 상호 배제 상태 (동기 ref 즉시 갱신 + stable callback)
+  const [benchmarkBusy, setBenchmarkBusy] = useState(false);
+  const benchmarkBusyRef = useRef(false);
+
+  const handleBenchmarkBusyChange = useCallback((busy: boolean) => {
+    benchmarkBusyRef.current = busy;
+    setBenchmarkBusy(busy);
+  }, []);
 
   // 참조값 보관
   const adultRef = useRef(adultConfirmed);
@@ -242,6 +252,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
 
   // 텍스트 모드 전환
   const handleEnableTextMode = useCallback(() => {
+    if (benchmarkBusyRef.current || benchmarkBusy) return;
     isTextModeRef.current = true;
     setIsTextMode(true);
     setShowTextInput(true);
@@ -256,15 +267,15 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
     if (speechInputRef.current) {
       speechInputRef.current.cancel();
     }
-  }, []);
+  }, [benchmarkBusy]);
 
   // 코칭 시작
   const handleStart = useCallback(() => {
-    if (!adultRef.current || !controllerRef.current) return;
+    if (!adultRef.current || !controllerRef.current || benchmarkBusyRef.current || benchmarkBusy) return;
     hasStartedRef.current = true;
     const currentQ = COACH_QUESTIONS[questionIndex];
     controllerRef.current.start(currentQ);
-  }, [questionIndex]);
+  }, [questionIndex, benchmarkBusy]);
 
   // 일시정지
   const handlePause = useCallback(() => {
@@ -275,6 +286,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
 
   // 다음 질문 이동 (완료 상태에서 사용자가 명시적으로 클릭할 때만)
   const handleNextQuestion = useCallback(() => {
+    if (benchmarkBusyRef.current || benchmarkBusy) return;
     if (questionIndex < COACH_QUESTIONS.length - 1) {
       const nextIdx = questionIndex + 1;
       setQuestionIndex(nextIdx);
@@ -294,16 +306,18 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
     } else {
       setAllFinished(true);
     }
-  }, [questionIndex]);
+  }, [questionIndex, benchmarkBusy]);
 
   // 텍스트 직접 제출
   const handleSubmitText = useCallback(
     (e?: React.FormEvent) => {
       if (e) e.preventDefault();
-      // 성인 미확인, 시작 전, 완료, 평가 또는 대기 진행 중에는 제출 차단 (중복 호출 및 할당량 낭비 방지)
+      // 성인 미확인, 벤치마크 진행 중, 시작 전, 완료, 평가 또는 대기 진행 중에는 제출 차단
       if (
         !adultRef.current ||
         !hasStartedRef.current ||
+        benchmarkBusyRef.current ||
+        benchmarkBusy ||
         snapshot.phase === 'ready' ||
         snapshot.phase === 'complete' ||
         snapshot.phase === 'evaluating' ||
@@ -320,7 +334,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
         setShowTextInput(false);
       }
     },
-    [typedAnswer, snapshot.phase]
+    [typedAnswer, snapshot.phase, benchmarkBusy]
   );
 
   const currentQ = COACH_QUESTIONS[questionIndex];
@@ -686,6 +700,11 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
           </div>
         </div>
         {renderDiagnosticPanel()}
+        <WhisperBenchmarkPanel
+          adultConfirmed={adultConfirmed}
+          coachingActive={false}
+          onBusyChange={handleBenchmarkBusyChange}
+        />
       </div>
     );
   }
@@ -1005,13 +1024,13 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
             />
             <button
               type="submit"
-              disabled={!isTextSubmitAllowed}
+              disabled={!isTextSubmitAllowed || benchmarkBusy}
               style={{
                 ...secondaryButtonStyle,
                 width: 'auto',
                 minWidth: '70px',
-                opacity: isTextSubmitAllowed ? 1 : 0.4,
-                cursor: isTextSubmitAllowed ? 'pointer' : 'not-allowed',
+                opacity: isTextSubmitAllowed && !benchmarkBusy ? 1 : 0.4,
+                cursor: isTextSubmitAllowed && !benchmarkBusy ? 'pointer' : 'not-allowed',
               }}
             >
               제출
@@ -1025,11 +1044,11 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
         {phase === 'ready' && (
           <button
             onClick={handleStart}
-            disabled={!adultConfirmed}
+            disabled={!adultConfirmed || benchmarkBusy}
             style={{
               ...primaryButtonStyle,
-              opacity: adultConfirmed ? 1 : 0.4,
-              cursor: adultConfirmed ? 'pointer' : 'not-allowed',
+              opacity: adultConfirmed && !benchmarkBusy ? 1 : 0.4,
+              cursor: adultConfirmed && !benchmarkBusy ? 'pointer' : 'not-allowed',
             }}
           >
             {adultConfirmed ? '코칭 시작' : '만 18세 이상 확인 후 시작'}
@@ -1051,10 +1070,11 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
         {phase === 'paused' && (
           <button
             onClick={handleStart}
-            disabled={!adultConfirmed}
+            disabled={!adultConfirmed || benchmarkBusy}
             style={{
               ...primaryButtonStyle,
-              opacity: adultConfirmed ? 1 : 0.4,
+              opacity: adultConfirmed && !benchmarkBusy ? 1 : 0.4,
+              cursor: adultConfirmed && !benchmarkBusy ? 'pointer' : 'not-allowed',
             }}
           >
             다시 시작
@@ -1064,10 +1084,12 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
         {phase === 'error' && (
           <button
             onClick={handleStart}
-            disabled={!adultConfirmed}
+            disabled={!adultConfirmed || benchmarkBusy}
             style={{
               ...primaryButtonStyle,
               background: '#ef4444',
+              opacity: adultConfirmed && !benchmarkBusy ? 1 : 0.4,
+              cursor: adultConfirmed && !benchmarkBusy ? 'pointer' : 'not-allowed',
             }}
           >
             다시 시도
@@ -1075,7 +1097,15 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
         )}
 
         {phase === 'complete' && (
-          <button onClick={handleNextQuestion} style={primaryButtonStyle}>
+          <button
+            onClick={handleNextQuestion}
+            disabled={benchmarkBusy}
+            style={{
+              ...primaryButtonStyle,
+              opacity: !benchmarkBusy ? 1 : 0.4,
+              cursor: !benchmarkBusy ? 'pointer' : 'not-allowed',
+            }}
+          >
             {questionIndex < COACH_QUESTIONS.length - 1 ? '다음 질문으로 →' : '연습 마치기'}
           </button>
         )}
@@ -1083,6 +1113,20 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
 
       {/* 상시 로컬 회화 진단 패널 (일반 회화 화면 및 세션 완료 화면 공통) */}
       {renderDiagnosticPanel()}
+
+      {/* 기기 내 음성 비교 (Web Speech API vs In-Browser Whisper) 패널 */}
+      <WhisperBenchmarkPanel
+        adultConfirmed={adultConfirmed}
+        coachingActive={
+          phase === 'preparing' ||
+          phase === 'speaking' ||
+          phase === 'listening' ||
+          phase === 'evaluating' ||
+          phase === 'waiting' ||
+          phase === 'practicing'
+        }
+        onBusyChange={handleBenchmarkBusyChange}
+      />
 
       {/* URL 쿼리 speech-debug=1 일 때만 활성화되는 휘발성 음성 진단 UI */}
       {isSpeechDebug && (

@@ -20,6 +20,17 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify('v0.2.0'),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
   },
+  resolve: {
+    alias: [
+      {
+        find: /^onnxruntime-web$/,
+        replacement: 'onnxruntime-web/webgpu',
+      },
+    ],
+  },
+  worker: {
+    format: 'es',
+  },
   build: {
     target: 'es2022',
     outDir: 'dist',

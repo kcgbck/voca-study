@@ -19,6 +19,7 @@
     "worddb:review:apply": "npx tsx scripts/worddb/applyHumanReview.ts"
   },
   "dependencies": {
+    "@huggingface/transformers": "3.8.1",
     "dexie": "^4.0.11",
     "pdfjs-dist": "^4.10.38",
     "react": "^18.3.1",

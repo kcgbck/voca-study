@@ -49,9 +49,9 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-Gemini구현·Codex검증으로단일후보로컬보존/음성텍스트명시/말하기형식지적차단/이름문장구조피드백을완료. 79파일820시험·타입·린트·빌드·보호경로·공백검사PASS. 실제운영합성5시나리오5요청HTTP200/PASS, 왕복1.2~1.9초(마이크10초와재생제외). D1소비68→73(+5), 보수적예산단위+82499=1207464, STT/TTS0. 이름원문보존·coffee문법교정·이름질문음료답변재연습·다중후보구제검증. 진단개선을실제발음인식해결로판정안함. S25한국이름/coffee인식자체는미해결, 후보없으면텍스트만복원불가. 무료온디바이스대안은기기성능/다운로드/정확도비교가필요. 무료90%·모델·10초듣기·단어장보존. 기존사람/외부/보드관문미검증. 상세FOLLOWUP-32.
+무료 기기내 Whisper tiny q8 비교 기능을 Gemini가 구현하고 Codex가 검증했다. 전체 검사84파일872시험 PASS, 타입·린트·빌드·보호 경로·diff PASS. 제공 기밀 문자열 로컬 부재 검사325파일 PASS. 명시 준비 시 최초65~70MB, WebGPU 실패시WASM 초기화 재시도, 오디오메모리처리. 기존 코칭과 마이크 상호배제 및 취소/시간초과 회귀 시험 통과. 공개예제11초 파일 상한3MiB 수정. 실제PC모델실행/캐시/S25의 한국 이름·커피·컵·잼·부정어·숫자 정확도속도 비교는 운영 전달 후 남아 있다. 비교 패널만 추가하며 기존 학습 인식 기본값 유지, 단어장/서버/90%한도 보존. 현재parentHEAD4601ab1. main 커밋·푸시·운영 비교 기능 배포는 사용자 승인 범위로 진행. 실제 S25 우위 확인 전 기본 전환 금지. 상세 docs/FOLLOWUP-33_ONDEVICE_WHISPER.md.
 
-Operation: followup32-live-verification-20261024
-Parent HEAD: 1e61f22c80675b6a2b899aa0229c3fdfd3babff4
-Attribution: session-attribution-unavailable
+Operation: followup33-whisper-comparison-20261024
+Parent HEAD: 4601ab1cbd093725f3d5272b55a22b58e9544552
+Attribution: baseline-compared
 <!-- CODING_PARTNER_V2_STATE_END -->
