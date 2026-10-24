@@ -608,7 +608,7 @@ export class CoachTutorController {
       if (text.length > 0) {
         // N-best 후보군 유효성 검증 및 스냅샷 구성
         let validatedCandidates: string[] | undefined = undefined;
-        if (localCandidates.length > 1) {
+        if (localCandidates.length >= 1) {
           const rawTop = text;
           const sanitized: string[] = [];
           for (const item of localCandidates) {
@@ -625,7 +625,7 @@ export class CoachTutorController {
             if (sanitized.length >= 3) break;
           }
           // 반드시 실제 rawTop으로 시작해야 함
-          if (sanitized.length > 1 && sanitized[0] === rawTop) {
+          if (sanitized.length >= 1 && sanitized[0] === rawTop) {
             validatedCandidates = sanitized;
           }
         }
@@ -773,10 +773,10 @@ export class CoachTutorController {
     this.understoodText = undefined;
 
     // 4. 초기 평가 및 피드백 직접 진행
-    const context: CoachInputContext | undefined =
+    const context: CoachInputContext =
       listenRes.candidates && listenRes.candidates.length > 1
         ? { inputSource, candidates: listenRes.candidates }
-        : undefined;
+        : { inputSource };
     await this.processEvaluationAndContinue(
       transcript,
       signal,
@@ -960,10 +960,10 @@ export class CoachTutorController {
           evalRequests = 0;
         } else {
           this.emitSnapshot({ phase: 'evaluating', message: '반복 발화를 평가하고 있습니다.' });
-          const repeatContext: CoachInputContext | undefined =
-            listenRes.candidates && listenRes.candidates.length > 1
-              ? { inputSource: 'voice', candidates: listenRes.candidates }
-              : undefined;
+          const repeatContext: CoachInputContext =
+            inputSource === 'voice' && listenRes.candidates && listenRes.candidates.length > 1
+              ? { inputSource, candidates: listenRes.candidates }
+              : { inputSource };
           const evalRes = await this.safeEvaluate(
             this.currentQuestion.id,
             repeatTranscript,
@@ -1124,7 +1124,7 @@ export class CoachTutorController {
       await this.processEvaluationAndContinue(
         trimmed,
         signal,
-        undefined,
+        { inputSource: 'text' },
         'text',
         [],
         attemptStartTime
@@ -1149,7 +1149,12 @@ export class CoachTutorController {
         evalRequests = 0;
       } else {
         this.emitSnapshot({ phase: 'evaluating', message: '반복 발화를 평가하고 있습니다.' });
-        const evalRes = await this.safeEvaluate(this.currentQuestion.id, trimmed, signal);
+        const evalRes = await this.safeEvaluate(
+          this.currentQuestion.id,
+          trimmed,
+          signal,
+          { inputSource: 'text' }
+        );
         if (signal.aborted) return;
 
         repeatEval = evalRes.evaluation;

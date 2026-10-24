@@ -155,10 +155,9 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: 로컬 진단 기록 전달
-Gemini 로컬 인식·평가 기록 구현·메모 공백 수정, Codex79파일809시험과 타입·린트·빌드·보호 경로·공백 검사 PASS. 운영 Chrome에서 동일정답 반복 포함2기록, 원문/평가/메모 구분, 실제 키입력 공백과 새로고침 보존, 복사 성공 UI 확인. 도구 클립보드 읽기는 빈 값으로 실제 붙여넣기 왕복 미확인. D1 최초평가1건16467단위만 차감, 반복·진단 메모·복사·재접속 추가0건0단위, STT/TTS0. 누적64건1059064단위. 모델·무료90%·단어장 보존. 진단은 기기 로컬 최근20건24시간64KiB, 오디오저장·자동진단전송 없음. 실제S25/360px/장기·사람·외부·보드 미검증 유지. 상세 FOLLOWUP-31 6절.
+로컬진단의중복2건제외5기록에서평가시도4·무음1 확인, D1누적64→68 및STT/TTS0 일치. 실제발화·이름은외부구현지시/문서에남기지않고합성가명만사용. Gemini가단일후보진단보존·음성/텍스트명시·음성형식지적차단·이름문장구조피드백구현. Codex독립실패재현과최종79파일820시험·전체검사PASS. 텍스트반복출처/공백키워드누락/프롬프트상한문제도수정검증. 단어장·90%·모델·10초듣기·API계약유지. 실제S25이름/coffee음향인식해결판정안함. Androidphrases미지원, 후보없는텍스트만으로발화복원불가. 배포후합성운영대조진행. 상세FOLLOWUP-32.
 
-Operation: followup31-live-diagnostics-20261024
-Parent HEAD: 7221ff7b11c416ce77b10c0ad071757bbf1c804b
-Attribution: session-attribution-unavailable
+Operation: followup32-single-transcript-20261024
+Parent HEAD: 9ec461dea887d2e1355de7faee63e55789469529
+Attribution: baseline-compared
 <!-- CODING_PARTNER_V2_STATE_END -->

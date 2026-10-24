@@ -42,3 +42,14 @@ it('counts quota retry requests without duplicating an answer entry or claiming 
  vi.useFakeTimers();const h=harness();h.evaluate.mockRejectedValueOnce(new CoachBudgetError('잠시 후','COACH_MINUTE_LIMIT',1));const pending=h.controller.start(COACH_QUESTIONS[0]);await flush();await vi.advanceTimersByTimeAsync(1000);await pending;
  expect(h.records).toHaveLength(2);expect(h.records[0].evaluationRequests).toBe(2);expect(h.records[0].elapsedMs).toBeGreaterThanOrEqual(1000);expect(h.records[1].evaluationRequests).toBe(0);expect(h.evaluate).toHaveBeenCalledTimes(2);
 });
+it('preserves the single native candidate in diagnostics while carrying voice source without expanding the wire candidate schema',async()=>{
+ const h=harness();h.listen.mockImplementation(async(_l,o)=>{o?.onAlternatives?.(['My name is London Park.']);return 'My name is London Park.';});h.evaluate.mockResolvedValue({...good,modelAnswerEn:'My name is London Park.'});
+ await h.controller.start(COACH_QUESTIONS[0]);expect(h.evaluate).toHaveBeenCalledExactlyOnceWith('name','My name is London Park.',{inputSource:'voice'});expect(h.records).toHaveLength(2);expect(h.records.every(r=>r.candidates.length===1&&r.candidates[0]==='My name is London Park.')).toBe(true);
+});
+it('carries voice source even when the native bridge has no alternatives callback and invents no candidates',async()=>{
+ const h=harness();h.listen.mockImplementation(async()=> 'My name is Mina.');h.evaluate.mockResolvedValue({...good,modelAnswerEn:'My name is Mina.'});await h.controller.start(COACH_QUESTIONS[0]);expect(h.evaluate).toHaveBeenCalledExactlyOnceWith('name','My name is Mina.',{inputSource:'voice'});expect(h.records.every(r=>r.candidates.length===0&&r.inputSource==='voice')).toBe(true);
+});
+it('marks first and changed typed answers explicitly as text with no inherited speech candidates',async()=>{
+ const h=harness();(h.controller as any).deps.isTextMode=()=>true;const pending=h.controller.start(COACH_QUESTIONS[0]);await flush();await h.controller.submitText('My name is Mina.');await flush();await h.controller.submitText('My name is Jina.');await pending;
+ expect(h.evaluate.mock.calls.map(c=>c[2])).toEqual([{inputSource:'text'},{inputSource:'text'}]);expect(h.records.every(r=>r.inputSource==='text'&&r.candidates.length===0)).toBe(true);
+});

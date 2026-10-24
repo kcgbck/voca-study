@@ -318,11 +318,14 @@ export class CoachDiagnosticStore {
       lines.push(`- 사용자 의도: ${rec.intendedText ? rec.intendedText : '(사용자 미입력 - 확인 불가)'}`);
       lines.push(`- 원본 인식 문장(Raw): "${rec.rawText}"`);
 
-      if (rec.candidates && rec.candidates.length > 0) {
+      if (rec.candidates && rec.candidates.length > 1) {
         lines.push('- 인식 대안 후보군:');
         rec.candidates.forEach((c, cIdx) => {
           lines.push(`  (${cIdx}) "${c}"`);
         });
+      } else if (rec.candidates && rec.candidates.length === 1) {
+        lines.push('- 인식 대안 후보군: 단일 전사 1개 (다른 대안 없음)');
+        lines.push(`  (0) "${rec.candidates[0]}"`);
       } else {
         lines.push('- 인식 대안 후보군: 없음 (단일 텍스트/후보 미제공)');
       }

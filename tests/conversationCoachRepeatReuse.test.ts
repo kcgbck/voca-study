@@ -32,7 +32,7 @@ it('never seeds reuse from a model example: short answer and first complete repe
 });
 it.each(['My name is Alexa.','My name is not Alex.','I am 20 years old.'])('sends a changed answer to AI rather than matching approximately: %s',async changed=>{
  const h=setup(['My name is Alex.',changed],[good,uncertain]);await h.controller.start(COACH_QUESTIONS[0]);
- expect(h.evaluate).toHaveBeenCalledTimes(2);expect(h.evaluate.mock.calls[1]).toEqual(['name',changed]);
+ expect(h.evaluate).toHaveBeenCalledTimes(2);expect(h.evaluate.mock.calls[1]).toEqual(['name',changed,{inputSource:'voice'}]);
  expect(h.states.at(-1)).toMatchObject({phase:'paused',practiceDone:0});
 });
 it('allows outer whitespace trimming, consistent with API validation',async()=>{
@@ -40,7 +40,7 @@ it('allows outer whitespace trimming, consistent with API validation',async()=>{
 });
 it.each(['my name is alex.','MY NAME IS ALEX!','My name is Alex','  My   name\tis Alex.  ','My name is Alex?!','My name is Alex...'])('reuses formatting-only variation while preserving the actual recognized text: %s',async repeated=>{
  const h=setup(['My name is Alex.',repeated]);await h.controller.start(COACH_QUESTIONS[0]);
- expect(h.evaluate).toHaveBeenCalledOnce();expect(h.evaluate.mock.calls[0]).toEqual(['name','My name is Alex.']);
+ expect(h.evaluate).toHaveBeenCalledOnce();expect(h.evaluate.mock.calls[0]).toEqual(['name','My name is Alex.',{inputSource:'voice'}]);
  expect(h.states.at(-1)).toMatchObject({phase:'complete',practiceDone:1,recognizedText:repeated.trim()});
 });
 it.each([
@@ -53,7 +53,7 @@ it.each([
  ["I'm twenty-eight.",'I am twenty eight.'],['I paid +2 dollars.','I paid -2 dollars.'],
 ])('preserves potentially meaningful differences and sends raw changed input to AI: %s -> %s',async(first,changed)=>{
  const h=setup([first,changed],[good,uncertain]);await h.controller.start(COACH_QUESTIONS[0]);
- expect(h.evaluate.mock.calls).toEqual([['name',first],['name',changed]]);
+ expect(h.evaluate.mock.calls).toEqual([['name',first,{inputSource:'voice'}],['name',changed,{inputSource:'voice'}]]);
  expect(h.states.at(-1)).toMatchObject({phase:'paused',practiceDone:0});
 });
 it('never reuses an empty key even if an upstream evaluation incorrectly approves punctuation',async()=>{
@@ -63,7 +63,7 @@ it('never reuses an empty key even if an upstream evaluation incorrectly approve
 it('format variation in a new question or restarted initial answer still requires AI',async()=>{
  const h=setup(['My name is Alex.','MY NAME IS ALEX!','my name is alex','MY NAME IS ALEX.']);
  await h.controller.start(COACH_QUESTIONS[0]);await h.controller.start(COACH_QUESTIONS[0]);
- expect(h.evaluate.mock.calls).toEqual([['name','My name is Alex.'],['name','my name is alex']]);
+ expect(h.evaluate.mock.calls).toEqual([['name','My name is Alex.',{inputSource:'voice'}],['name','my name is alex',{inputSource:'voice'}]]);
 });
 it('format-only direct text repetition reuses approval without changing displayed text',async()=>{
  const h=setup();h.listen.mockResolvedValueOnce('My name is Alex.').mockImplementation(()=>new Promise<string>(()=>{}));
@@ -72,7 +72,7 @@ it('format-only direct text repetition reuses approval without changing displaye
 });
 it('format normalization does not turn a short answer into an approved complete sentence',async()=>{
  const h=setup(['Alex.','ALEX!'],[{...good,sentenceComplete:false},uncertain]);await h.controller.start(COACH_QUESTIONS[0]);
- expect(h.evaluate.mock.calls).toEqual([['name','Alex.'],['name','ALEX!']]);expect(h.states.at(-1)).toMatchObject({phase:'paused',practiceDone:0});
+ expect(h.evaluate.mock.calls).toEqual([['name','Alex.',{inputSource:'voice'}],['name','ALEX!',{inputSource:'voice'}]]);expect(h.states.at(-1)).toMatchObject({phase:'paused',practiceDone:0});
 });
 it('reuses typographic apostrophe variation without expanding or removing the contraction',async()=>{
  const h=setup(["I'd like tea.",'I’D LIKE TEA!']);await h.controller.start(COACH_QUESTIONS[2]);
@@ -97,7 +97,7 @@ it('never reuses incomplete or off-topic replies as correct',async()=>{
 });
 it('restarting the same question and changing question both require fresh initial AI evaluation',async()=>{
  const h=setup(Array(6).fill('My name is Alex.'));await h.controller.start(COACH_QUESTIONS[0]);await h.controller.start(COACH_QUESTIONS[0]);await h.controller.start(COACH_QUESTIONS[1]);
- expect(h.evaluate.mock.calls).toEqual([['name','My name is Alex.'],['name','My name is Alex.'],['age','My name is Alex.']]);
+ expect(h.evaluate.mock.calls).toEqual([['name','My name is Alex.',{inputSource:'voice'}],['name','My name is Alex.',{inputSource:'voice'}],['age','My name is Alex.',{inputSource:'voice'}]]);
 });
 it('pause clears reuse, including the direct text submission path',async()=>{
  const h=setup();h.listen.mockResolvedValueOnce('My name is Alex.').mockImplementation(()=>new Promise<string>(()=>{}));
@@ -163,6 +163,6 @@ it('a format-equivalent interim preview cannot hide a different finalized name f
  h.instances[1].onstart();h.result(h.instances[1],'MY NAME IS ALEX!',false);await flush();
  expect(h.evaluate).toHaveBeenCalledOnce();expect(h.states.at(-1).practiceDone).toBe(0);
  h.result(h.instances[1],'My name is Mina.');await vi.advanceTimersByTimeAsync(10000);h.instances[1].onend();await pending;
- expect(h.evaluate.mock.calls).toEqual([['name','My name is Alex.'],['name','My name is Mina.']]);
+ expect(h.evaluate.mock.calls).toEqual([['name','My name is Alex.',{inputSource:'voice'}],['name','My name is Mina.',{inputSource:'voice'}]]);
  expect(h.states.at(-1)).toMatchObject({phase:'complete',recognizedText:'My name is Mina.',practiceDone:1});expect(vi.getTimerCount()).toBe(0);
 });

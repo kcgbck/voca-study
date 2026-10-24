@@ -40,7 +40,7 @@ it('text submitted during voice capture does not inherit native alternatives',as
 });
 it('ignores a callback list that does not start with the actual settled transcript',async()=>{
  const h=flow([],{...good});let turn=0;h.listen.mockImplementation(async(_l,o)=>{o?.onAlternatives?.(['I want tea.','I want coffee.']);return ++turn===1?'I want water.':'I want water.';});
- await h.controller.start(COACH_QUESTIONS[2]);expect(h.evaluate).toHaveBeenCalledOnce();expect(h.evaluate.mock.calls[0]).toEqual(['cafe','I want water.']);
+ await h.controller.start(COACH_QUESTIONS[2]);expect(h.evaluate).toHaveBeenCalledOnce();expect(h.evaluate.mock.calls[0]).toEqual(['cafe','I want water.',{inputSource:'voice'}]);
 });
 it('does not accept caller mutations of a previously reported native candidate list',async()=>{
  const h=flow([],{...good,recognizedCandidateIndex:1});let resolve!:(text:string)=>void;let n=0;
@@ -135,4 +135,23 @@ it('caller mutation after submission cannot expand the candidate index validatio
 it('rejects an oversized multi-byte candidate body before reserving any budget',async()=>{
  const h=server();const candidates=['가'.repeat(500),'나'.repeat(500),'다'.repeat(500)];const r=await handlePublicCoach(h.request({answer:candidates[0],candidates}),h.env,{fetchFn:h.fetchFn});
  expect(r.status).toBe(413);expect(h.fetchFn).not.toHaveBeenCalled();expect(h.statements).toHaveLength(0);
+});
+it.each([
+ {meaning:'relevant' as const,sentenceComplete:true,feedbackKo:'첫 글자를 대문자로 쓰고 마침표를 붙여 주세요.'},
+ {meaning:'relevant' as const,sentenceComplete:false,feedbackKo:'띄어쓰기와 구두점을 고쳐 보세요.'},
+ {meaning:'needs_help' as const,sentenceComplete:false,feedbackKo:'문장 부호를 고쳐 보세요.'},
+ {meaning:'uncertain' as const,sentenceComplete:false,feedbackKo:'capitalization과 punctuation을 고쳐 보세요.'},
+])('removes writing advice for voice without changing AI judgment: %j',async grade=>{
+ const h=server({...good,...grade,recognizedCandidateIndex:0});const r=await handlePublicCoach(h.request({answer:'coffee please',candidates:undefined,inputSource:'voice'}),h.env,{fetchFn:h.fetchFn});expect(r.status).toBe(200);const ev=(await r.json()).evaluation;
+ expect(ev.meaning).toBe(grade.meaning);expect(ev.sentenceComplete).toBe(grade.sentenceComplete);expect(ev.feedbackKo).not.toMatch(/대문자|소문자|마침표|구두점|문장\s*부호|띄어쓰기|capitaliz|punctuation/i);expect(h.fetchFn).toHaveBeenCalledOnce();
+});
+it('keeps typed writing advice and marks source text in the single evaluation payload',async()=>{
+ const feedbackKo='첫 글자를 대문자로 쓰고 마침표를 붙여 주세요.';const h=server({...good,feedbackKo,recognizedCandidateIndex:0});const r=await handlePublicCoach(h.request({answer:'i would like coffee',candidates:undefined,inputSource:'text'}),h.env,{fetchFn:h.fetchFn});const ev=(await r.json()).evaluation;expect(ev.feedbackKo).toBe(feedbackKo);expect(JSON.parse(JSON.parse((h.fetchFn.mock.calls[0] as any)[1].body).contents[0].parts[0].text).inputSource).toBe('text');
+});
+it('praises the name sentence pattern without certifying recognition of an unverified personal name',async()=>{
+ const raw='my name is London Park';const h=server({...good,feedbackKo:'이름을 정확히 알아들었어요! 완벽한 발음이에요.',recognizedCandidateIndex:0});const r=await handlePublicCoach(h.request({questionId:'name',answer:raw,candidates:undefined,inputSource:'voice'}),h.env,{fetchFn:h.fetchFn});const ev=(await r.json()).evaluation;
+ expect(ev).toMatchObject({meaning:'relevant',sentenceComplete:true,modelAnswerEn:raw});expect(ev.feedbackKo).toMatch(/문장|구조|형태/);expect(ev.feedbackKo).not.toMatch(/정확|알아들|완벽한 발음/);expect(h.fetchFn).toHaveBeenCalledOnce();
+});
+it('does not convert off-topic drink speech during the name question into a correct name answer',async()=>{
+ const h=server({...good,meaning:'needs_help',sentenceComplete:false,feedbackKo:'지금은 이름을 묻고 있어요.',recognizedCandidateIndex:0});const r=await handlePublicCoach(h.request({questionId:'name',answer:'hi would you like a cup please',candidates:undefined,inputSource:'voice'}),h.env,{fetchFn:h.fetchFn});expect((await r.json()).evaluation).toMatchObject({meaning:'needs_help',sentenceComplete:false,feedbackKo:'지금은 이름을 묻고 있어요.'});
 });

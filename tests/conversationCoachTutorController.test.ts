@@ -24,7 +24,7 @@ describe('beginner Korean-guided tutor', () => {
     expect(listen.mock.calls[0][1].windowMs).toBe(10000);expect(states.at(-1).message).toContain('10초');
     await vi.advanceTimersByTimeAsync(8000);expect(evaluate).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(1500);await pending;
-    expect(evaluate).toHaveBeenCalledExactlyOnceWith('name','My name is Alex.');expect(vi.getTimerCount()).toBe(0);
+    expect(evaluate).toHaveBeenCalledExactlyOnceWith('name','My name is Alex.',{inputSource:'voice'});expect(vi.getTimerCount()).toBe(0);
   });
   it('starts immediately and directly evaluates final English before counting practice', async () => {
     vi.useFakeTimers();
@@ -43,7 +43,7 @@ describe('beginner Korean-guided tutor', () => {
   it('evaluates the raw transcript without a confirmation round or silently rewriting it', async () => {
     const h = setup(['Might aim is Alice.']); h.evaluate.mockResolvedValue(uncertain);
     await h.controller.start(COACH_QUESTIONS[0]);
-    expect(h.evaluate).toHaveBeenCalledExactlyOnceWith(COACH_QUESTIONS[0].id, 'Might aim is Alice.');
+    expect(h.evaluate).toHaveBeenCalledExactlyOnceWith(COACH_QUESTIONS[0].id, 'Might aim is Alice.',{inputSource:'voice'});
     expect(h.listen.mock.calls.map(c => c[0])).toEqual(['en-US']);
     expect(h.speak.mock.calls.some(c => /맞나요|아니요|인식 후보/.test(c[0]))).toBe(false);
     expect(h.states.at(-1)).toMatchObject({phase:'paused', practiceDone:0});
@@ -76,7 +76,7 @@ describe('beginner Korean-guided tutor', () => {
     const h = setup(['Coffee, please.', "I would like coffee, please.", "I would like coffee, please."]);
     h.evaluate.mockResolvedValueOnce({...good, sentenceComplete:false, modelAnswerEn:'I would like coffee, please.'});
     await h.controller.start(COACH_QUESTIONS[2]);
-    expect(h.evaluate.mock.calls[0]).toEqual(['cafe','Coffee, please.']);
+    expect(h.evaluate.mock.calls[0]).toEqual(['cafe','Coffee, please.',{inputSource:'voice'}]);
     expect(h.evaluate).toHaveBeenCalledTimes(2);
     expect(h.listen.mock.calls.map(c => c[0])).toEqual(['en-US','en-US','en-US']);
     expect(h.states.at(-1)).toMatchObject({phase:'complete',practiceDone:2,practiceTarget:2});

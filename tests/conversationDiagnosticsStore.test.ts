@@ -53,3 +53,6 @@ it('preserves spaces during controlled incremental annotation typing',()=>{
  expect(value).toBe('I actually said coffee, please.');expect(store.exportText()).toContain('I actually said coffee, please.');
  store.annotate('one','   ');expect(store.list()[0].intendedText).toBeUndefined();
 });
+it('distinguishes a returned single native transcript from unavailable alternatives in the report',()=>{
+ const store=new CoachDiagnosticStore(storage(),()=>baseTime);const r=sample();r.candidates=[r.rawText];r.evaluation!.recognizedCandidateIndex=0;store.append(r);const report=store.exportText();expect(report).toMatch(/단일.*1개|1개.*단일/);expect(report).toContain(r.rawText);expect(report).not.toContain('후보 미제공');
+});
