@@ -49,10 +49,10 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: 음성 후보 개선 운영 및 검증 한계
-Gemini 구현·Codex 독립 검증으로 실제 음성 후보를 같은 AI 평가에 전달하고 원문/문맥 표시, 구제된 오인식 원문 캐시 금지, 온전한 채택 영문 보존, 한국어 안전 피드백을 반영했다. main c07d77c까지 푸시·운영 배포 완료. 전체77파일767시험 및 타입·린트·빌드·보호 경로·공백 PASS. 실제 합성28호출은 D1 28소비/보수적 예산 단위463427과 정확히 일치, STT/TTS0. 최신 모델에서 jam·tennis·bread 구제와 cup·한국식 가명·숫자·부정 보존 확인. coffee는 간헐 uncertain으로 정지해 완전 해결 아님. 불명확 발화1회20초504, 성공으로 세지 않음. Gemini 구독 개별 한도429로 후속 응답 순서 개선 구현은 막혔으며 직접 구현 역할 변경을 사용자에게 질문한 상태다. 미구현 검증안은 운영 코드에 포함하지 않았다. 최종 증거 기록을 커밋·main 푸시·같은 코드 운영 배포한다. 실물 S25와 수동 관문 유지. 상세 docs/FOLLOWUP-29_GEMINI_SPEECH_CONTEXT.md.
+## 현재: Gemini 후보 우선 구조화 응답 구현
+사용자가 Gemini 재충전을 확인하고 계속 구현 지시. 깨끗한 main a18b5a4에서 Gemini가 publicCoachHandler의 후보 번호 우선 JSON 및 구조화 응답 스키마를 추가했다. Codex 직접 제품 수정 없음. 실제 후보 범위에 맞춘 정수 번호를 먼저 생성하고 의미·문법·피드백을 이어 생성한다. 정확도 개선 가설이며 실제 재시험 전 완전 해결로 주장하지 않는다. 기존 출력 보존·한국어 피드백·무료90% 상한·모델·20초 제한·단일 호출 유지. Codex 독립 시험2개 실패 재현 후 통과, 전체77파일769시험·타입·린트·빌드·보호 경로·공백 PASS. 민감값293파일 일치0, 단어 DB/저장소 무변경. 저장·커밋·main 푸시·운영 배포 후 합성 회복 및 D1 대조 진행. 이전28호출/463427단위/STT·TTS0, coffee불안정·20초504 1회는 이력 보존. 실물 S25 등 수동 관문 미검증.
 
-Operation: followup29-speech-evidence-20261024
-Parent HEAD: c07d77c308855201af047fac4a1ce2ef0451987c
-Attribution: session-attribution-unavailable
+Operation: followup30-schema-order-20261024
+Parent HEAD: a18b5a428b1b2110e5fc8fd04fd978eecd355a5d
+Attribution: baseline-compared
 <!-- CODING_PARTNER_V2_STATE_END -->

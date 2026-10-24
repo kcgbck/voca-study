@@ -63,6 +63,14 @@ it('sends raw and native candidates together to exactly one model call and budge
  const reserved=h.statements.find(s=>s.sql.includes('INSERT INTO'));expect(reserved.values[5]).toBeGreaterThanOrEqual(16384+new TextEncoder().encode(JSON.stringify({question:COACH_QUESTIONS[2].questionEn,answer:h.body.answer,candidates:h.body.candidates})).byteLength);
  expect((await r.json()).evaluation.recognizedCandidateIndex).toBe(1);expect(JSON.stringify(h.statements)).not.toContain('coffee');
 });
+it('constrains model output to select an actual candidate before grading and feedback generation',async()=>{
+ const h=server();await handlePublicCoach(h.request(),h.env,{fetchFn:h.fetchFn});const body=JSON.parse((h.fetchFn.mock.calls[0] as any)[1].body);const schema=body.generationConfig.responseSchema;
+ expect(schema.propertyOrdering).toEqual(['recognizedCandidateIndex','meaning','sentenceComplete','feedbackKo','modelAnswerEn']);expect(schema.required).toContain('recognizedCandidateIndex');expect(schema.properties.recognizedCandidateIndex).toMatchObject({type:'integer',minimum:0,maximum:1});expect(body.generationConfig.maxOutputTokens).toBe(512);
+});
+it('structured output offers only index zero without native candidates',async()=>{
+ const h=server({...good,recognizedCandidateIndex:0});await handlePublicCoach(h.request({candidates:undefined,inputSource:'text'}),h.env,{fetchFn:h.fetchFn});const body=JSON.parse((h.fetchFn.mock.calls[0] as any)[1].body);
+ expect(body.generationConfig.responseSchema.properties.recognizedCandidateIndex.maximum).toBe(0);
+});
 it('preserves the complete selected sentence instead of generated noun substitutions and avoids blaming discarded STT words',async()=>{
  const h=server({...good,recognizedCandidateIndex:1,modelAnswerEn:'I would like tea.',feedbackKo:'커플 대신 커피라고 말하세요.'});
  const r=await handlePublicCoach(h.request(),h.env,{fetchFn:h.fetchFn});const ev=(await r.json()).evaluation;

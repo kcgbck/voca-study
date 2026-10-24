@@ -379,7 +379,7 @@ export async function handlePublicCoach(
 3. sentenceComplete: 채택된 후보가 온전한 주어+동사 문장이면 true, 단답/오류는 false.
 4. feedbackKo: 한국어 필수(60자 권장, 최대 500자). 채택된 후보만 인정/칭찬/교정하고 탈락한 STT 어휘 언급 금지. cup 등 미지정은 없는 음료 단정 없이 되묻고 uncertain은 재발화 요청.
 5. modelAnswerEn: 초보자용 모범 문장(120자 권장, 최대 200자, 한글 금지). 발화자의 어휘(이름/음료/숫자/부정)를 보존하고 미발화 어휘(coffee 등)를 덧붙이지 마세요('I would like a cup.'은 유지). uncertain은 예문 날조 없이 채택/원문 유지.
-JSON: {"meaning":"relevant"|"needs_help"|"uncertain","sentenceComplete":boolean,"feedbackKo":"문자열","modelAnswerEn":"문자열","recognizedCandidateIndex":0|1|2}`;
+JSON: {"recognizedCandidateIndex":0|1|2,"meaning":"relevant"|"needs_help"|"uncertain","sentenceComplete":boolean,"feedbackKo":"문자열","modelAnswerEn":"문자열"}`;
 
   const geminiRequestBody = {
     system_instruction: {
@@ -404,6 +404,43 @@ JSON: {"meaning":"relevant"|"needs_help"|"uncertain","sentenceComplete":boolean,
     ],
     generationConfig: {
       responseMimeType: 'application/json',
+      responseSchema: {
+        type: 'object',
+        properties: {
+          recognizedCandidateIndex: {
+            type: 'integer',
+            minimum: 0,
+            maximum: (validatedCandidates?.length ?? 1) - 1,
+          },
+          meaning: {
+            type: 'string',
+            enum: ['relevant', 'needs_help', 'uncertain'],
+          },
+          sentenceComplete: {
+            type: 'boolean',
+          },
+          feedbackKo: {
+            type: 'string',
+          },
+          modelAnswerEn: {
+            type: 'string',
+          },
+        },
+        required: [
+          'recognizedCandidateIndex',
+          'meaning',
+          'sentenceComplete',
+          'feedbackKo',
+          'modelAnswerEn',
+        ],
+        propertyOrdering: [
+          'recognizedCandidateIndex',
+          'meaning',
+          'sentenceComplete',
+          'feedbackKo',
+          'modelAnswerEn',
+        ],
+      },
       maxOutputTokens: 512,
       temperature: 0.2,
       thinkingConfig: {
