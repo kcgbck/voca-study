@@ -18,6 +18,7 @@ import {
   CoachBudgetError,
 } from './coachProtocol';
 import type { BrowserSpeechInputOptions } from '../services/browserSpeechInput';
+import type { CoachDiagnosticRecord, SafeDiagnosticErrorCode } from './coachDiagnostics';
 
 export type CoachPhase =
   | 'ready'
@@ -55,6 +56,7 @@ export interface CoachTutorControllerDeps {
   ) => Promise<CoachEvaluation>;
   emit: (state: CoachSnapshot) => void;
   isTextMode?: () => boolean;
+  onDiagnostic?: (record: CoachDiagnosticRecord) => void;
 }
 
 export interface CoachTutorControllerOptions {
@@ -113,6 +115,29 @@ export class CoachTutorController {
     private deps: CoachTutorControllerDeps,
     private options?: CoachTutorControllerOptions
   ) {}
+
+  /**
+   * 진단 콜백 안전 호출 (예외 발생 시에도 학습 흐름에 영향 없음, 방어적 깊은 복사본 전달)
+   */
+  private emitDiagnostic(record: CoachDiagnosticRecord): void {
+    if (!this.deps.onDiagnostic) return;
+    try {
+      const cloned: CoachDiagnosticRecord = JSON.parse(JSON.stringify(record));
+      this.deps.onDiagnostic(cloned);
+    } catch {
+      // 콜백 예외가 코칭 컨트롤러 흐름을 중단시키지 않음
+    }
+  }
+
+  /**
+   * 고유 ID 생성 (crypto.randomUUID 또는 타임스탬프 난수 조합)
+   */
+  private generateDiagnosticId(): string {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    return `diag_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+  }
 
   /**
    * 취소 및 타임아웃 경합 헬퍼 (모의/네이티브 프로미스가 취소를 무시해도 즉시 settle)
@@ -268,13 +293,15 @@ export class CoachTutorController {
     answer: string,
     signal: AbortSignal,
     context?: CoachInputContext
-  ): Promise<CoachEvaluation | null> {
-    if (signal.aborted) return null;
+  ): Promise<{ evaluation: CoachEvaluation | null; evaluationRequests: number; errorCode?: SafeDiagnosticErrorCode }> {
+    if (signal.aborted) return { evaluation: null, evaluationRequests: 0 };
 
     let retryCount = 0;
     let spokenWaitNotice = false;
+    let totalRequests = 0;
 
     while (!signal.aborted && retryCount <= 2) {
+      totalRequests++;
       const evalPromise = context
         ? this.deps.evaluate(questionId, answer, context)
         : this.deps.evaluate(questionId, answer);
@@ -285,7 +312,7 @@ export class CoachTutorController {
       );
 
       if (signal.aborted || res.status === 'aborted') {
-        return null;
+        return { evaluation: null, evaluationRequests: totalRequests };
       }
 
       if (res.status === 'ok' && res.value) {
@@ -302,7 +329,11 @@ export class CoachTutorController {
               phase: 'error',
               message: '유효하지 않은 평가 후보 인덱스 응답입니다.',
             });
-            return null;
+            return {
+              evaluation: null,
+              evaluationRequests: totalRequests,
+              errorCode: 'INVALID_CANDIDATE_INDEX',
+            };
           }
         } else if (
           val.recognizedCandidateIndex !== undefined &&
@@ -312,7 +343,11 @@ export class CoachTutorController {
             phase: 'error',
             message: '후보군이 없을 때 유효하지 않은 인덱스 응답입니다.',
           });
-          return null;
+          return {
+            evaluation: null,
+            evaluationRequests: totalRequests,
+            errorCode: 'INVALID_NO_CANDIDATE_INDEX',
+          };
         }
 
         // non-top 후보 선택 시에는 원본 발화(raw answer)로 캐시를 시딩하지 않음
@@ -336,7 +371,7 @@ export class CoachTutorController {
             };
           }
         }
-        return val;
+        return { evaluation: val, evaluationRequests: totalRequests };
       }
 
       if (res.status === 'timeout') {
@@ -344,7 +379,11 @@ export class CoachTutorController {
           phase: 'error',
           message: '평가 응답 시간이 초과되었습니다.',
         });
-        return null;
+        return {
+          evaluation: null,
+          evaluationRequests: totalRequests,
+          errorCode: 'EVALUATION_TIMEOUT',
+        };
       }
 
       if (res.status === 'error') {
@@ -355,7 +394,11 @@ export class CoachTutorController {
               phase: 'error',
               message: err.message || '하루 무료 평가 한도를 사용했어요. 한도 초기화 후 다시 이용해 주세요.',
             });
-            return null;
+            return {
+              evaluation: null,
+              evaluationRequests: totalRequests,
+              errorCode: 'COACH_DAILY_LIMIT',
+            };
           }
 
           if (
@@ -369,7 +412,11 @@ export class CoachTutorController {
                 phase: 'error',
                 message: '서비스 이용이 많아 처리가 지연되고 있습니다. 잠시 후 다시 이용해 주세요.',
               });
-              return null;
+              return {
+                evaluation: null,
+                evaluationRequests: totalRequests,
+                errorCode: 'COACH_MINUTE_LIMIT',
+              };
             }
 
             retryCount++;
@@ -388,22 +435,22 @@ export class CoachTutorController {
                 signal
               );
               if (!spokeNotice || signal.aborted) {
-                return null;
+                return { evaluation: null, evaluationRequests: totalRequests };
               }
             }
 
             // 1초 단위로 안전하게 카운트다운 진행 (진행 중 언제든 pause/abort 가능)
             for (let sec = waitTotal; sec > 0; sec--) {
-              if (signal.aborted) return null;
+              if (signal.aborted) return { evaluation: null, evaluationRequests: totalRequests };
               this.emitSnapshot({
                 phase: 'waiting',
                 message: `잠시 이용량이 많아 ${sec}초 후 자동으로 평가합니다.`,
               });
               const sleepOk = await this.safeSleep(1000, signal);
-              if (!sleepOk || signal.aborted) return null;
+              if (!sleepOk || signal.aborted) return { evaluation: null, evaluationRequests: totalRequests };
             }
 
-            if (signal.aborted) return null;
+            if (signal.aborted) return { evaluation: null, evaluationRequests: totalRequests };
             this.emitSnapshot({ phase: 'evaluating', message: '답변을 분석하고 있습니다.' });
             continue;
           }
@@ -415,13 +462,17 @@ export class CoachTutorController {
           phase: 'error',
           message: errMsg,
         });
-        return null;
+        return {
+          evaluation: null,
+          evaluationRequests: totalRequests,
+          errorCode: 'EVALUATION_FAILED',
+        };
       }
 
-      return null;
+      return { evaluation: null, evaluationRequests: totalRequests };
     }
 
-    return null;
+    return { evaluation: null, evaluationRequests: totalRequests };
   }
 
   /**
@@ -480,7 +531,7 @@ export class CoachTutorController {
     signal: AbortSignal
   ): Promise<
     | { status: 'ok'; text: string; candidates?: string[] }
-    | { status: 'fatal_error' }
+    | { status: 'fatal_error'; errorCode?: 'SPEECH_NETWORK' | 'SPEECH_PERMISSION' | 'SPEECH_ERROR' }
     | { status: 'timeout' }
     | { status: 'aborted' }
   > {
@@ -589,12 +640,23 @@ export class CoachTutorController {
         return { status: 'timeout' };
       }
 
+      let errorCode: 'SPEECH_NETWORK' | 'SPEECH_PERMISSION' | 'SPEECH_ERROR' = 'SPEECH_ERROR';
+      if (code === 'network') {
+        errorCode = 'SPEECH_NETWORK';
+      } else if (
+        code === 'not-allowed' ||
+        code === 'service-not-allowed' ||
+        code === 'audio-capture'
+      ) {
+        errorCode = 'SPEECH_PERMISSION';
+      }
+
       // 권한, 네트워크 등 치명적 오류 (paused로 덮어쓰지 않고 error 보존)
       this.emitSnapshot({
         phase: 'error',
         message: res.error?.message || '음성 인식 중 오류가 발생했습니다.',
       });
-      return { status: 'fatal_error' };
+      return { status: 'fatal_error', errorCode };
     }
 
     return { status: 'timeout' };
@@ -641,14 +703,50 @@ export class CoachTutorController {
     if (!(await this.safeSpeak(question.questionEn, 'en-US', signal))) return;
 
     // 3. 초기 답변 듣기 (영어 10초 바운디드 캡처 후 직접 평가)
+    const questionSnapshot = question;
+    const stageSnapshot: 'initial' | 'repeat' = 'initial';
+    const inputSource: 'voice' | 'text' = this.deps.isTextMode?.() ? 'text' : 'voice';
+    const attemptStartTime = Date.now();
+
     const listenRes = await this.listenEnglishWithSilenceRetry(signal);
     if (signal.aborted || listenRes.status === 'aborted') return;
 
     if (listenRes.status === 'fatal_error') {
+      const elapsedMs = Math.max(0, Date.now() - attemptStartTime);
+      this.emitDiagnostic({
+        id: this.generateDiagnosticId(),
+        timestamp: new Date().toISOString(),
+        questionId: questionSnapshot.id,
+        questionEn: questionSnapshot.questionEn,
+        stage: stageSnapshot,
+        inputSource,
+        rawText: this.recognizedText,
+        candidates: [],
+        evaluationSource: 'none',
+        evaluationRequests: 0,
+        elapsedMs,
+        errorCode: listenRes.errorCode || 'SPEECH_ERROR',
+      });
       return;
     }
 
     if (listenRes.status === 'timeout') {
+      const elapsedMs = Math.max(0, Date.now() - attemptStartTime);
+      this.emitDiagnostic({
+        id: this.generateDiagnosticId(),
+        timestamp: new Date().toISOString(),
+        questionId: questionSnapshot.id,
+        questionEn: questionSnapshot.questionEn,
+        stage: stageSnapshot,
+        inputSource,
+        rawText: this.recognizedText,
+        candidates: [],
+        evaluationSource: 'none',
+        evaluationRequests: 0,
+        elapsedMs,
+        errorCode: 'SPEECH_NO_SPEECH',
+      });
+
       // 초기 무음/빈 결과: 가짜 채점 없이 고정 교재 예문 기반 한국어 도움말 제공 후 2회 반복 연습 진행
       this.feedbackKo = '괜찮아요. 예문을 듣고 함께 연습해 볼까요?';
       this.modelAnswerEn = question.exampleAnswerEn;
@@ -677,9 +775,16 @@ export class CoachTutorController {
     // 4. 초기 평가 및 피드백 직접 진행
     const context: CoachInputContext | undefined =
       listenRes.candidates && listenRes.candidates.length > 1
-        ? { inputSource: 'voice', candidates: listenRes.candidates }
+        ? { inputSource, candidates: listenRes.candidates }
         : undefined;
-    await this.processEvaluationAndContinue(transcript, signal, context);
+    await this.processEvaluationAndContinue(
+      transcript,
+      signal,
+      context,
+      inputSource,
+      listenRes.candidates ?? [],
+      attemptStartTime
+    );
   }
 
   /**
@@ -688,13 +793,39 @@ export class CoachTutorController {
   private async processEvaluationAndContinue(
     answer: string,
     signal: AbortSignal,
-    context?: CoachInputContext
+    context?: CoachInputContext,
+    inputSource: 'voice' | 'text' = 'text',
+    candidates: string[] = [],
+    attemptStartTime: number = Date.now()
   ): Promise<void> {
     if (!this.currentQuestion || signal.aborted) return;
+    const questionSnapshot = this.currentQuestion;
+    const stageSnapshot: 'initial' | 'repeat' = 'initial';
 
     this.emitSnapshot({ phase: 'evaluating', message: '답변을 분석하고 있습니다.' });
-    const evaluation = await this.safeEvaluate(this.currentQuestion.id, answer, signal, context);
-    if (signal.aborted || !evaluation) return;
+    const evalResult = await this.safeEvaluate(this.currentQuestion.id, answer, signal, context);
+    if (signal.aborted) return;
+
+    const evaluation = evalResult.evaluation;
+    const elapsedMs = Math.max(0, Date.now() - attemptStartTime);
+
+    this.emitDiagnostic({
+      id: this.generateDiagnosticId(),
+      timestamp: new Date().toISOString(),
+      questionId: questionSnapshot.id,
+      questionEn: questionSnapshot.questionEn,
+      stage: stageSnapshot,
+      inputSource,
+      rawText: answer,
+      candidates: candidates.length > 0 ? candidates : context?.candidates ? context.candidates : [],
+      evaluationSource: 'ai',
+      evaluation: evaluation ?? undefined,
+      evaluationRequests: evalResult.evaluationRequests,
+      elapsedMs,
+      errorCode: evalResult.errorCode,
+    });
+
+    if (!evaluation) return;
 
     this.feedbackKo = evaluation.feedbackKo;
     this.modelAnswerEn = evaluation.modelAnswerEn;
@@ -757,12 +888,49 @@ export class CoachTutorController {
         if (!(await this.safeSpeak(this.modelAnswerEn, 'en-US', signal))) return;
 
         // 영어 발화 듣기
+        const questionSnapshot = this.currentQuestion;
+        const stageSnapshot: 'initial' | 'repeat' = 'repeat';
+        const inputSource: 'voice' | 'text' = this.deps.isTextMode?.() ? 'text' : 'voice';
+        const attemptStartTime = Date.now();
+
         const listenRes = await this.listenEnglishWithSilenceRetry(signal);
         if (signal.aborted || listenRes.status === 'aborted') return;
 
-        if (listenRes.status === 'fatal_error') return;
+        if (listenRes.status === 'fatal_error') {
+          const elapsedMs = Math.max(0, Date.now() - attemptStartTime);
+          this.emitDiagnostic({
+            id: this.generateDiagnosticId(),
+            timestamp: new Date().toISOString(),
+            questionId: questionSnapshot.id,
+            questionEn: questionSnapshot.questionEn,
+            stage: stageSnapshot,
+            inputSource,
+            rawText: this.recognizedText,
+            candidates: [],
+            evaluationSource: 'none',
+            evaluationRequests: 0,
+            elapsedMs,
+            errorCode: listenRes.errorCode || 'SPEECH_ERROR',
+          });
+          return;
+        }
 
         if (listenRes.status === 'timeout') {
+          const elapsedMs = Math.max(0, Date.now() - attemptStartTime);
+          this.emitDiagnostic({
+            id: this.generateDiagnosticId(),
+            timestamp: new Date().toISOString(),
+            questionId: questionSnapshot.id,
+            questionEn: questionSnapshot.questionEn,
+            stage: stageSnapshot,
+            inputSource,
+            rawText: this.recognizedText,
+            candidates: [],
+            evaluationSource: 'none',
+            evaluationRequests: 0,
+            elapsedMs,
+            errorCode: 'SPEECH_NO_SPEECH',
+          });
           this.emitSnapshot({ phase: 'paused', message: '답변을 감지하지 못했습니다.' });
           return;
         }
@@ -775,6 +943,9 @@ export class CoachTutorController {
         const trimmedRepeat = repeatTranscript.trim();
         const repeatKey = normalizeRepeatAnswerKey(trimmedRepeat);
         let repeatEval: CoachEvaluation | null = null;
+        let evaluationSource: 'ai' | 'reuse' = 'ai';
+        let evalRequests = 0;
+        let evalErrorCode: SafeDiagnosticErrorCode | undefined = undefined;
 
         if (
           !signal.aborted &&
@@ -785,18 +956,27 @@ export class CoachTutorController {
           this.lastValidatedEntry.normalizedKey === repeatKey
         ) {
           repeatEval = { ...this.lastValidatedEntry.evaluation };
+          evaluationSource = 'reuse';
+          evalRequests = 0;
         } else {
           this.emitSnapshot({ phase: 'evaluating', message: '반복 발화를 평가하고 있습니다.' });
           const repeatContext: CoachInputContext | undefined =
             listenRes.candidates && listenRes.candidates.length > 1
               ? { inputSource: 'voice', candidates: listenRes.candidates }
               : undefined;
-          repeatEval = await this.safeEvaluate(
+          const evalRes = await this.safeEvaluate(
             this.currentQuestion.id,
             repeatTranscript,
             signal,
             repeatContext
           );
+          if (signal.aborted) return;
+
+          repeatEval = evalRes.evaluation;
+          evalRequests = evalRes.evaluationRequests;
+          evalErrorCode = evalRes.errorCode;
+          evaluationSource = 'ai';
+
           if (
             repeatEval &&
             repeatEval.meaning === 'relevant' &&
@@ -810,7 +990,26 @@ export class CoachTutorController {
           }
         }
 
-        if (signal.aborted || !repeatEval) return;
+        if (signal.aborted) return;
+
+        const repeatElapsedMs = Math.max(0, Date.now() - attemptStartTime);
+        this.emitDiagnostic({
+          id: this.generateDiagnosticId(),
+          timestamp: new Date().toISOString(),
+          questionId: questionSnapshot.id,
+          questionEn: questionSnapshot.questionEn,
+          stage: stageSnapshot,
+          inputSource,
+          rawText: repeatTranscript,
+          candidates: listenRes.candidates ?? [],
+          evaluationSource,
+          evaluation: repeatEval ?? undefined,
+          evaluationRequests: evalRequests,
+          elapsedMs: repeatElapsedMs,
+          errorCode: evalErrorCode,
+        });
+
+        if (!repeatEval) return;
 
         this.feedbackKo = repeatEval.feedbackKo;
         this.modelAnswerEn = repeatEval.modelAnswerEn;
@@ -917,12 +1116,26 @@ export class CoachTutorController {
 
     this.recognizedText = trimmed;
     this.understoodText = undefined;
+    const questionSnapshot = this.currentQuestion;
+    const stageSnapshot = this.currentMode;
+    const attemptStartTime = Date.now();
 
     if (this.currentMode === 'initial') {
-      await this.processEvaluationAndContinue(trimmed, signal);
+      await this.processEvaluationAndContinue(
+        trimmed,
+        signal,
+        undefined,
+        'text',
+        [],
+        attemptStartTime
+      );
     } else {
       const repeatKey = normalizeRepeatAnswerKey(trimmed);
       let repeatEval: CoachEvaluation | null = null;
+      let evaluationSource: 'ai' | 'reuse' = 'ai';
+      let evalRequests = 0;
+      let evalErrorCode: SafeDiagnosticErrorCode | undefined = undefined;
+
       if (
         !signal.aborted &&
         this.currentMode === 'repeat' &&
@@ -932,11 +1145,39 @@ export class CoachTutorController {
         this.lastValidatedEntry.normalizedKey === repeatKey
       ) {
         repeatEval = { ...this.lastValidatedEntry.evaluation };
+        evaluationSource = 'reuse';
+        evalRequests = 0;
       } else {
         this.emitSnapshot({ phase: 'evaluating', message: '반복 발화를 평가하고 있습니다.' });
-        repeatEval = await this.safeEvaluate(this.currentQuestion.id, trimmed, signal);
+        const evalRes = await this.safeEvaluate(this.currentQuestion.id, trimmed, signal);
+        if (signal.aborted) return;
+
+        repeatEval = evalRes.evaluation;
+        evalRequests = evalRes.evaluationRequests;
+        evalErrorCode = evalRes.errorCode;
+        evaluationSource = 'ai';
       }
-      if (signal.aborted || !repeatEval) return;
+
+      if (signal.aborted) return;
+
+      const repeatElapsedMs = Math.max(0, Date.now() - attemptStartTime);
+      this.emitDiagnostic({
+        id: this.generateDiagnosticId(),
+        timestamp: new Date().toISOString(),
+        questionId: questionSnapshot.id,
+        questionEn: questionSnapshot.questionEn,
+        stage: stageSnapshot,
+        inputSource: 'text',
+        rawText: trimmed,
+        candidates: [],
+        evaluationSource,
+        evaluation: repeatEval ?? undefined,
+        evaluationRequests: evalRequests,
+        elapsedMs: repeatElapsedMs,
+        errorCode: evalErrorCode,
+      });
+
+      if (!repeatEval) return;
 
       this.feedbackKo = repeatEval.feedbackKo;
       this.modelAnswerEn = repeatEval.modelAnswerEn;

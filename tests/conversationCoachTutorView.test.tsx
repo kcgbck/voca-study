@@ -11,6 +11,7 @@ vi.mock('../src/features/conversation/services/voiceOutput',()=>({VoiceOutputSer
 vi.mock('../src/features/conversation/coach/publicCoachApi',()=>({PublicCoachApiClient:class{evaluate=h.eval;cancel=h.cancelApi;}}));
 import {CoachBudgetError,COACH_QUESTIONS} from '../src/features/conversation/coach/coachProtocol';
 import {CoachTutorView} from '../src/features/conversation/components/CoachTutorView';
+import {COACH_DIAGNOSTICS_KEY} from '../src/features/conversation/coach/coachDiagnostics';
 const render=()=>{h.s=h.r=0;return CoachTutorView({onBack:vi.fn()});};
 function nodes(t:any):any[]{return t&&typeof t==='object'?[t,...React.Children.toArray(t.props?.children).flatMap(nodes)]:[];}
 function text(t:any):string{return typeof t==='string'||typeof t==='number'?String(t):Array.isArray(t)?t.map(text).join(''):t?.props?text(t.props.children):'';}
@@ -125,9 +126,33 @@ it('five typed questions advance only on Next and end without background microph
   expect(text(render())).toContain(q.questionEn);await submitAnswer(q.exampleAnswerEn);await submitAnswer(q.exampleAnswerEn);expect(h.eval).toHaveBeenCalledTimes(i+1);
   await vi.advanceTimersByTimeAsync(60000);expect(h.eval).toHaveBeenCalledTimes(i+1);button(render(),i<COACH_QUESTIONS.length-1?'다음 질문으로':'연습 마치기').props.onClick();await flush();
  }
- expect(text(render())).toContain('오늘 연습을 마쳤어요');expect(h.eval.mock.calls.map(c=>c[0])).toEqual(COACH_QUESTIONS.map(q=>q.id));expect(h.listen).not.toHaveBeenCalled();expect(h.speak).not.toHaveBeenCalled();expect(vi.getTimerCount()).toBe(0);
+ expect(text(render())).toContain('오늘 연습을 마쳤어요');expect(button(render(),'진단 기록 복사').props.disabled).toBe(false);expect(h.eval.mock.calls.map(c=>c[0])).toEqual(COACH_QUESTIONS.map(q=>q.id));expect(h.listen).not.toHaveBeenCalled();expect(h.speak).not.toHaveBeenCalled();expect(vi.getTimerCount()).toBe(0);
 });
 it('hiding the page during text waiting cancels cleanly without a later timeout or evaluation',async()=>{
  render();agree();button(render(),'텍스트 모드로 전환').props.onClick();(button(render(),'코칭 시작')??button(render(),'다시 시작')).props.onClick();await flush();h.listeners.pagehide();await flush();await vi.advanceTimersByTimeAsync(180000);
  expect(text(render())).toContain('일시정지');expect(text(render())).not.toMatch(/감지하지 못|듣지 못/);expect(h.eval).not.toHaveBeenCalled();expect(vi.getTimerCount()).toBe(0);
+});
+
+function diagnosticDisk(){const data=new Map<string,string>([['word-data','keep']]);const disk={getItem:vi.fn((k:string)=>data.get(k)??null),setItem:vi.fn((k:string,v:string)=>{data.set(k,v);}),removeItem:vi.fn((k:string)=>{data.delete(k);})};vi.stubGlobal('localStorage',disk);(window as any).localStorage=disk;return{data,disk};}
+it('normal canonical coaching exposes a collapsed local report and copies only on an explicit click',async()=>{
+ diagnosticDisk();const writeText=vi.fn().mockResolvedValue(undefined);vi.stubGlobal('navigator',{clipboard:{writeText}});render();expect(button(render(),'진단 기록 복사').props.disabled).toBe(true);agree();button(render(),'코칭 시작').props.onClick();await flush();
+ const tree=render();const summary=nodes(tree).find(n=>n.type==='summary'&&text(n).includes('인식'));expect(summary).toBeDefined();const panel=nodes(tree).find(n=>n.type==='details'&&text(n).includes('인식·평가 기록'));expect(panel.props.open).not.toBe(true);
+ expect(writeText).not.toHaveBeenCalled();expect(h.eval).toHaveBeenCalledOnce();expect(h.listen).toHaveBeenCalledTimes(2);await button(tree,'진단 기록 복사').props.onClick();await flush();expect(writeText).toHaveBeenCalledOnce();const report=writeText.mock.calls[0][0];for(const term of ['coach-report-v1','What is your name?','My name is Alex.'])expect(report).toContain(term);expect(report).toMatch(/재사용/);expect(report).toMatch(/초기|첫/);expect(report).toMatch(/반복/);
+ h.cleanup?.();h.states=[];h.refs=[];h.effect=false;render();await button(render(),'진단 기록 복사').props.onClick();expect(writeText.mock.calls[1][0]).toContain('My name is Alex.');expect(h.eval).toHaveBeenCalledOnce();
+});
+it('intended-utterance notes stay local, preserve the raw transcript and never trigger another evaluation',async()=>{
+ diagnosticDisk();const writeText=vi.fn().mockResolvedValue(undefined);vi.stubGlobal('navigator',{clipboard:{writeText}});render();agree();button(render(),'코칭 시작').props.onClick();await flush();const tree=render();const editor=nodes(tree).find(n=>n.type==='textarea'&&!n.props.readOnly);expect(editor).toBeDefined();expect(editor.props.maxLength).toBe(500);editor.props.onChange({target:{value:'I actually said another name.'}});await flush();await button(render(),'진단 기록 복사').props.onClick();const report=writeText.mock.calls[0][0];expect(report).toContain('I actually said another name.');expect(report).toContain('My name is Alex.');expect(h.eval).toHaveBeenCalledOnce();expect(h.listen).toHaveBeenCalledTimes(2);
+});
+it('clears only diagnostics after pausing and disables clear during active learning',async()=>{
+ const {data}=diagnosticDisk();render();agree();button(render(),'코칭 시작').props.onClick();await flush();expect(data.has(COACH_DIAGNOSTICS_KEY)).toBe(true);h.listen.mockImplementation(()=>new Promise(()=>{}));button(render(),'다음 질문으로').props.onClick();await flush();expect(button(render(),'진단 기록 지우기').props.disabled).toBe(true);h.listeners.pagehide();await flush();expect(button(render(),'진단 기록 지우기').props.disabled).toBe(false);await button(render(),'진단 기록 지우기').props.onClick();await flush();expect(button(render(),'진단 기록 복사').props.disabled).toBe(true);expect(data.get('word-data')).toBe('keep');expect([...data.keys()].some(k=>k.startsWith('coach_adult_confirmed_'))).toBe(true);expect(h.eval).toHaveBeenCalledOnce();
+});
+it.each(['denied','unsupported'])('offers a readable manual report when clipboard is %s, without false success',async mode=>{
+ diagnosticDisk();vi.stubGlobal('navigator',mode==='denied'?{clipboard:{writeText:vi.fn().mockRejectedValue(new Error('denied'))}}:{});render();agree();button(render(),'코칭 시작').props.onClick();await flush();await button(render(),'진단 기록 복사').props.onClick();await flush();const t=render();const manual=nodes(t).find(n=>n.type==='textarea'&&n.props.readOnly);expect(manual).toBeDefined();expect(manual.props.value).toContain('coach-report-v1');expect(manual.props.value).toContain('My name is Alex.');expect(text(t)).not.toContain('클립보드에 복사했습니다.');expect(h.eval).toHaveBeenCalledOnce();
+});
+it('invalidates a stale manual report after the user annotates an utterance',async()=>{
+ diagnosticDisk();vi.stubGlobal('navigator',{});render();agree();button(render(),'코칭 시작').props.onClick();await flush();await button(render(),'진단 기록 복사').props.onClick();await flush();expect(nodes(render()).some(n=>n.type==='textarea'&&n.props.readOnly)).toBe(true);
+ const editor=nodes(render()).find(n=>n.type==='textarea'&&!n.props.readOnly);editor.props.onChange({target:{value:'I actually said coffee.'}});expect(nodes(render()).some(n=>n.type==='textarea'&&n.props.readOnly)).toBe(false);await button(render(),'진단 기록 복사').props.onClick();await flush();expect(nodes(render()).find(n=>n.type==='textarea'&&n.props.readOnly).props.value).toContain('I actually said coffee.');expect(h.eval).toHaveBeenCalledOnce();
+});
+it('never labels a candidate as AI-selected when evaluation returned an error',async()=>{
+ diagnosticDisk();h.listen.mockImplementation(async(_l,o)=>{o?.onAlternatives?.(['might aim','My name is Alex.']);return 'might aim';});h.eval.mockRejectedValue(new Error('service unavailable'));render();agree();button(render(),'코칭 시작').props.onClick();await flush();expect(text(render())).toContain('might aim');expect(text(render())).not.toMatch(/← 채택/);expect(h.eval).toHaveBeenCalledOnce();
 });

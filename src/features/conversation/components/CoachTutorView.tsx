@@ -27,6 +27,10 @@ import {
   type BrowserSpeechTrace,
 } from '../services/browserSpeechInput';
 import { VoiceOutputService } from '../services/voiceOutput';
+import {
+  CoachDiagnosticStore,
+  type CoachDiagnosticRecord,
+} from '../coach/coachDiagnostics';
 
 export interface CoachTutorViewProps {
   onBack: () => void;
@@ -78,6 +82,15 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
     new URLSearchParams(window.location.search).get('speech-debug') === '1';
   const [speechTraces, setSpeechTraces] = useState<BrowserSpeechTrace[]>([]);
   const [copyStatus, setCopyStatus] = useState<string>('');
+
+  // 상시 로컬 진단 기록 상태 (저장소 ref 1회 생성, 마운트 시 로드)
+  const diagStoreRef = useRef<CoachDiagnosticStore | null>(null);
+  if (!diagStoreRef.current) {
+    diagStoreRef.current = new CoachDiagnosticStore();
+  }
+  const [diagRecords, setDiagRecords] = useState<CoachDiagnosticRecord[]>([]);
+  const [diagCopyStatus, setDiagCopyStatus] = useState<string>('');
+  const [manualReportText, setManualReportText] = useState<string>('');
 
   // 참조값 보관
   const adultRef = useRef(adultConfirmed);
@@ -150,12 +163,24 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
         setSnapshot(nextState);
       },
       isTextMode: () => isTextModeRef.current,
+      onDiagnostic: (record: CoachDiagnosticRecord) => {
+        if (!diagStoreRef.current) return;
+        diagStoreRef.current.append(record);
+        if (isMountedRef.current) {
+          setDiagRecords(diagStoreRef.current.list());
+          setDiagCopyStatus('');
+          setManualReportText('');
+        }
+      },
     });
   }
 
   // 마운트 시 브라우저 지원 여부 확인 및 생명주기 리스너 등록
   useEffect(() => {
     isMountedRef.current = true;
+    if (diagStoreRef.current) {
+      setDiagRecords(diagStoreRef.current.list());
+    }
 
     if (speechInputRef.current) {
       const supported = speechInputRef.current.isSupported();
@@ -325,6 +350,317 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
     }
   }, [traceEnvelope]);
 
+  // 상시 로컬 진단 기록 핸들러
+  const handleCopyDiagReport = useCallback(async () => {
+    if (!diagStoreRef.current) return;
+    const report = diagStoreRef.current.exportText();
+
+    if (
+      typeof navigator !== 'undefined' &&
+      navigator.clipboard &&
+      typeof navigator.clipboard.writeText === 'function'
+    ) {
+      try {
+        await navigator.clipboard.writeText(report);
+        if (isMountedRef.current) {
+          setDiagCopyStatus('클립보드에 복사했습니다.');
+          setManualReportText('');
+        }
+      } catch {
+        if (isMountedRef.current) {
+          setDiagCopyStatus('클립보드에 복사하지 못했습니다. 아래 내용을 길게 눌러 직접 복사해 주세요.');
+          setManualReportText(report);
+        }
+      }
+    } else {
+      if (isMountedRef.current) {
+        setDiagCopyStatus('클립보드를 지원하지 않는 환경입니다. 아래 내용을 길게 눌러 직접 복사해 주세요.');
+        setManualReportText(report);
+      }
+    }
+  }, []);
+
+  const handleClearDiagReport = useCallback(() => {
+    if (!diagStoreRef.current) return;
+    const success = diagStoreRef.current.clear();
+    if (isMountedRef.current) {
+      setDiagRecords(diagStoreRef.current.list());
+      setManualReportText('');
+      if (!success) {
+        setDiagCopyStatus('저장소 삭제 중 오류가 발생하여 화면 메모리만 비웠습니다.');
+      } else {
+        setDiagCopyStatus('');
+      }
+    }
+  }, []);
+
+  const handleAnnotateDiag = useCallback((id: string, value: string) => {
+    if (!diagStoreRef.current) return;
+    diagStoreRef.current.annotate(id, value);
+    if (isMountedRef.current) {
+      setDiagRecords(diagStoreRef.current.list());
+      setDiagCopyStatus('');
+      setManualReportText('');
+    }
+  }, []);
+
+  // 진단 패널 렌더 헬퍼 (초기/학습 중 화면 및 학습 완료 화면 공통 표시)
+  const isClearDisabled = !(
+    phase === 'ready' ||
+    phase === 'paused' ||
+    phase === 'error' ||
+    phase === 'complete' ||
+    allFinished
+  );
+
+  const renderDiagnosticPanel = () => {
+    const records = diagRecords;
+    const hasRecords = records.length > 0;
+    const isPersistenceAvailable = diagStoreRef.current?.persistenceAvailable ?? true;
+
+    return (
+      <details
+        onToggle={(e) => {
+          if ((e.currentTarget as HTMLDetailsElement).open && diagStoreRef.current && isMountedRef.current) {
+            setDiagRecords(diagStoreRef.current.list());
+          }
+        }}
+        style={{
+          marginTop: '20px',
+          background: '#0f172a',
+          border: '1px solid #334155',
+          borderRadius: '12px',
+          padding: '12px 14px',
+          minWidth: 0,
+          overflowWrap: 'anywhere',
+          wordBreak: 'break-word',
+        }}
+      >
+        <summary
+          style={{
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 600,
+            color: '#94a3b8',
+            minHeight: '44px',
+            display: 'flex',
+            alignItems: 'center',
+            minWidth: 0,
+            overflowWrap: 'anywhere',
+            wordBreak: 'break-word',
+          }}
+        >
+          인식·평가 기록 ({records.length})
+        </summary>
+
+        <div style={{ marginTop: '10px', fontSize: '12px', color: '#64748b', lineHeight: 1.5, overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+          💡 최근 20건 / 24시간 동안의 회화 음성 인식 및 AI 평가 결과가 기기 로컬에만 보관됩니다. 이 진단 기록 자체의 자동 외부 전송이나 오디오 녹음 저장은 일체 없으며(일반 회화 진행을 위한 브라우저 음성 인식 및 AI 평가는 정상 동작), 복사하기 전 이름 등 개인정보가 포함되어 있는지 확인하세요.
+        </div>
+
+        {!isPersistenceAvailable && (
+          <div style={{ marginTop: '8px', padding: '6px 10px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '6px', fontSize: '12px', color: '#f87171' }}>
+            ⚠️ 브라우저 로컬 저장소를 사용할 수 없어 현재 화면 메모리에만 임시 보관 중입니다. (새로고침 시 초기화될 수 있습니다)
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={handleCopyDiagReport}
+            disabled={!hasRecords}
+            style={{
+              ...secondaryButtonStyle,
+              minHeight: '44px',
+              padding: '0 16px',
+              opacity: hasRecords ? 1 : 0.4,
+              cursor: hasRecords ? 'pointer' : 'not-allowed',
+            }}
+          >
+            진단 기록 복사
+          </button>
+
+          <button
+            type="button"
+            onClick={handleClearDiagReport}
+            disabled={isClearDisabled}
+            style={{
+              ...secondaryButtonStyle,
+              minHeight: '44px',
+              padding: '0 16px',
+              color: '#f87171',
+              opacity: isClearDisabled ? 0.4 : 1,
+              cursor: isClearDisabled ? 'not-allowed' : 'pointer',
+            }}
+          >
+            진단 기록 지우기
+          </button>
+        </div>
+
+        {diagCopyStatus && (
+          <p
+            style={{
+              margin: '8px 0 0 0',
+              fontSize: '12px',
+              color: diagCopyStatus.includes('못했습니다') || diagCopyStatus.includes('오류') ? '#f87171' : '#34d399',
+            }}
+          >
+            {diagCopyStatus}
+          </p>
+        )}
+
+        {manualReportText && (
+          <div style={{ marginTop: '10px' }}>
+            <span style={{ fontSize: '11px', color: '#94a3b8' }}>수동 복사용 텍스트 (길게 눌러 복사):</span>
+            <textarea
+              readOnly
+              value={manualReportText}
+              style={{
+                ...textInputStyle,
+                width: '100%',
+                height: '140px',
+                marginTop: '4px',
+                fontSize: '11px',
+                fontFamily: 'monospace',
+                lineHeight: 1.4,
+              }}
+            />
+          </div>
+        )}
+
+        {hasRecords && (
+          <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {records.map((rec) => {
+              const selectedIdx = rec.evaluation?.recognizedCandidateIndex ?? 0;
+              const selectedText = rec.candidates && rec.candidates[selectedIdx] ? rec.candidates[selectedIdx] : rec.rawText;
+
+              return (
+                <details
+                  key={rec.id}
+                  style={{
+                    background: '#1e293b',
+                    borderRadius: '8px',
+                    padding: '8px 10px',
+                    border: '1px solid #334155',
+                    fontSize: '12px',
+                    minWidth: 0,
+                    overflowWrap: 'anywhere',
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  <summary
+                    style={{
+                      cursor: 'pointer',
+                      color: '#cbd5e1',
+                      fontWeight: 600,
+                      minHeight: '44px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      minWidth: 0,
+                      overflowWrap: 'anywhere',
+                      wordBreak: 'break-word',
+                    }}
+                  >
+                    [{rec.questionId}] {rec.stage === 'initial' ? '초기' : '반복'} · &ldquo;{rec.rawText || '(무음/실패)'}&rdquo;
+                  </summary>
+
+                  <div
+                    style={{
+                      marginTop: '8px',
+                      paddingTop: '8px',
+                      borderTop: '1px solid #334155',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                      color: '#94a3b8',
+                      minWidth: 0,
+                      overflowWrap: 'anywhere',
+                      wordBreak: 'break-word',
+                    }}
+                  >
+                    <div><span style={{ color: '#64748b' }}>시각 / 입력·평가 소요:</span> {rec.timestamp} ({rec.elapsedMs}ms)</div>
+                    <div><span style={{ color: '#64748b' }}>질문:</span> [{rec.questionId}] {rec.questionEn}</div>
+                    <div><span style={{ color: '#64748b' }}>입력 방식:</span> {rec.inputSource === 'voice' ? '음성인식' : '텍스트 직접입력'} ({rec.stage === 'initial' ? '초기 답변' : '반복 연습'})</div>
+                    <div><span style={{ color: '#64748b' }}>원본 인식(Raw):</span> <strong style={{ color: '#f8fafc' }}>&ldquo;{rec.rawText}&rdquo;</strong></div>
+
+                    {rec.candidates && rec.candidates.length > 0 && (
+                      <div>
+                        <span style={{ color: '#64748b' }}>대안 후보군:</span>
+                        {rec.candidates.map((c, i) => {
+                          const isSelected = Boolean(rec.evaluation && i === selectedIdx);
+                          return (
+                            <div key={i} style={{ marginLeft: '12px', color: isSelected ? '#38bdf8' : '#94a3b8', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+                              ({i}) &ldquo;{c}&rdquo; {isSelected ? '← 채택' : ''}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    <div>
+                      <span style={{ color: '#64748b' }}>평가 출처:</span>{' '}
+                      {rec.evaluationSource === 'ai'
+                        ? `AI 평가 요청 (앱 ${rec.evaluationRequests}회 시도, 제공사/예산 차감 횟수와 다를 수 있음)`
+                        : rec.evaluationSource === 'reuse'
+                        ? '로컬 승인 답안 안전 재사용 (AI 0회)'
+                        : '평가 미실행'}
+                    </div>
+
+                    {rec.evaluation && (
+                      <div
+                        style={{
+                          background: '#0f172a',
+                          padding: '8px',
+                          borderRadius: '6px',
+                          marginTop: '4px',
+                          minWidth: 0,
+                          overflowWrap: 'anywhere',
+                          wordBreak: 'break-word',
+                        }}
+                      >
+                        <div><span style={{ color: '#38bdf8' }}>AI 채택:</span> &ldquo;{selectedText}&rdquo; (인덱스 {selectedIdx})</div>
+                        <div>
+                          <span style={{ color: '#34d399' }}>판정:</span>{' '}
+                          의미 [{rec.evaluation.meaning === 'relevant' ? '뜻이 통함 (relevant)' : rec.evaluation.meaning === 'needs_help' ? '다시 연습 (needs_help)' : '인식/의미 불확실 (uncertain)'}],{' '}
+                          문장 완성 [{rec.evaluation.sentenceComplete ? '완전' : '미완성/단답'}]
+                        </div>
+                        <div><span style={{ color: '#e2e8f0' }}>피드백:</span> {rec.evaluation.feedbackKo}</div>
+                        <div><span style={{ color: '#60a5fa' }}>모범 예문:</span> {rec.evaluation.modelAnswerEn}</div>
+                      </div>
+                    )}
+
+                    {rec.errorCode && (
+                      <div style={{ color: '#f87171' }}><span style={{ color: '#ef4444' }}>오류 코드:</span> {rec.errorCode}</div>
+                    )}
+
+                    <div style={{ marginTop: '8px' }}>
+                      <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>
+                        내가 말한 내용 (선택, 음성인식 원문과 비교용):
+                      </label>
+                      <textarea
+                        value={rec.intendedText ?? ''}
+                        maxLength={500}
+                        placeholder="실제로 발화한 영어나 의도를 적어두면 복사 시 함께 기록됩니다 (최대 500자)"
+                        onChange={(e) => handleAnnotateDiag(rec.id, e.target.value)}
+                        aria-label="내가 말한 내용 (선택)"
+                        style={{
+                          ...textInputStyle,
+                          width: '100%',
+                          height: '56px',
+                          fontSize: '12px',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    </div>
+                  </div>
+                </details>
+              );
+            })}
+          </div>
+        )}
+      </details>
+    );
+  };
+
   // 전체 완료 화면
   if (allFinished) {
     return (
@@ -349,6 +685,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
             </button>
           </div>
         </div>
+        {renderDiagnosticPanel()}
       </div>
     );
   }
@@ -743,6 +1080,9 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
           </button>
         )}
       </div>
+
+      {/* 상시 로컬 회화 진단 패널 (일반 회화 화면 및 세션 완료 화면 공통) */}
+      {renderDiagnosticPanel()}
 
       {/* URL 쿼리 speech-debug=1 일 때만 활성화되는 휘발성 음성 진단 UI */}
       {isSpeechDebug && (

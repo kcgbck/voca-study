@@ -155,10 +155,10 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: Gemini 개선·Codex 실제 대조 완료
-77파일781시험 PASS. 최종 합성12시나리오13요청 통과: coffee 등 후보 구제·부정 반전 차단·원문 보존·반복2회 평가·텍스트 경로. 이번35요청=D1 35소비579170단위, STT/TTS0. 무료90%와 사용자 데이터 보존. 최종 기록 커밋·main 푸시·운영 배포 정리 진행. 실제 S25 인식률/장기/사람·외부·보드 관문 미검증 유지.
+## 현재: 로컬 회화 진단 기록
+Gemini가 질문·원본 인식·최대3후보·AI 선택·판정·반복 재사용·안전 오류를 기기 로컬 최근20건/24시간/64KiB로 기록하고 선택 메모와 명시 복사를 구현했다. 추가 AI 요청과 오디오 저장·자동 진단 전송 없음. Codex 독립79파일808시험 및 타입·린트·빌드·보호 경로·공백 검사 PASS. 저장 실패·취소·콜백 변조·실패 후보 표시 오류를 재현하고 수정 검증했다. 서버·모델·무료90%·단어장 보존. 운영 텍스트 브라우저와 예산 대조는 배포 후 확인, 실제S25 인식률·클립보드·사람·외부·보드 관문은 미검증 유지.
 
-Operation: followup30-live-evidence-20261024
-Parent HEAD: 8a5c6af06e3086b5df702b413c5cf1c05291edae
-Attribution: session-attribution-unavailable
+Operation: followup31-local-diagnostics-20261024
+Parent HEAD: fc6d2c9b374385d781914f9e00045e7358ead229
+Attribution: baseline-compared
 <!-- CODING_PARTNER_V2_STATE_END -->

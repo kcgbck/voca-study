@@ -49,10 +49,10 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: Gemini 음성 후보 개선 최종 운영 대조 완료
-사용자 재충전 후 Gemini 구현·Codex 독립 검증 역할로 재개했다. 후보 번호 우선 구조화 응답, 중복 1순위 전달 제거, 명시적 부정 충돌 차단을 구현했다. 실제 실패를 숨기지 않고 원인 가설별 대조 후 보완했다. 최종77파일781시험·타입·린트·빌드·보호 경로·공백 검사 PASS. 최종 운영 합성12시나리오13요청 전부 통과 및 HTTP200. coffee/jam/tennis/bread 구제, 가명·숫자·cup 보존, 부정 반전 차단, 불명확 입력 안전 처리, 왜곡 원문 반복2AI평가와 텍스트 경로 확인. 이번35실호출=D1 35소비/579170단위 정확히 일치. 누적 당일63소비1042597단위, STT/TTS0. 최종 왕복0.99~2.30초이며 마이크10초/재생 제외. 무료90%·모델·사용자 데이터 보존. 실제 S25 발음 인식률과 장기·사람·보드 관문은 미검증. 최종 증거 저장·커밋·main 푸시·동일 코드 운영 배포 및 중간 배포 정리를 마무리한다. 상세 docs/FOLLOWUP-29_GEMINI_SPEECH_CONTEXT.md 6절.
+## 현재: 로컬 인식·평가 기록 구현 검증 완료
+Gemini가 질문·원본 인식·최대3후보·AI 선택·판정·반복 재사용·안전 오류를 기기 로컬 최근20건/24시간/64KiB로 기록하고 선택 메모와 명시 복사를 구현했다. 추가 AI 요청과 오디오 저장·자동 진단 전송 없음. Codex 독립79파일808시험 및 타입·린트·빌드·보호 경로·공백 검사 PASS. 저장 실패·취소·콜백 변조·실패 후보 표시 오류를 재현하고 수정 검증했다. 서버·모델·무료90%·단어장 보존. 운영 텍스트 브라우저와 예산 대조는 배포 후 확인, 실제S25 인식률·클립보드·사람·외부·보드 관문은 미검증 유지.
 
-Operation: followup30-live-evidence-20261024
-Parent HEAD: 8a5c6af06e3086b5df702b413c5cf1c05291edae
-Attribution: session-attribution-unavailable
+Operation: followup31-local-diagnostics-20261024
+Parent HEAD: fc6d2c9b374385d781914f9e00045e7358ead229
+Attribution: baseline-compared
 <!-- CODING_PARTNER_V2_STATE_END -->
