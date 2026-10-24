@@ -13,7 +13,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   COACH_POLICY_VERSION,
-  COACH_QUESTIONS,
+  CAFE_QUESTIONS,
+  CAFE_SCENARIO_ID,
+  SCENARIO_COMPLETE_SENTINEL,
   type CoachInputContext,
 } from '../coach/coachProtocol';
 import {
@@ -52,8 +54,10 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
     return false;
   });
 
-  // 질문 인덱스 (0 ~ 4)
-  const [questionIndex, setQuestionIndex] = useState(0);
+  // 현재 카페 질문 노드 및 완료 여부
+  const [currentNodeId, setCurrentNodeId] = useState<string>(CAFE_QUESTIONS[0].id);
+  const [recentHistory, setRecentHistory] = useState<Array<{ questionId: string; answer: string }>>([]);
+  const [visitedCount, setVisitedCount] = useState<number>(1);
 
   // 음성 지원 여부 (SSR 정적 초기 렌더링 시 false로 단정하지 않음)
   const [speechSupported, setSpeechSupported] = useState<boolean>(true);
@@ -273,9 +277,12 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
   const handleStart = useCallback(() => {
     if (!adultRef.current || !controllerRef.current || benchmarkBusyRef.current || benchmarkBusy) return;
     hasStartedRef.current = true;
-    const currentQ = COACH_QUESTIONS[questionIndex];
-    controllerRef.current.start(currentQ);
-  }, [questionIndex, benchmarkBusy]);
+    const currentQ = CAFE_QUESTIONS.find((q) => q.id === currentNodeId) || CAFE_QUESTIONS[0];
+    controllerRef.current.start(currentQ, {
+      scenarioId: CAFE_SCENARIO_ID,
+      recentContext: recentHistory,
+    });
+  }, [currentNodeId, recentHistory, benchmarkBusy]);
 
   // 일시정지
   const handlePause = useCallback(() => {
@@ -286,27 +293,65 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
 
   // 다음 질문 이동 (완료 상태에서 사용자가 명시적으로 클릭할 때만)
   const handleNextQuestion = useCallback(() => {
-    if (benchmarkBusyRef.current || benchmarkBusy) return;
-    if (questionIndex < COACH_QUESTIONS.length - 1) {
-      const nextIdx = questionIndex + 1;
-      setQuestionIndex(nextIdx);
-      setSnapshot((prev) => ({
-        ...prev,
-        phase: 'ready',
-        recognizedText: '',
-        feedbackKo: '',
-        modelAnswerEn: '',
-        practiceDone: 0,
-        practiceTarget: 1,
-        message: '',
-      }));
-      if (controllerRef.current && adultRef.current) {
-        controllerRef.current.start(COACH_QUESTIONS[nextIdx]);
-      }
-    } else {
-      setAllFinished(true);
+    if (
+      benchmarkBusyRef.current ||
+      benchmarkBusy ||
+      !adultRef.current ||
+      snapshot.phase !== 'complete' ||
+      !snapshot.approvedAnswer
+    ) {
+      return;
     }
-  }, [questionIndex, benchmarkBusy]);
+    const pendingNextId = snapshot.pendingNextQuestionId;
+    const currentQ = CAFE_QUESTIONS.find((q) => q.id === currentNodeId) || CAFE_QUESTIONS[0];
+
+    // pendingNextId 유효성 및 허용 간선 확인
+    if (!pendingNextId || !currentQ.allowedNextQuestionIds.includes(pendingNextId)) {
+      return;
+    }
+
+    // 직전 완료된 실제 학습자 승인 답변만 최근 맥락에 기록
+    const completedAnswer = snapshot.approvedAnswer;
+    const updatedHistory = [
+      ...recentHistory,
+      { questionId: currentQ.id, answer: completedAnswer },
+    ].slice(-2); // 최대 2턴 유지
+
+    if (pendingNextId === SCENARIO_COMPLETE_SENTINEL) {
+      setAllFinished(true);
+      return;
+    }
+
+    const nextNode = CAFE_QUESTIONS.find((q) => q.id === pendingNextId);
+    if (!nextNode) {
+      return;
+    }
+
+    setCurrentNodeId(nextNode.id);
+    setRecentHistory(updatedHistory);
+    setVisitedCount((prev) => prev + 1);
+
+    setSnapshot((prev) => ({
+      ...prev,
+      phase: 'ready',
+      recognizedText: '',
+      understoodText: undefined,
+      feedbackKo: '',
+      modelAnswerEn: '',
+      practiceDone: 0,
+      practiceTarget: 1,
+      message: '',
+      pendingNextQuestionId: undefined,
+      approvedAnswer: undefined,
+    }));
+
+    if (controllerRef.current && adultRef.current) {
+      controllerRef.current.start(nextNode, {
+        scenarioId: CAFE_SCENARIO_ID,
+        recentContext: updatedHistory,
+      });
+    }
+  }, [currentNodeId, recentHistory, snapshot, benchmarkBusy]);
 
   // 텍스트 직접 제출
   const handleSubmitText = useCallback(
@@ -337,7 +382,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
     [typedAnswer, snapshot.phase, benchmarkBusy]
   );
 
-  const currentQ = COACH_QUESTIONS[questionIndex];
+  const currentQ = CAFE_QUESTIONS.find((q) => q.id === currentNodeId) || CAFE_QUESTIONS[0];
   const phase = snapshot.phase;
 
   // 진단 페이로드 (진단 모드 시 화면 표시 및 클립보드 복사용 동일 규격)
@@ -688,10 +733,10 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
           <div style={{ textAlign: 'center', padding: '32px 16px' }}>
             <span style={{ fontSize: '48px' }}>🎉</span>
             <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981', marginTop: '16px' }}>
-              오늘 연습을 마쳤어요
+              오늘 주문 연습을 마쳤어요
             </h2>
             <p style={{ color: '#94a3b8', fontSize: '14px', lineHeight: 1.6, marginTop: '8px' }}>
-              초급 일상 질문 5가지에 대해 한국어 코칭과 함께 말하기 연습을 모두 완료했습니다.
+              카페 주문 상황(음료·온도·크기·포장·옵션·결제)에 대해 한국어 코칭과 함께 말하기 연습을 성공적으로 완료했습니다.
               내일도 가벼운 마음으로 다시 연습해 보세요!
             </p>
             <button onClick={onBack} style={primaryButtonStyle}>
@@ -754,12 +799,15 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
           ← 나가기
         </button>
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500, whiteSpace: 'nowrap' }}>
+            AI 영어 회화
+          </span>
           <span style={{ fontSize: '15px', fontWeight: 600, color: '#f8fafc', whiteSpace: 'nowrap' }}>
-            AI 영어 회화 (초급)
+            초급 카페 주문
           </span>
         </div>
         <span style={{ fontSize: '13px', color: '#94a3b8', whiteSpace: 'nowrap' }}>
-          {questionIndex + 1} / {COACH_QUESTIONS.length}
+          {visitedCount}번째 질문 · 최대 6문항
         </span>
       </div>
 
@@ -805,7 +853,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
           }}
         >
           <span style={{ fontSize: '13px', color: '#10b981', fontWeight: 600 }}>
-            질문 {questionIndex + 1}
+            질문 ({visitedCount}단계)
           </span>
           {getPhaseBadge()}
         </div>
@@ -1106,7 +1154,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
               cursor: !benchmarkBusy ? 'pointer' : 'not-allowed',
             }}
           >
-            {questionIndex < COACH_QUESTIONS.length - 1 ? '다음 질문으로 →' : '연습 마치기'}
+            {snapshot.pendingNextQuestionId === SCENARIO_COMPLETE_SENTINEL ? '주문 마치기' : '다음 질문으로 →'}
           </button>
         )}
       </div>

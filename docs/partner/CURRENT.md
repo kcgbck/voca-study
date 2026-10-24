@@ -155,9 +155,9 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-무료 기기내 Whisper 비교 기능을 Gemini가 구현하고 Codex가 독립 검증하여 main/운영에 전달했다. 제품HEAD cc7ea19. 전체84파일872시험/타입/린트/빌드/보호경로/diff PASS. 실제 PC WebGPU q8 공개영어전사 실패 발견 후 WASM 호환 모드로 수정. 실제 WASM 공개11초음성2회 정상전사1747/1761ms, 재시작 캐시준비1084/1114ms. PC 수치를 S25 또는 초보자 발음 증거로 취급하지 않는다. 운영 정규주소 HTTP200 최신번들 확인. 실행 전후 D1 회화73건/보수단위1207464 동일, STT/TTS0건, 추가차감0. 기밀문자열 부재327파일PASS. S25 이름·커피·컵·잼·부정어·숫자6문항 리포트 사용자에게 요청해 대기. 실제 우위전 기본 학습 Web Speech 유지, 단어장/사용자저장소/서버/90%보존. 사용자승인대로 기록 커밋·main푸시 및 현재운영만남기는배포정리 마무리. 상세 FOLLOWUP-33.
+카페 상황 회화 5~6문항을 사용자 승인대로 Gemini 구독 CLI가 구현하고 Codex가 검증했다. 기준 HEAD 60c7475/main. 고정5문항 API 호환 유지, 새 UI는 카페 음료→온도→크기→매장/포장→옵션→결제이며 iced 선제답변은 온도를 건너뛴다. 평가·한국어 교정·영어 예문·후속 ID를 단일 API에 통합하고 서버 공인 간선만 허용한다. 최근2턴/1024UTF8/본문4KiB, 16384기본+동적프롬프트 계량,13RPM/225000유닛/450RPD,현재무료모델/독립D1을 보존했다. 실제 승인 동일문장만 정규화 재사용,새답변/변경답변/새질문/후보복구는보수적으로평가. 18세1회/한국어진행/영어질문/10초듣기/확인대화없음/사용자Next유지. Gemini초안 중복문법/부정안전응답의nextID/타입/SSR제목누락을 독립검증으로발견해수정시켰다. RunCommand 시도는자동거부되었고권한확대없음. scripts/verify.ps1 전체86파일907시험/타입/린트/빌드/보호경로/diff PASS. 단어장1800개54000회감사결함0. 독립메모리SQLite 예산8검사 PASS(분당14번째차단/일일450/실패소모/잘못된입력0소모/UTF8통째drop/반복1회소모). 배포22자산 기밀리터럴0/APK없음. 운영D1기준 대화73건/1207464유닛,STT/TTS없음. 사용자Cloudflare재로그인완료. 사용자요청에따라 검증결과기록후커밋/main푸시/운영반영을진행한다. 실제Gemini카페분기·응답시간·D1전후비교는운영반영후기록예정. 실제S25마이크/Whisper우위는아직미검증,기본WebSpeech보존. 상세docs/FOLLOWUP-36_CAFE_ADAPTIVE_COACH.md. APK와인증자료/개인기록은커밋·전송제외.
 
-Operation: followup33-whisper-live-evidence-20261024
-Parent HEAD: cc7ea19edc1f1223839fbbaec11e25ff1fd51dd4
-Attribution: session-attribution-unavailable
+Operation: followup36-cafe-adaptive-20261024
+Parent HEAD: 60c74754fe2d8d599619e3bfed4f4c813ff514ba
+Attribution: baseline-compared
 <!-- CODING_PARTNER_V2_STATE_END -->

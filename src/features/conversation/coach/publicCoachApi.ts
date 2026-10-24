@@ -13,8 +13,12 @@
 import {
   COACH_POLICY_VERSION,
   CoachBudgetError,
+  CAFE_SCENARIO_ID,
+  CAFE_QUESTIONS,
+  COACH_QUESTIONS,
   type CoachEvaluation,
   type CoachInputContext,
+  type CoachRecentContextItem,
 } from './coachProtocol';
 
 /**
@@ -137,6 +141,19 @@ export class PublicCoachApiClient {
       throw new Error('유효하지 않은 질문 ID입니다.');
     }
 
+    const isCafeQuestion = CAFE_QUESTIONS.some((q) => q.id === questionId);
+    const isLegacyQuestion = COACH_QUESTIONS.some((q) => q.id === questionId);
+    if (!isCafeQuestion && !isLegacyQuestion) {
+      throw new Error('유효하지 않은 질문 ID입니다.');
+    }
+
+    if (isCafeQuestion && (!context || context.scenarioId !== CAFE_SCENARIO_ID)) {
+      throw new Error('카페 질문에는 올바른 시나리오 ID가 필요합니다.');
+    }
+    if (isLegacyQuestion && context?.scenarioId !== undefined) {
+      throw new Error('레거시 질문에는 시나리오 ID를 지정할 수 없습니다.');
+    }
+
     if (typeof answer !== 'string') {
       throw new Error('답변 내용이 올바른 문자열이 아닙니다.');
     }
@@ -149,6 +166,9 @@ export class PublicCoachApiClient {
     // 1-1. context 사전 유효성 검사 및 방어적 복사 (crypto, cancel, timer 생성 전에 수행)
     let validatedCandidates: string[] | undefined = undefined;
     let validatedInputSource: 'voice' | 'text' | undefined = undefined;
+    let validatedScenarioId: string | undefined = undefined;
+    let validatedRecentContext: CoachRecentContextItem[] | undefined = undefined;
+
     if (context) {
       if (context.inputSource !== 'voice' && context.inputSource !== 'text') {
         throw new Error('유효하지 않은 입력 방식(inputSource)입니다.');
@@ -177,6 +197,50 @@ export class PublicCoachApiClient {
           throw new Error('후보군의 첫 번째 항목은 제출 답변과 정확히 일치해야 합니다.');
         }
         validatedCandidates = clonedCandidates;
+      }
+
+      if (context.scenarioId !== undefined) {
+        if (typeof context.scenarioId !== 'string' || context.scenarioId !== CAFE_SCENARIO_ID) {
+          throw new Error('유효하지 않은 시나리오 ID입니다.');
+        }
+        validatedScenarioId = context.scenarioId;
+      }
+
+      if (context.recentContext !== undefined) {
+        if (!Array.isArray(context.recentContext)) {
+          throw new Error('최근 대화 맥락(recentContext)은 배열이어야 합니다.');
+        }
+        if (context.recentContext.length > 2) {
+          throw new Error('최근 대화 맥락은 최대 2턴까지만 허용됩니다.');
+        }
+
+        const validCatalogQuestionIds = new Set(
+          validatedScenarioId === CAFE_SCENARIO_ID
+            ? CAFE_QUESTIONS.map((q) => q.id)
+            : COACH_QUESTIONS.map((q) => q.id)
+        );
+
+        const checkedContext: CoachRecentContextItem[] = [];
+        for (const item of context.recentContext) {
+          if (!item || typeof item !== 'object' || Array.isArray(item)) {
+            throw new Error('대화 맥락 항목이 올바른 객체가 아닙니다.');
+          }
+          const qId = item.questionId;
+          const ans = item.answer;
+          if (typeof qId !== 'string' || !validCatalogQuestionIds.has(qId)) {
+            throw new Error('대화 맥락에 유효하지 않은 질문 ID가 포함되어 있습니다.');
+          }
+          if (typeof ans !== 'string' || ans.trim().length === 0 || ans.length > 500) {
+            throw new Error('대화 맥락 답변은 1자 이상 500자 이하의 문자열이어야 합니다.');
+          }
+          checkedContext.push({ questionId: qId, answer: ans.trim() });
+        }
+
+        const contextBytes = new TextEncoder().encode(JSON.stringify(checkedContext)).byteLength;
+        if (contextBytes > 1024) {
+          throw new Error('대화 맥락 직렬화 크기가 최대 허용치(1024B)를 초과했습니다.');
+        }
+        validatedRecentContext = checkedContext;
       }
     }
 
@@ -229,6 +293,12 @@ export class PublicCoachApiClient {
     }
     if (validatedCandidates) {
       payload.candidates = validatedCandidates;
+    }
+    if (validatedScenarioId) {
+      payload.scenarioId = validatedScenarioId;
+    }
+    if (validatedRecentContext) {
+      payload.recentContext = validatedRecentContext;
     }
 
     const fetchFn = this.customFetch || fetch;
@@ -347,12 +417,33 @@ export class PublicCoachApiClient {
         throw new Error('후보군이 없을 때 유효하지 않은 인덱스 응답입니다.');
       }
 
+      // adaptive scenario nextQuestionId 클라이언트 정밀 검증
+      let nextQuestionId: string | undefined = undefined;
+      if (validatedScenarioId === CAFE_SCENARIO_ID) {
+        const currentNode = CAFE_QUESTIONS.find((q) => q.id === questionId);
+        if (currentNode) {
+          if (
+            typeof ev.nextQuestionId !== 'string' ||
+            !currentNode.allowedNextQuestionIds.includes(ev.nextQuestionId)
+          ) {
+            throw new Error('평가 결과의 다음 질문 ID(nextQuestionId)가 허용 목록에 없습니다.');
+          }
+          nextQuestionId = ev.nextQuestionId;
+        }
+      } else if (ev.nextQuestionId !== undefined) {
+        if (typeof ev.nextQuestionId !== 'string') {
+          throw new Error('유효하지 않은 다음 질문 ID 응답입니다.');
+        }
+        nextQuestionId = ev.nextQuestionId;
+      }
+
       return {
         meaning: ev.meaning,
         sentenceComplete: ev.sentenceComplete,
         feedbackKo: ev.feedbackKo.trim(),
         modelAnswerEn: ev.modelAnswerEn.trim(),
         recognizedCandidateIndex,
+        ...(nextQuestionId ? { nextQuestionId } : {}),
       };
     })();
 

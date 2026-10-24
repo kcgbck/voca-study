@@ -16,6 +16,8 @@ import {
   type CoachQuestion,
   type CoachInputContext,
   CoachBudgetError,
+  CAFE_SCENARIO_ID,
+  CAFE_QUESTIONS,
 } from './coachProtocol';
 import type { BrowserSpeechInputOptions } from '../services/browserSpeechInput';
 import type { CoachDiagnosticRecord, SafeDiagnosticErrorCode } from './coachDiagnostics';
@@ -43,6 +45,13 @@ export interface CoachSnapshot {
   practiceDone: number;
   practiceTarget: number;
   message: string;
+  pendingNextQuestionId?: string;
+  approvedAnswer?: string;
+}
+
+export interface CoachStartOptions {
+  scenarioId?: string;
+  recentContext?: Array<{ questionId: string; answer: string }>;
 }
 
 export interface CoachTutorControllerDeps {
@@ -104,6 +113,10 @@ export class CoachTutorController {
   private practiceTarget = 1;
   private currentMode: 'initial' | 'repeat' = 'initial';
   private pendingTextResolver: ((text: string) => void) | null = null;
+  private pendingNextQuestionId?: string = undefined;
+  private approvedAnswer?: string = undefined;
+  private currentScenarioId?: string = undefined;
+  private currentRecentContext?: Array<{ questionId: string; answer: string }> = undefined;
   private lastValidatedEntry: {
     questionId: string;
     answer: string;
@@ -251,6 +264,8 @@ export class CoachTutorController {
       practiceDone: partial.practiceDone ?? this.practiceDone,
       practiceTarget: partial.practiceTarget ?? this.practiceTarget,
       message: partial.message ?? '',
+      pendingNextQuestionId: partial.pendingNextQuestionId !== undefined ? partial.pendingNextQuestionId : this.pendingNextQuestionId,
+      approvedAnswer: partial.approvedAnswer !== undefined ? partial.approvedAnswer : this.approvedAnswer,
     };
     this.deps.emit(snapshot);
   }
@@ -300,11 +315,32 @@ export class CoachTutorController {
     let spokenWaitNotice = false;
     let totalRequests = 0;
 
+    let boundedContext: Array<{ questionId: string; answer: string }> | undefined = undefined;
+    if (this.currentRecentContext && this.currentRecentContext.length > 0) {
+      // 최대 2턴 이내
+      const slice2 = this.currentRecentContext.slice(-2);
+      // 1024B 이내 바운딩 (초과 시 오래된 턴 통째로 drop)
+      let candidateSlice = slice2;
+      while (candidateSlice.length > 0) {
+        const bytes = new TextEncoder().encode(JSON.stringify(candidateSlice)).byteLength;
+        if (bytes <= 1024) {
+          boundedContext = candidateSlice;
+          break;
+        }
+        candidateSlice = candidateSlice.slice(1);
+      }
+    }
+
+    const mergedContext: CoachInputContext = {
+      inputSource: context?.inputSource ?? (this.deps.isTextMode?.() ? 'text' : 'voice'),
+      ...(context?.candidates ? { candidates: context.candidates } : {}),
+      ...(this.currentScenarioId ? { scenarioId: this.currentScenarioId } : {}),
+      ...(boundedContext && boundedContext.length > 0 ? { recentContext: boundedContext } : {}),
+    };
+
     while (!signal.aborted && retryCount <= 2) {
       totalRequests++;
-      const evalPromise = context
-        ? this.deps.evaluate(questionId, answer, context)
-        : this.deps.evaluate(questionId, answer);
+      const evalPromise = this.deps.evaluate(questionId, answer, mergedContext);
       const res = await this.raceStep(
         evalPromise,
         25000,
@@ -350,6 +386,48 @@ export class CoachTutorController {
           };
         }
 
+        // pendingNextQuestionId 갱신 및 검증 (유효한 평가 결과일 때만 갱신, uncertain일 때 전이 금지)
+        if (val.meaning !== 'uncertain') {
+          if (this.currentScenarioId === CAFE_SCENARIO_ID && this.currentQuestion) {
+            const authoritativeNode = CAFE_QUESTIONS.find((q) => q.id === this.currentQuestion?.id);
+            if (!authoritativeNode) {
+              this.pendingNextQuestionId = undefined;
+              this.approvedAnswer = undefined;
+              this.emitSnapshot({
+                phase: 'error',
+                message: '공인 카탈로그에 존재하지 않는 질문입니다.',
+              });
+              return {
+                evaluation: null,
+                evaluationRequests: totalRequests,
+                errorCode: 'EVALUATION_FAILED',
+              };
+            }
+            if (
+              typeof val.nextQuestionId !== 'string' ||
+              !authoritativeNode.allowedNextQuestionIds.includes(val.nextQuestionId)
+            ) {
+              this.pendingNextQuestionId = undefined;
+              this.approvedAnswer = undefined;
+              this.emitSnapshot({
+                phase: 'error',
+                message: '유효하지 않은 다음 질문 추천입니다.',
+              });
+              return {
+                evaluation: null,
+                evaluationRequests: totalRequests,
+                errorCode: 'EVALUATION_FAILED',
+              };
+            }
+          }
+          if (typeof val.nextQuestionId === 'string') {
+            this.pendingNextQuestionId = val.nextQuestionId;
+          }
+        } else {
+          this.pendingNextQuestionId = undefined;
+          this.approvedAnswer = undefined;
+        }
+
         // non-top 후보 선택 시에는 원본 발화(raw answer)로 캐시를 시딩하지 않음
         const isNonTopRecovery =
           typeof val.recognizedCandidateIndex === 'number' &&
@@ -375,6 +453,8 @@ export class CoachTutorController {
       }
 
       if (res.status === 'timeout') {
+        this.pendingNextQuestionId = undefined;
+        this.approvedAnswer = undefined;
         this.emitSnapshot({
           phase: 'error',
           message: '평가 응답 시간이 초과되었습니다.',
@@ -387,6 +467,8 @@ export class CoachTutorController {
       }
 
       if (res.status === 'error') {
+        this.pendingNextQuestionId = undefined;
+        this.approvedAnswer = undefined;
         const err = res.error;
         if (err instanceof CoachBudgetError) {
           if (err.code === 'COACH_DAILY_LIMIT') {
@@ -665,7 +747,7 @@ export class CoachTutorController {
   /**
    * 코칭 세션 시작
    */
-  public async start(question: CoachQuestion): Promise<void> {
+  public async start(question: CoachQuestion, options?: CoachStartOptions): Promise<void> {
     this.currentAbortController?.abort();
     const abortController = new AbortController();
     this.currentAbortController = abortController;
@@ -678,6 +760,10 @@ export class CoachTutorController {
     }
 
     this.currentQuestion = question;
+    this.currentScenarioId = options?.scenarioId;
+    this.currentRecentContext = options?.recentContext
+      ? options.recentContext.map((c) => ({ questionId: c.questionId, answer: c.answer }))
+      : undefined;
     this.recognizedText = '';
     this.understoodText = undefined;
     this.feedbackKo = '';
@@ -686,6 +772,8 @@ export class CoachTutorController {
     this.practiceTarget = 1;
     this.currentMode = 'initial';
     this.lastValidatedEntry = null;
+    this.pendingNextQuestionId = undefined;
+    this.approvedAnswer = undefined;
 
     // 1. 한국어 상황 설명
     this.emitSnapshot({ phase: 'speaking', message: question.scenarioKo });
@@ -837,8 +925,12 @@ export class CoachTutorController {
       evaluation.recognizedCandidateIndex > 0
     ) {
       this.understoodText = context.candidates[evaluation.recognizedCandidateIndex];
+      this.approvedAnswer = this.understoodText;
     } else {
       this.understoodText = undefined;
+      if (evaluation.meaning === 'relevant') {
+        this.approvedAnswer = answer.trim();
+      }
     }
 
     this.emitSnapshot({
@@ -850,8 +942,10 @@ export class CoachTutorController {
     });
     if (!(await this.safeSpeak(this.feedbackKo, 'ko-KR', signal))) return;
 
-    // uncertain 판정 시 즉시 paused (진도 0)
+    // uncertain 판정 시 즉시 paused (진도 0, pendingNextQuestionId/approvedAnswer 초기화)
     if (evaluation.meaning === 'uncertain') {
+      this.pendingNextQuestionId = undefined;
+      this.approvedAnswer = undefined;
       this.emitSnapshot({ phase: 'paused', message: '뜻을 확실하게 이해하지 못했어요.' });
       return;
     }
@@ -956,6 +1050,9 @@ export class CoachTutorController {
           this.lastValidatedEntry.normalizedKey === repeatKey
         ) {
           repeatEval = { ...this.lastValidatedEntry.evaluation };
+          if (repeatEval.meaning !== 'uncertain' && typeof repeatEval.nextQuestionId === 'string') {
+            this.pendingNextQuestionId = repeatEval.nextQuestionId;
+          }
           evaluationSource = 'reuse';
           evalRequests = 0;
         } else {
@@ -985,8 +1082,12 @@ export class CoachTutorController {
             repeatEval.recognizedCandidateIndex > 0
           ) {
             this.understoodText = repeatContext.candidates[repeatEval.recognizedCandidateIndex];
+            this.approvedAnswer = this.understoodText;
           } else {
             this.understoodText = undefined;
+            if (repeatEval && repeatEval.meaning === 'relevant') {
+              this.approvedAnswer = repeatTranscript.trim();
+            }
           }
         }
 
@@ -1023,8 +1124,10 @@ export class CoachTutorController {
         });
         if (!(await this.safeSpeak(repeatEval.feedbackKo, 'ko-KR', signal))) return;
 
-        // 반복 연습 중 uncertain인 경우 크레딧 없이 paused
+        // 반복 연습 중 uncertain인 경우 크레딧 없이 paused (전이 금지)
         if (repeatEval.meaning === 'uncertain') {
+          this.pendingNextQuestionId = undefined;
+          this.approvedAnswer = undefined;
           this.emitSnapshot({ phase: 'paused', message: '뜻을 확실하게 이해하지 못했어요.' });
           return;
         }
@@ -1068,6 +1171,8 @@ export class CoachTutorController {
     this.pendingTextResolver = null;
     this.lastValidatedEntry = null;
     this.understoodText = undefined;
+    this.pendingNextQuestionId = undefined;
+    this.approvedAnswer = undefined;
     this.currentAbortController?.abort();
     this.currentAbortController = null;
     try {
@@ -1145,6 +1250,9 @@ export class CoachTutorController {
         this.lastValidatedEntry.normalizedKey === repeatKey
       ) {
         repeatEval = { ...this.lastValidatedEntry.evaluation };
+        if (repeatEval.meaning !== 'uncertain' && typeof repeatEval.nextQuestionId === 'string') {
+          this.pendingNextQuestionId = repeatEval.nextQuestionId;
+        }
         evaluationSource = 'reuse';
         evalRequests = 0;
       } else {
@@ -1186,6 +1294,9 @@ export class CoachTutorController {
 
       this.feedbackKo = repeatEval.feedbackKo;
       this.modelAnswerEn = repeatEval.modelAnswerEn;
+      if (repeatEval.meaning === 'relevant') {
+        this.approvedAnswer = trimmed;
+      }
 
       this.emitSnapshot({
         phase: 'speaking',
@@ -1196,6 +1307,8 @@ export class CoachTutorController {
       if (!(await this.safeSpeak(repeatEval.feedbackKo, 'ko-KR', signal))) return;
 
       if (repeatEval.meaning === 'uncertain') {
+        this.pendingNextQuestionId = undefined;
+        this.approvedAnswer = undefined;
         this.emitSnapshot({ phase: 'paused', message: '뜻을 확실하게 이해하지 못했어요.' });
         return;
       }
