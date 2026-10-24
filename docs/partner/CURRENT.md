@@ -155,10 +155,10 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: 운영 합성 평가 피드백 보완
-후보 선택 경로와 9호출/D1 9차감/STT·TTS0 확인. 실제 응답의 잘못된 피드백 3종을 발견해 Gemini가 지침 보완, 77파일760시험 PASS. 저장·커밋·main 푸시·운영 재배포 후 엄격한 실제 모델 재시험 진행. 실물 인식률은 미측정.
+## 현재: 음성 후보 보존 장치 검증
+지시문만으로 남은 실제 모델 오류를 확인해 Gemini가 후보 선택 예시·완전한 문장 보존·한국어 안전 피드백을 보완. 77파일767시험 PASS. 저장·커밋·main 푸시·운영 배포 후 예시에 없는 단어까지 실제 재시험한다. 무료90% 상한과 단어 데이터 보존.
 
-Operation: followup29-speech-feedback-20261024
-Parent HEAD: b490ec8f33cd92525642dca396a82cd2dce35c64
+Operation: followup29-speech-guards-20261024
+Parent HEAD: 457ff5193d6a33f91338546d619d551f7a0248f7
 Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->

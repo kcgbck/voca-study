@@ -62,21 +62,28 @@
   - text 모드에 candidates 전달 시 400 거부.
   - 배열 형태, 길이(2~3), 빈 문자열/500자 초과/중복 여부, `candidates[0] !== trimmedAnswer` 검증.
 - 예산 예약(`estimatedUnits`) 시 `candidates`의 실제 UTF-8 바이트 수를 합산 계산하여 과소 계량 방지.
-- **시스템 프롬프트 컴팩트화 및 운영 결함 보완:**
-  - 중복 근거 문구를 압축하여 프롬프트 길이를 1,130자(Codex 실제 소스 계수, 1,500자 미만)로 컴팩트하게 정돈하면서, 실운영 합성 결과(`.agy-work/286_speech_live.json`)에서 발견된 실결함 교정 지침 반영.
-  - 채택된 후보(selected candidate) 기준으로만 문법/완성도 및 피드백을 평가하도록 명시 (원문 index 0의 STT 대안 어휘를 학습자의 어휘 실수로 지적하거나 'couple 대신 coffee' 등으로 탓하지 않음).
-  - 온전한 문장이 채택된 경우 `sentenceComplete=true` 부여 및 한국어 피드백에서 대안 어휘를 탓하지 않는 올바른 칭찬/교정을 지시.
-  - 어휘 의도 엄격 보존: 발화에 없는 구체적 음료명(coffee 등)이나 인명을 모범답안(`modelAnswerEn`)에 임의 날조/추가 금지 ('I would like a cup.'은 그대로 보존, 모호할 경우 한국어로 음료 되묻기).
-  - `uncertain` 시 미발화된 예시 인명/문장('My name is John' 등) 날조 금지, 채택/원문 텍스트 유지 및 한국어로 재발화만 요청.
-- Gemini 반환 JSON 파싱 시 `recognizedCandidateIndex`의 유효 범위 검증(502 방어).
+- **시스템 프롬프트 컴팩트화 및 후보 선택 Few-Shot 도입:**
+  - 중복 문구를 압축하여 목표 상한(<=1400자) 내로 컴팩트하게 정돈. (정확한 글자 수는 Codex 측정에 위임)
+  - candidates 중 채택할 후보를 먼저 결정(FIRST)하고, candidates 경계 밖의 발음 유사 어휘로 임의 재작성하지 않도록 명시.
+  - 네이티브 후보군 경계 내 Few-Shot 예시 추가:
+    - `['I would like couple, please.', 'I would like coffee, please.']` -> index 1, relevant/true
+    - `['I had toast with gym.', 'I had toast with jam.']` -> index 1, relevant/true
+    - `['I would like a cup.', 'I would like coffee.']` -> index 0, relevant/true
+    - (주의: 상기 예시는 원칙 전달용이며 실제 정답 어휘는 반드시 전달된 candidates 내에 있어야 함)
+  - 기존 필수 요구사항 보존: `six`, `Coffee, please`, `I has coffee`, 낯선 한국어 이름 표기 보존, 숫자/부정어 엄격성, `maxOutputTokens: 512`, JSON 스키마.
+- **결정론적 서버 안전 가드 (Deterministic Server Guard):**
+  - AI 반환 JSON 파싱 및 인덱스 유효성 검증 직후 서버 레벨에서 결정론적 교정 적용:
+  - 1) `meaning === 'relevant'`이고 `sentenceComplete === true`일 때: 채택된 문장이 200자 이하이며 영문 알파벳 포함(`/[a-zA-Z]/`) 및 한글 부재(`!/[가-힣ㄱ-ㅎㅏ-ㅣ]/`) 조건을 모두 만족하는 경우에만 `modelAnswerEn`을 해당 채택 문장 원본으로 확정 (한글 직접 입력 등 미충족 시 검증된 기존 AI 모범답안 유지).
+  - 2) 1순위 왜곡 구제(non-top recovery: `recognizedCandidateIndex > 0`)이고 `relevant`인 경우: 탈락한 STT 어휘(couple, gym 등)를 학습자 실수로 비난하지 않고 한국어 피드백(`feedbackKo`) 적용. TTS 영문 모범답안은 컨트롤러에서 별도로 낭독하므로 한국어 피드백 내 영문 모범답안을 삽입하지 않고 한국어 전용 문구(`sentenceComplete` 시 온전문장 칭찬, 아닐 시 '뜻은 잘 전달됐어요. 이어지는 예문처럼 완전한 문장으로 말해 보세요.')로 제공.
+  - 모델의 meaning/sentenceComplete/index 판정 결정 자체는 왜곡하지 않으며, 텍스트 직접 입력 및 기존 에러/예산 처리는 100% 동일하게 유지.
 
 ---
 
 ## 3. 한계 및 미검증 사항 (Preserved Limitations)
 
-- **운영 1차 실측 발견 결함 및 재검증 대기 (Live Discovery Unresolved):**
-  - 운영 배포 후 수집된 실측 합성 결과(`.agy-work/286_speech_live.json`)에서 1) 후보 채택 후 원문 STT 어휘 탓 및 `sentenceComplete=false` 오판, 2) 'a cup' 발화에 'a cup of coffee' 모범답안 날조, 3) 불확실 발화에 'My name is John' 모범답안 날조 현상이 발견되었습니다.
-  - 본 프롬프트 보강을 통해 지침을 명확화하였으나, Codex 재시험 및 실제 모델 재평가 검증이 완료될 때까지 해당 결함은 **해결 대기(not yet resolved until Codex retest)** 상태로 문서화하여 관리합니다.
+- **운영 실측 1·2차 결함 및 재검증 대기 (Live Discovery 2nd Failure Pending Retest):**
+  - 운영 배포 후 수집된 실측 합성 결과(`.agy-work/286_speech_live.json`, `.agy-work/289_speech_live.json`)에서 지침만으로는 모델이 candidates[1]의 `coffee` 대신 0순위 `couple`을 채택하고 발음 유사 어휘 `cup`을 날조하거나, 1순위 채택 시에도 피드백에서 여전히 STT 오류(`gym->jam`)를 학습자 탓으로 돌리는 현상이 확인되었습니다.
+  - 본 Few-Shot 프롬프트 보강 및 서버 결정론적 가드(`finalModelAnswerEn`, `finalFeedbackKo`)를 도입하였으나, Codex 재시험 및 실제 배포 재평가 검증이 완료될 때까지 해당 결함은 **해결 대기(pending retest)** 상태로 유지합니다.
 - **후보군 부재 시의 한계:**
   - 브라우저 네이티브 STT가 제공한 1~3순위 후보군 어디에도 올바른 단어나 이름이 들어있지 않은 경우(예: 완전히 엉뚱한 영어 단어들만 생성된 경우), 인위적으로 교재 예문을 주입하거나 단어를 추측하지 않으므로 여전히 `uncertain`으로 처리됩니다.
 - **실물 단말 미검증 상태 유지:**

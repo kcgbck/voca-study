@@ -63,6 +63,27 @@ it('sends raw and native candidates together to exactly one model call and budge
  const reserved=h.statements.find(s=>s.sql.includes('INSERT INTO'));expect(reserved.values[5]).toBeGreaterThanOrEqual(16384+new TextEncoder().encode(JSON.stringify({question:COACH_QUESTIONS[2].questionEn,answer:h.body.answer,candidates:h.body.candidates})).byteLength);
  expect((await r.json()).evaluation.recognizedCandidateIndex).toBe(1);expect(JSON.stringify(h.statements)).not.toContain('coffee');
 });
+it('preserves the complete selected sentence instead of generated noun substitutions and avoids blaming discarded STT words',async()=>{
+ const h=server({...good,recognizedCandidateIndex:1,modelAnswerEn:'I would like tea.',feedbackKo:'커플 대신 커피라고 말하세요.'});
+ const r=await handlePublicCoach(h.request(),h.env,{fetchFn:h.fetchFn});const ev=(await r.json()).evaluation;
+ expect(ev.modelAnswerEn).toBe(h.body.candidates[1]);expect(ev.feedbackKo).not.toMatch(/커플|couple|대신/);expect(ev.meaning).toBe('relevant');expect(ev.sentenceComplete).toBe(true);expect(h.fetchFn).toHaveBeenCalledOnce();
+});
+it('preserves plausible top candidate wording without inventing the alternative beverage',async()=>{
+ const h=server({...good,recognizedCandidateIndex:0});const r=await handlePublicCoach(h.request({answer:'I would like a cup.',candidates:['I would like a cup.','I would like coffee.']}),h.env,{fetchFn:h.fetchFn});
+ expect((await r.json()).evaluation.modelAnswerEn).toBe('I would like a cup.');
+});
+it('incomplete recovery keeps the AI grammar example but never blames an unused native word',async()=>{
+ const h=server({...good,recognizedCandidateIndex:1,sentenceComplete:false,feedbackKo:'copy 대신 coffee를 말하세요.'});const r=await handlePublicCoach(h.request({answer:'copy please',candidates:['copy please','coffee please']}),h.env,{fetchFn:h.fetchFn});const ev=(await r.json()).evaluation;
+ expect(ev.modelAnswerEn).toBe(good.modelAnswerEn);expect(ev.sentenceComplete).toBe(false);expect(ev.feedbackKo).not.toMatch(/copy|대신/);expect(ev.feedbackKo).toMatch(/[가-힣]/);expect(ev.feedbackKo).not.toMatch(/[a-zA-Z]/);
+});
+it.each(['커피 주세요','12345','...'])('complete-answer preservation never bypasses English-only output validation: %s',async answer=>{
+ const h=server({...good,recognizedCandidateIndex:0});const r=await handlePublicCoach(h.request({answer,candidates:undefined,inputSource:'text'}),h.env,{fetchFn:h.fetchFn});
+ expect(r.status).toBe(200);const ev=(await r.json()).evaluation;expect(ev.modelAnswerEn).not.toMatch(/[가-힣]/);expect(ev.modelAnswerEn).toMatch(/[a-zA-Z]/);
+});
+it('complete long answers retain the bounded AI example without cutting native words',async()=>{
+ const h=server({...good,recognizedCandidateIndex:0});const answer='I would like coffee with '.repeat(9)+'milk.';expect(answer.length).toBeGreaterThan(200);
+ const r=await handlePublicCoach(h.request({answer,candidates:undefined,inputSource:'text'}),h.env,{fetchFn:h.fetchFn});expect(r.status).toBe(200);expect((await r.json()).evaluation.modelAnswerEn).toBe(good.modelAnswerEn);
+});
 it.each([{inputSource:'text'},{inputSource:'invalid'},{candidates:['different raw','coffee']},{candidates:['x','x']},{candidates:['x']},{candidates:['x','y','z','q']},{candidates:['I would like couple, please.',42]},{candidates:['I would like couple, please.',' ']},{candidates:['I would like couple, please.','x'.repeat(501)]}])('rejects invalid candidate context before budget/upstream: %j',async patch=>{
  const h=server();const r=await handlePublicCoach(h.request(patch),h.env,{fetchFn:h.fetchFn});expect(r.status).toBe(400);expect(h.fetchFn).not.toHaveBeenCalled();expect(h.statements).toHaveLength(0);
 });
