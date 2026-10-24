@@ -850,6 +850,29 @@ JSON: {"recognizedCandidateIndex":0|1|2,"meaning":"relevant"|"needs_help"|"uncer
       }
     }
 
+    // 5. 적응형 카페 시나리오 전용 피드백 형식 안전 가드:
+    // AI가 한국어 피드백 내에 영어 알파벳 문장을 중복 삽입하거나 100자를 초과한 장황한 설명을 반환했을 때,
+    // 검증된 AI 평가 결과(meaning, sentenceComplete, modelAnswerEn, nextQuestionId 등)는 일체 변경하지 않고
+    // 음성 낭독에 적합한 정제된 한국어 전용 원포인트 피드백(<= 100자)으로만 치환한다.
+    // (영어 예문은 modelAnswerEn으로 별도 제공되며, 영문이 없고 100자 이하인 정상 구체 한국어 피드백은 그대로 보존)
+    if (isAdaptiveScenario) {
+      const hasLatinAlphabet = /[a-zA-Z]/.test(finalFeedbackKo);
+      const isTooLong = finalFeedbackKo.length > 100;
+      if (hasLatinAlphabet || isTooLong) {
+        if (meaning === 'relevant') {
+          if (sentenceComplete) {
+            finalFeedbackKo = '뜻이 잘 전달됐어요. 완전한 문장으로 자연스럽게 답했어요.';
+          } else {
+            finalFeedbackKo = '뜻은 잘 전달됐어요. 예문처럼 완전한 문장으로 말해 보세요.';
+          }
+        } else if (meaning === 'needs_help') {
+          finalFeedbackKo = '질문에 맞는 답변인지 확인하고, 이어지는 예문으로 연습해 보세요.';
+        } else {
+          finalFeedbackKo = '답변의 뜻을 확실히 이해하기 어려워요. 다시 말해 주세요.';
+        }
+      }
+    }
+
     const evaluation: CoachEvaluation = {
       meaning,
       sentenceComplete,

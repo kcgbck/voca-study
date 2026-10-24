@@ -251,7 +251,7 @@ describe('Adaptive Coach - Server & Protocol & API Integration', () => {
       const shortCoffeeEval = {
         meaning: 'relevant',
         sentenceComplete: false,
-        feedbackKo: '주문할 때 자연스러운 표현이에요. 이번에는 "I would like coffee, please."처럼 문장으로 연습해 봐요.',
+        feedbackKo: '주문할 때 자연스럽게 통하는 표현이에요.',
         modelAnswerEn: 'I would like coffee, please.',
         nextQuestionId: 'cafe_temp',
       };
@@ -275,7 +275,142 @@ describe('Adaptive Coach - Server & Protocol & API Integration', () => {
       expect(data.evaluation.meaning).toBe('relevant');
       expect(data.evaluation.sentenceComplete).toBe(false);
       expect(data.evaluation.nextQuestionId).toBe('cafe_temp');
-      expect(data.evaluation.feedbackKo).toContain('주문할 때 자연스러운 표현');
+      expect(data.evaluation.feedbackKo).toBe('주문할 때 자연스럽게 통하는 표현이에요.');
+    });
+
+    it('sanitizes feedbackKo to clean Korean when AI includes Latin English sentence in adaptive feedback', async () => {
+      // AI output has redundant English "I would like coffee, please." inside feedbackKo
+      const aiWithEnglishFeedback = {
+        meaning: 'relevant',
+        sentenceComplete: false,
+        feedbackKo: '좋은 표현이에요. I would like coffee, please. 처럼 말해 보세요.',
+        modelAnswerEn: 'I would like coffee, please.',
+        nextQuestionId: 'cafe_temp',
+      };
+      const { env, fetchFn, statements } = setupMockServer();
+      fetchFn.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            candidates: [{ content: { parts: [{ text: JSON.stringify(aiWithEnglishFeedback) }] } }],
+          }),
+          { headers: { 'Content-Type': 'application/json' } }
+        )
+      );
+
+      const res = await handlePublicCoach(
+        createServerRequest({ answer: 'Coffee, please.' }),
+        env,
+        { fetchFn }
+      );
+      expect(res.status).toBe(200);
+      expect(fetchFn).toHaveBeenCalledOnce(); // No extra API retry!
+      expect(statements.some((s) => s.sql.includes("state = 'consumed'"))).toBe(true);
+
+      const data = await res.json();
+      expect(data.evaluation.meaning).toBe('relevant');
+      expect(data.evaluation.sentenceComplete).toBe(false);
+      expect(data.evaluation.modelAnswerEn).toBe('I would like coffee, please.');
+      expect(data.evaluation.nextQuestionId).toBe('cafe_temp');
+
+      // Feedback sanitized to concise Korean template (no Latin characters, <= 100 chars)
+      expect(data.evaluation.feedbackKo).toBe('뜻은 잘 전달됐어요. 예문처럼 완전한 문장으로 말해 보세요.');
+      expect(/[a-zA-Z]/.test(data.evaluation.feedbackKo)).toBe(false);
+      expect(data.evaluation.feedbackKo.length).toBeLessThanOrEqual(100);
+    });
+
+    it('sanitizes feedbackKo when explanation exceeds 100 characters while preserving evaluation outcomes', async () => {
+      const verboseFeedback = '정말 좋은 답변입니다. '.repeat(10); // > 100 chars
+      const aiVerboseEval = {
+        meaning: 'relevant',
+        sentenceComplete: true,
+        feedbackKo: verboseFeedback,
+        modelAnswerEn: 'I would like coffee, please.',
+        nextQuestionId: 'cafe_temp',
+      };
+      const { env, fetchFn } = setupMockServer();
+      fetchFn.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            candidates: [{ content: { parts: [{ text: JSON.stringify(aiVerboseEval) }] } }],
+          }),
+          { headers: { 'Content-Type': 'application/json' } }
+        )
+      );
+
+      const res = await handlePublicCoach(
+        createServerRequest({ answer: 'I would like coffee, please.' }),
+        env,
+        { fetchFn }
+      );
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.evaluation.meaning).toBe('relevant');
+      expect(data.evaluation.sentenceComplete).toBe(true);
+      expect(data.evaluation.modelAnswerEn).toBe('I would like coffee, please.');
+      expect(data.evaluation.feedbackKo).toBe('뜻이 잘 전달됐어요. 완전한 문장으로 자연스럽게 답했어요.');
+      expect(data.evaluation.feedbackKo.length).toBeLessThanOrEqual(100);
+    });
+
+    it('sanitizes feedbackKo for needs_help without promoting meaning to relevant', async () => {
+      const needsHelpEval = {
+        meaning: 'needs_help',
+        sentenceComplete: false,
+        feedbackKo: '질문과 맞지 않아요. I would like a car.', // Contains English + Korean
+        modelAnswerEn: 'I would like coffee, please.',
+        nextQuestionId: 'cafe_temp',
+      };
+      const { env, fetchFn } = setupMockServer();
+      fetchFn.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            candidates: [{ content: { parts: [{ text: JSON.stringify(needsHelpEval) }] } }],
+          }),
+          { headers: { 'Content-Type': 'application/json' } }
+        )
+      );
+
+      const res = await handlePublicCoach(
+        createServerRequest({ answer: 'A car, please.' }),
+        env,
+        { fetchFn }
+      );
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.evaluation.meaning).toBe('needs_help'); // Preserved without promotion!
+      expect(data.evaluation.sentenceComplete).toBe(false);
+      expect(data.evaluation.feedbackKo).toBe('질문에 맞는 답변인지 확인하고, 이어지는 예문으로 연습해 보세요.');
+    });
+
+    it('preserves clean Korean specific feedback for carrier and sleeve without modification', async () => {
+      const carrierOnlyFeedback = '캐리어가 필요 없다고 정확히 밝히셨어요.';
+      const cleanEval = {
+        meaning: 'relevant',
+        sentenceComplete: true,
+        feedbackKo: carrierOnlyFeedback,
+        modelAnswerEn: 'I do not need a carrier, thank you.',
+        nextQuestionId: 'cafe_payment',
+      };
+      const { env, fetchFn } = setupMockServer();
+      fetchFn.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            candidates: [{ content: { parts: [{ text: JSON.stringify(cleanEval) }] } }],
+          }),
+          { headers: { 'Content-Type': 'application/json' } }
+        )
+      );
+
+      const res = await handlePublicCoach(
+        createServerRequest({
+          questionId: 'cafe_option',
+          answer: 'I do not need a carrier, thank you.',
+        }),
+        env,
+        { fetchFn }
+      );
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.evaluation.feedbackKo).toBe(carrierOnlyFeedback); // Preserved exactly!
     });
 
     it('when learner already specifies "I would like iced tea, please", AI selects cafe_size directly', async () => {

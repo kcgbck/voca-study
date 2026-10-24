@@ -155,9 +155,9 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-카페 실제운영 1차검증 완료: 제품9caa7f8/main/운영반영. 합성Controller+실제공개API+Google+D1으로5문항6호출(iced tea후coffee변경재평가),6문항7호출(단답교정+동일반복재사용),총11문항13평가 모두성공. consumed73→86(+13),유닛1207464→1428521(+221057),STT/TTS0유지. API왕복1245~2003ms/중앙1436ms; 실제S25마이크/TTS측정아님. 360px가로넘침없음. 실제피드백에서carrier만거절했는데sleeve도거절한것으로넓힌문제발견하여Gemini에부정범위보존/미언급항목추측금지/짧은한국어피드백/영문예문중복금지 최소프롬프트수정시킴. 수정후전체86파일907시험/타입/린트/빌드/보호경로/diff PASS. 13RPM/225000유닛/450RPD와기본16384계량/단일20초/noexternretry/무료모델/단어장/사용자저장소보존. 이번수정커밋/main푸시/운영반영후carrier와sleeve부정2건/단답coffee/iced분기와브라우저텍스트학습을재검증예정. 실제S25발음·Whisper비교는여전히미검증. 원본자료와인증자료커밋제외. 상세FOLLOWUP-36.
+카페 실제운영추가검증에서carrier단독거절과carrier거절+sleeve요청은정상처리확인. 단답Coffeeplease에서AI가영어예문중복금지지시를어겨한국어피드백에영어문장을포함하는경우발견. Gemini가카페전용피드백형식가드구현: 영문알파벳혼입또는100자초과면짧은한국어표현으로만치환. AI meaning/sentenceComplete/영문예문/후속ID/후보/호출/계량은변경없고추가호출0. 정상구체한국어피드백과기존한국어필수/500자검증보존. 추가4시험포함전체86파일911시험/타입/린트/빌드/보호경로/diff PASS(506). 독립예산8프로브PASS. API90%13/225000/450/단일20초/noexternretry/16384기본계량/무료모델보존. 실제첫13평가소모73→86/STT TTS0,다음3평가에서부정범위2건PASS/단답형식QA실패를발견한상태이며현재수정재배포후4건재검증과브라우저동일반복확인예정. 제품외단어장/사용자저장소보존,실제S25마이크/Whisper비교미검증. 상세FOLLOWUP36. 이번사용자요청범위인표현가드2파일과검증기록만선택커밋하고main푸시운영반영한다.
 
-Operation: followup36-cafe-feedback-scope-20261024
-Parent HEAD: 9caa7f87e6f02aac1557bfc625274d014684fc03
+Operation: followup36-cafe-korean-guard-20261024
+Parent HEAD: 68ec52301e91d9924261933d0ffab44f0bcc841e
 Attribution: baseline-compared
 <!-- CODING_PARTNER_V2_STATE_END -->
