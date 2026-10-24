@@ -49,10 +49,10 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: Gemini 후보 우선 구조화 응답 구현
-사용자가 Gemini 재충전을 확인하고 계속 구현 지시. 깨끗한 main a18b5a4에서 Gemini가 publicCoachHandler의 후보 번호 우선 JSON 및 구조화 응답 스키마를 추가했다. Codex 직접 제품 수정 없음. 실제 후보 범위에 맞춘 정수 번호를 먼저 생성하고 의미·문법·피드백을 이어 생성한다. 정확도 개선 가설이며 실제 재시험 전 완전 해결로 주장하지 않는다. 기존 출력 보존·한국어 피드백·무료90% 상한·모델·20초 제한·단일 호출 유지. Codex 독립 시험2개 실패 재현 후 통과, 전체77파일769시험·타입·린트·빌드·보호 경로·공백 PASS. 민감값293파일 일치0, 단어 DB/저장소 무변경. 저장·커밋·main 푸시·운영 배포 후 합성 회복 및 D1 대조 진행. 이전28호출/463427단위/STT·TTS0, coffee불안정·20초504 1회는 이력 보존. 실물 S25 등 수동 관문 미검증.
+## 현재: 음성 후보 입력 중복 제거
+f4956e1 main 푸시·운영 배포 후 구조화 응답10호출 중8사례 통과, coffee 오선택 및 그에 따른 원문 캐시 문제2사례는 실패로 기록했다. D1은 누적38소비/628944단위, STT/TTS0. 응답 순서만으로 정확도 문제가 해결되지 않음을 확인했다. Gemini가 후보 존재 시 업스트림의 중복 사용자 답변 필드를 생략하고 실제 후보 목록만 전달하도록 최소 보완했다. 수신 원문과 화면, 후보0의 실제 원문은 보존하며 후보가 없으면 기존 답변 필드를 유지한다. Codex 독립 실패1개 재현 후 전체77파일769시험·타입·린트·빌드·보호 경로·공백 검사 PASS. 민감값294파일 일치0. 저장·커밋·main 푸시·운영 재배포 후 합성 재대조 진행. 모델·예산·출력·시간 제한과 단어 데이터 무변경.
 
-Operation: followup30-schema-order-20261024
-Parent HEAD: a18b5a428b1b2110e5fc8fd04fd978eecd355a5d
-Attribution: baseline-compared
+Operation: followup30-native-list-20261024
+Parent HEAD: f4956e1a2dbfff127ae0ab8eb04f183229c53789
+Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->

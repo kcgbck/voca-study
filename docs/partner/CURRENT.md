@@ -155,10 +155,10 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: Gemini 후보 우선 스키마 검증
-Gemini 구현·Codex 검증 역할 유지. 실제 후보 번호를 먼저 생성하도록 응답 스키마를 추가, 77파일769시험 및 전체 검사 PASS. main 커밋·푸시·운영 배포 후 합성 실제 모델 재시험 및 예산 DB 대조 진행. 무료90% 상한, 모델, 사용자 데이터 보존. 실물 인식률 미측정.
+## 현재: Gemini 후보 입력 중복 제거 검증
+구조화 응답만으로 coffee 실패가 남아 Gemini가 실제 후보 목록만 전송하도록 보완. 원문 보존, 후보 없는 답변 동작 유지. Codex77파일769시험 및 전체 검사 PASS. 저장·커밋·main 푸시·기본 주소 운영 배포 후 실제 재검증 진행. 무료90%와 단어 데이터 보존, 실물 인식률 미측정.
 
-Operation: followup30-schema-order-20261024
-Parent HEAD: a18b5a428b1b2110e5fc8fd04fd978eecd355a5d
-Attribution: baseline-compared
+Operation: followup30-native-list-20261024
+Parent HEAD: f4956e1a2dbfff127ae0ab8eb04f183229c53789
+Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->

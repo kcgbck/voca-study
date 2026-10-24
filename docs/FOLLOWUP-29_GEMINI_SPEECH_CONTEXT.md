@@ -72,10 +72,13 @@
     - (주의: 상기 예시는 원칙 전달용이며 실제 정답 어휘는 반드시 전달된 candidates 내에 있어야 함)
   - 기존 필수 요구사항 보존: `six`, `Coffee, please`, `I has coffee`, 낯선 한국어 이름 표기 보존, 숫자/부정어 엄격성, `maxOutputTokens: 512`, JSON 스키마.
 - **구조적 후보 우선 생성 가설 및 `responseSchema` 적용 (Structural Selection-Order Hypothesis):**
-  - AI 반환 JSON 프롬프트 및 `generationConfig.responseSchema`의 속성 순서(`propertyOrdering`)에서 `recognizedCandidateIndex`를 최우선(맨 앞)으로 재배치:
-    - 프롬프트 JSON 일러스트레이션: `{"recognizedCandidateIndex":0|1|2,"meaning":"relevant"|"needs_help"|"uncertain", ...}`
-    - `generationConfig.responseSchema`: `recognizedCandidateIndex`(integer, minimum 0, maximum 후보수-1)를 첫 번째 프로퍼티로 지정하고 `propertyOrdering`을 강제하여 디코더가 의미/피드백 생성 이전에 후보군 선택을 먼저 결정하도록 유도.
-  - 본 조치는 디코더의 생성 순서 앵커링을 검증하기 위한 최소한의 구조적 가설 적용이며, 정확도 완전 보장이 입증된 것은 아니므로 **Codex 실측 재검증 대기(pending retest)** 상태로 유지.
+  - AI 반환 JSON 프롬프트 및 `generationConfig.responseSchema`의 속성 순서(`propertyOrdering`)에서 `recognizedCandidateIndex`를 최우선(맨 앞)으로 재배치.
+  - 실측 결과(`.agy-work/320_schema_live.json`)에 따르면 순서 재배치만으로는 `coffee` 후보 대신 0순위 `couple`을 채택하는 앵커링이 완전히 해소되지 않았음이 확인됨.
+- **2차 구조적 가설: `userAnswerEn` 중복 제거 및 단일 후보 목록 전송 (Single Candidate List Hypothesis):**
+  - 원본 답변(`raw answer`)이 `userAnswerEn`으로 단독 전달되면서 동시에 `candidates[0]`으로 중복 전달되어 경량 모델이 0순위에 과도하게 앵커링되는 문제를 방지.
+  - 유효한 후보군(`validatedCandidates`)이 존재할 때는 `contents` 페이로드에 `userAnswerEn`을 생략하고 오직 동일 발화의 대안 가설 목록인 `candidates`만 전송. (후보군 부재/텍스트 입력 시에는 기존대로 `userAnswerEn` 전송).
+  - 프롬프트에 `candidates`는 동일 발화의 대안 가설 목록이며 질문 문맥에 일관되게 맞는 후보를 선택하고 index 0이 문맥상 틀렸을 때 index 0을 특권화(우선)하지 말 것을 명시.
+  - 본 조치 역시 모델 평가 앵커링을 검증하기 위한 가설적 접근이며, 정확도 보장으로 단정하지 않고 **Codex 실측 재검증 대기(pending retest)** 상태로 관리.
 - **결정론적 서버 안전 가드 (Deterministic Server Guard):**
   - AI 반환 JSON 파싱 및 인덱스 유효성 검증 직후 서버 레벨에서 결정론적 교정 적용:
   - 1) `meaning === 'relevant'`이고 `sentenceComplete === true`일 때: 채택된 문장이 200자 이하이며 영문 알파벳 포함(`/[a-zA-Z]/`) 및 한글 부재(`!/[가-힣ㄱ-ㅎㅏ-ㅣ]/`) 조건을 모두 만족하는 경우에만 `modelAnswerEn`을 해당 채택 문장 원본으로 확정 (한글 직접 입력 등 미충족 시 검증된 기존 AI 모범답안 유지).
@@ -108,5 +111,6 @@
 - 최신 묶음: jam, 프롬프트 예시에 없는 tennis·bread 후보 구제, cup 의도·한국식 합성 가명·숫자·부정 보존을 확인했다. 대안 채택 후 원문을 탓하는 피드백과 온전한 문장에 새 명사를 추가하는 응답은 서버 보존 장치로 막았다.
 - **coffee 구제 안정성 미달**: 같은 후보 묶음에서도 coffee를 선택하거나 uncertain으로 재발화를 요청하는 차이가 남았다. 최신 시험에서는 uncertain으로 정지하고 진도 0을 유지했다. 완전 해결 또는 높은 실기기 인식률로 보고하지 않는다.
 - 최신 묶음의 불명확 발화 1회는 **20초 504 시간 초과**였다. 자동 재호출 없이 예산 1건이 소비되었다. 해당 응답을 성공으로 세지 않았다.
-- 후보 번호가 출력 JSON 맨 마지막인 구조를 먼저 생성하는 방식으로 바꾸기 위해, `recognizedCandidateIndex`를 첫 번째로 배치하고 `responseSchema`의 `propertyOrdering`을 적용한 구조적 가설 구현을 완료했다. 이는 Codex 실측 재검증 대상이며 정확도 완전 보장으로 보지 않는다.
+- 후보 번호가 출력 JSON 맨 마지막인 구조를 먼저 생성하는 방식으로 바꾸기 위해, `recognizedCandidateIndex`를 첫 번째로 배치하고 `responseSchema`의 `propertyOrdering`을 적용했으나 스키마 적용 후 10호출 실측에서 coffee 앵커링이 여전히 잔존했다.
+- 이에 따라 0순위 중복 특권화를 제거하고 `candidates` 단일 목록만 전달하는 2차 구조적 가설을 반영했으며, 이는 Codex 실측 재검증 대상이며 정확도 완전 보장으로 보지 않는다.
 - S25 실제 발음, 후보가 하나만 반환되거나 전부 틀린 경우, 장기 안정성은 미검증이다. 기존 사람·외부·보드 수동 관문도 유지한다.

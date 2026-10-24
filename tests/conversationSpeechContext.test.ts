@@ -59,7 +59,7 @@ function server(ev:any={...good,recognizedCandidateIndex:1}){
 it('sends raw and native candidates together to exactly one model call and budgets every payload byte',async()=>{
  const h=server();const r=await handlePublicCoach(h.request(),h.env,{fetchFn:h.fetchFn});expect(r.status).toBe(200);expect(h.fetchFn).toHaveBeenCalledOnce();
  const payload=JSON.parse((h.fetchFn.mock.calls[0] as any)[1].body);const learner=JSON.parse(payload.contents[0].parts[0].text);
- expect(learner.userAnswerEn).toBe(h.body.answer);expect(learner.candidates).toEqual(h.body.candidates);
+ expect(learner).not.toHaveProperty('userAnswerEn');expect(learner.candidates[0]).toBe(h.body.answer);expect(learner.candidates).toEqual(h.body.candidates);
  const reserved=h.statements.find(s=>s.sql.includes('INSERT INTO'));expect(reserved.values[5]).toBeGreaterThanOrEqual(16384+new TextEncoder().encode(JSON.stringify({question:COACH_QUESTIONS[2].questionEn,answer:h.body.answer,candidates:h.body.candidates})).byteLength);
  expect((await r.json()).evaluation.recognizedCandidateIndex).toBe(1);expect(JSON.stringify(h.statements)).not.toContain('coffee');
 });
@@ -69,7 +69,7 @@ it('constrains model output to select an actual candidate before grading and fee
 });
 it('structured output offers only index zero without native candidates',async()=>{
  const h=server({...good,recognizedCandidateIndex:0});await handlePublicCoach(h.request({candidates:undefined,inputSource:'text'}),h.env,{fetchFn:h.fetchFn});const body=JSON.parse((h.fetchFn.mock.calls[0] as any)[1].body);
- expect(body.generationConfig.responseSchema.properties.recognizedCandidateIndex.maximum).toBe(0);
+ expect(body.generationConfig.responseSchema.properties.recognizedCandidateIndex.maximum).toBe(0);expect(JSON.parse(body.contents[0].parts[0].text).userAnswerEn).toBe(h.body.answer);
 });
 it('preserves the complete selected sentence instead of generated noun substitutions and avoids blaming discarded STT words',async()=>{
  const h=server({...good,recognizedCandidateIndex:1,modelAnswerEn:'I would like tea.',feedbackKo:'커플 대신 커피라고 말하세요.'});
