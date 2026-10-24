@@ -49,10 +49,10 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: 진단 기록 운영 시험 및 메모 공백 수정
-로컬 진단을 운영 main에 배포하고 실제 합성 텍스트 첫 평가·동일정답 반복 각각 기록2건을 확인했다. D1 소비63→64로 최초1회만 차감, 보수적 예산 단위+16467, STT/TTS0 유지. 실제 메모 타이핑에서 공백 소실을 발견하여 이전 코드 회귀 실패를 재현했고 Gemini 한 줄 수정 후79파일809시험 및 전체검사 PASS. 서버·무료90%·단어장 보존. 수정 배포 후 메모·복사·재조회 보존과 추가차감0 대조를 계속한다. 실제S25·장기·사람·외부·보드 관문은 미검증.
+## 현재: 회화 진단 기록 운영 검증 완료
+Gemini 로컬 인식·평가 기록 구현·메모 공백 수정, Codex79파일809시험과 타입·린트·빌드·보호 경로·공백 검사 PASS. 운영 Chrome에서 동일정답 반복 포함2기록, 원문/평가/메모 구분, 실제 키입력 공백과 새로고침 보존, 복사 성공 UI 확인. 도구 클립보드 읽기는 빈 값으로 실제 붙여넣기 왕복 미확인. D1 최초평가1건16467단위만 차감, 반복·진단 메모·복사·재접속 추가0건0단위, STT/TTS0. 누적64건1059064단위. 모델·무료90%·단어장 보존. 진단은 기기 로컬 최근20건24시간64KiB, 오디오저장·자동진단전송 없음. 실제S25/360px/장기·사람·외부·보드 미검증 유지. 상세 FOLLOWUP-31 6절.
 
-Operation: followup31-note-spacing-20261024
-Parent HEAD: 0e92e5f211e1be15eec7a72ab7af924e0d1b3117
+Operation: followup31-live-diagnostics-20261024
+Parent HEAD: 7221ff7b11c416ce77b10c0ad071757bbf1c804b
 Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->
