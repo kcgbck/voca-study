@@ -235,16 +235,16 @@ export const WhisperBenchmarkPanel: React.FC<WhisperBenchmarkPanelProps> = ({
     };
   }, [cancelAllOperations]);
 
-  // 1. 모델 준비 클릭 (명시적 Opt-In)
+  // 1. 모델 준비 클릭 (명시적 Opt-In, WebGPU q8 디코더 반복 오류 방지를 위해 WASM 호환 모드 고정)
   const handlePrepareModel = async () => {
     if (busyRef.current || coachingActive || !adultConfirmed) return;
 
-    updateBusyState(true, '모델 준비 중');
+    updateBusyState(true, '호환 모드(WASM) 모델 준비 중');
     setDownloadProgress(null);
     const thisGen = ++operationGenRef.current;
 
     try {
-      const status = await clientRef.current!.prepare('auto', (p) => {
+      const status = await clientRef.current!.prepare('wasm', (p) => {
         if (isMountedRef.current && operationGenRef.current === thisGen) {
           setDownloadProgress(p);
         }
@@ -939,13 +939,16 @@ export const WhisperBenchmarkPanel: React.FC<WhisperBenchmarkPanelProps> = ({
             <strong style={{ color: '#f8fafc', fontSize: '13px' }}>Whisper 모델 상태: </strong>
             <span style={{ color: isModelReady ? '#34d399' : modelStatus.state === 'error' ? '#f87171' : '#fbbf24' }}>
               {isModelReady
-                ? `준비 완료 (${modelStatus.backend.toUpperCase()}, ${modelStatus.isWarmCache ? '캐시 재사용' : '새로 다운로드'}, ${modelStatus.loadDurationMs}ms)`
+                ? `호환 모드(WASM) 준비 완료 (${modelStatus.isWarmCache ? '캐시 재사용' : '새로 다운로드'}, ${modelStatus.loadDurationMs}ms)`
                 : modelStatus.state === 'loading'
-                ? '모델 준비 중...'
+                ? '호환 모드(WASM) 준비 중...'
                 : modelStatus.state === 'error'
                 ? '초기화 실패'
                 : '미준비 (다운로드 필요)'}
             </span>
+            <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
+              ※ WebGPU q8 디코더 반복 오류 이슈로 인해 안정적인 호환 모드(WASM)로 실행됩니다.
+            </div>
           </div>
 
           <div style={{ display: 'flex', gap: '8px' }}>

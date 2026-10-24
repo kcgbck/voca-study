@@ -49,9 +49,9 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-무료 기기내 Whisper tiny q8 비교 기능을 Gemini가 구현하고 Codex가 검증했다. 전체 검사84파일872시험 PASS, 타입·린트·빌드·보호 경로·diff PASS. 제공 기밀 문자열 로컬 부재 검사325파일 PASS. 명시 준비 시 최초65~70MB, WebGPU 실패시WASM 초기화 재시도, 오디오메모리처리. 기존 코칭과 마이크 상호배제 및 취소/시간초과 회귀 시험 통과. 공개예제11초 파일 상한3MiB 수정. 실제PC모델실행/캐시/S25의 한국 이름·커피·컵·잼·부정어·숫자 정확도속도 비교는 운영 전달 후 남아 있다. 비교 패널만 추가하며 기존 학습 인식 기본값 유지, 단어장/서버/90%한도 보존. 현재parentHEAD4601ab1. main 커밋·푸시·운영 비교 기능 배포는 사용자 승인 범위로 진행. 실제 S25 우위 확인 전 기본 전환 금지. 상세 docs/FOLLOWUP-33_ONDEVICE_WHISPER.md.
+비교 기능 acdd746 배포 후 Codex 실제 PC WebGPU q8 실행에서 공개 영어 음성이 다국어 반복으로 깨짐을 확인했다. 준비14666ms/추론11041ms이나 정확도 실패. 공식 라이브러리 이슈1317과 일치하며 성공으로 취급하지 않는다. Gemini가 비교 패널만 WASM 명시 준비로 수정, 같은 가중치/다운로드범위 유지. Codex WASM 준비 경로 회귀 시험 및 전체84파일872시험/타입/린트/빌드/보호경로/diff PASS. WASM 실제 추론/캐시와 S25 비교는 재배포 후 대기. 기본 학습 Web Speech 유지, 단어장/서버/90%예산 보존. 사용자 승인대로 main 커밋·푸시·운영 배포 진행. parentHEAD acdd746. 상세 FOLLOWUP-33.
 
-Operation: followup33-whisper-comparison-20261024
-Parent HEAD: 4601ab1cbd093725f3d5272b55a22b58e9544552
-Attribution: baseline-compared
+Operation: followup33-whisper-wasm-fix-20261024
+Parent HEAD: acdd74661935a61b16d3c5e10ff9e653cff6d098
+Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->
