@@ -155,10 +155,10 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: 로컬 회화 진단 기록
-Gemini가 질문·원본 인식·최대3후보·AI 선택·판정·반복 재사용·안전 오류를 기기 로컬 최근20건/24시간/64KiB로 기록하고 선택 메모와 명시 복사를 구현했다. 추가 AI 요청과 오디오 저장·자동 진단 전송 없음. Codex 독립79파일808시험 및 타입·린트·빌드·보호 경로·공백 검사 PASS. 저장 실패·취소·콜백 변조·실패 후보 표시 오류를 재현하고 수정 검증했다. 서버·모델·무료90%·단어장 보존. 운영 텍스트 브라우저와 예산 대조는 배포 후 확인, 실제S25 인식률·클립보드·사람·외부·보드 관문은 미검증 유지.
+## 현재: 로컬 진단 운영 확인
+로컬 진단을 운영 main에 배포하고 실제 합성 텍스트 첫 평가·동일정답 반복 각각 기록2건을 확인했다. D1 소비63→64로 최초1회만 차감, 보수적 예산 단위+16467, STT/TTS0 유지. 실제 메모 타이핑에서 공백 소실을 발견하여 이전 코드 회귀 실패를 재현했고 Gemini 한 줄 수정 후79파일809시험 및 전체검사 PASS. 서버·무료90%·단어장 보존. 수정 배포 후 메모·복사·재조회 보존과 추가차감0 대조를 계속한다. 실제S25·장기·사람·외부·보드 관문은 미검증.
 
-Operation: followup31-local-diagnostics-20261024
-Parent HEAD: fc6d2c9b374385d781914f9e00045e7358ead229
-Attribution: baseline-compared
+Operation: followup31-note-spacing-20261024
+Parent HEAD: 0e92e5f211e1be15eec7a72ab7af924e0d1b3117
+Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->

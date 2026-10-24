@@ -47,3 +47,9 @@ it('never serializes non-finite counters or out-of-range selected indexes as val
  const store=new CoachDiagnosticStore(storage(),()=>baseTime);const r=sample();r.elapsedMs=Infinity;r.evaluationRequests=NaN;r.evaluation!.recognizedCandidateIndex=999;store.append(r);
  for(const record of store.list()){expect(Number.isFinite(record.elapsedMs)).toBe(true);expect(Number.isFinite(record.evaluationRequests)).toBe(true);expect(record.evaluation?.recognizedCandidateIndex===undefined||record.evaluation.recognizedCandidateIndex<record.candidates.length).toBe(true);}
 });
+it('preserves spaces during controlled incremental annotation typing',()=>{
+ const store=new CoachDiagnosticStore(storage(),()=>baseTime);store.append(sample());
+ let value='';for(const char of 'I actually said coffee, please.'){store.annotate('one',value+char);value=store.list()[0].intendedText??'';}
+ expect(value).toBe('I actually said coffee, please.');expect(store.exportText()).toContain('I actually said coffee, please.');
+ store.annotate('one','   ');expect(store.list()[0].intendedText).toBeUndefined();
+});

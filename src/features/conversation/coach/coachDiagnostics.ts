@@ -272,7 +272,7 @@ export class CoachDiagnosticStore {
     if (!target) return;
 
     if (intendedText && intendedText.trim().length > 0) {
-      target.intendedText = sanitizeString(intendedText.trim(), 500);
+      target.intendedText = sanitizeString(intendedText, 500);
     } else {
       delete target.intendedText;
     }
