@@ -49,9 +49,9 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-로컬진단의중복2건제외5기록에서평가시도4·무음1 확인, D1누적64→68 및STT/TTS0 일치. 실제발화·이름은외부구현지시/문서에남기지않고합성가명만사용. Gemini가단일후보진단보존·음성/텍스트명시·음성형식지적차단·이름문장구조피드백구현. Codex독립실패재현과최종79파일820시험·전체검사PASS. 텍스트반복출처/공백키워드누락/프롬프트상한문제도수정검증. 단어장·90%·모델·10초듣기·API계약유지. 실제S25이름/coffee음향인식해결판정안함. Androidphrases미지원, 후보없는텍스트만으로발화복원불가. 배포후합성운영대조진행. 상세FOLLOWUP-32.
+Gemini구현·Codex검증으로단일후보로컬보존/음성텍스트명시/말하기형식지적차단/이름문장구조피드백을완료. 79파일820시험·타입·린트·빌드·보호경로·공백검사PASS. 실제운영합성5시나리오5요청HTTP200/PASS, 왕복1.2~1.9초(마이크10초와재생제외). D1소비68→73(+5), 보수적예산단위+82499=1207464, STT/TTS0. 이름원문보존·coffee문법교정·이름질문음료답변재연습·다중후보구제검증. 진단개선을실제발음인식해결로판정안함. S25한국이름/coffee인식자체는미해결, 후보없으면텍스트만복원불가. 무료온디바이스대안은기기성능/다운로드/정확도비교가필요. 무료90%·모델·10초듣기·단어장보존. 기존사람/외부/보드관문미검증. 상세FOLLOWUP-32.
 
-Operation: followup32-single-transcript-20261024
-Parent HEAD: 9ec461dea887d2e1355de7faee63e55789469529
-Attribution: baseline-compared
+Operation: followup32-live-verification-20261024
+Parent HEAD: 1e61f22c80675b6a2b899aa0229c3fdfd3babff4
+Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->
