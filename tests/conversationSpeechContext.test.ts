@@ -23,6 +23,12 @@ it('cannot award credit from an invented candidate index',async()=>{
  const h=flow([['unintelligible','I would like coffee.']],{...good,recognizedCandidateIndex:9});await h.controller.start(COACH_QUESTIONS[2]);
  expect(h.states.at(-1).phase).not.toBe('complete');expect(h.states.at(-1).practiceDone).toBe(0);
 });
+it('uncertain alternative selection pauses without credit, an approval label, or a spoken invented example',async()=>{
+ const h=flow([['garbled words','another uncertain fragment']],{...good,meaning:'uncertain',sentenceComplete:false,recognizedCandidateIndex:1});
+ const speak=vi.spyOn((h.controller as any).deps,'speak');await h.controller.start(COACH_QUESTIONS[2]);
+ expect(h.states.at(-1)).toMatchObject({phase:'paused',practiceDone:0});expect(h.states.every(s=>s.understoodText===undefined)).toBe(true);
+ expect(speak.mock.calls.some(c=>c[0]===good.modelAnswerEn)).toBe(false);expect(h.evaluate).toHaveBeenCalledOnce();
+});
 it('does not grade candidate callbacks until capture has settled and ignores callbacks after pause',async()=>{
  const h=flow([]);let options:any;h.listen.mockImplementation(async(_lang,o)=>{options=o;o?.onAlternatives?.(['bad','I would like coffee.']);return new Promise<string>(()=>{});});
  const pending=h.controller.start(COACH_QUESTIONS[2]);await flush();expect(h.evaluate).not.toHaveBeenCalled();h.controller.pause();options.onAlternatives(['bad','coffee']);await pending;expect(h.evaluate).not.toHaveBeenCalled();

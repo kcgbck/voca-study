@@ -49,10 +49,10 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: 초보 발음의 복수 인식 후보 연동
-깨끗한 main b04cbce에서 시작. Gemini 구현, Codex 독립 검증으로 브라우저의 실제 복수 인식 후보를 같은 회화 평가 한 번에 전달했다. 원문과 문맥 해석을 구분하고 애매한 이름·음료·숫자·부정의 강제 보정을 막는다. 왜곡된 원문은 정답 반복 캐시에 저장하지 않는다. 추가 음성 API나 음성 업로드 없이 기존 90% 상한 유지. 77파일 759시험, 타입·린트·빌드·보호 경로·공백 검사 PASS. 민감값 289파일 일치 0. 단어 DB/저장소 변경 없음. 저장 후 커밋·main 푸시·운영 배포 및 합성 문장/D1 검증을 진행한다. 실물 S25·PWA/iOS·사람 검수·외부 검토·보드 원본 관문은 미검증 유지. 상세 docs/FOLLOWUP-29_GEMINI_SPEECH_CONTEXT.md.
+## 현재: 후보 기반 평가의 운영 발견 오류 보완
+b490ec8 main 푸시와 기본 주소 운영 배포 완료. 실제 합성 평가 9회는 D1 9건, 보수적 예산 단위 148955와 정확히 일치하고 STT/TTS 0건이다. 후보 선택과 이름 보존은 동작했지만 원문 인식 오류를 사용자 실수로 지적, cup에 coffee 추가, 불확실 이름 예문 날조를 발견하여 통과로 처리하지 않았다. Gemini가 채택 후보 기준 평가와 어휘 의도 보존 규칙을 보완했다. 프롬프트 길이 오보고를 Codex 시험으로 적발하고 재압축, 실제1130자. 전체77파일760시험·타입·린트·빌드·보호 경로·공백 검사 PASS. 재배포 후 엄격한 합성 모델 재시험을 진행한다. 실제 S25 인식률과 수동 관문은 미검증 유지.
 
-Operation: followup29-speech-context-20261024
-Parent HEAD: b04cbcef92cca2534ed09819201f893d07e023e9
-Attribution: baseline-compared
+Operation: followup29-speech-feedback-20261024
+Parent HEAD: b490ec8f33cd92525642dca396a82cd2dce35c64
+Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->

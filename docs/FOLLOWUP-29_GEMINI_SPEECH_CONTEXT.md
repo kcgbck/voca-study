@@ -62,15 +62,21 @@
   - text 모드에 candidates 전달 시 400 거부.
   - 배열 형태, 길이(2~3), 빈 문자열/500자 초과/중복 여부, `candidates[0] !== trimmedAnswer` 검증.
 - 예산 예약(`estimatedUnits`) 시 `candidates`의 실제 UTF-8 바이트 수를 합산 계산하여 과소 계량 방지.
-- **시스템 프롬프트 컴팩트화 (Review Fix):**
-  - 장황한 문구를 정돈하여 프롬프트 길이를 1500자 미만(약 1000자 내외)으로 압축.
-  - 1순위 왜곡 및 대안 후보 유일 일치 시에만 채택, 양립 가능 어휘(cup/coffee, jam/Jim, 인명/숫자/부정어) 자의적 추측 금지, 한국어 인명 로마자 표기 배제/치환 금지, 텍스트/후보군 부재 시 index 0 보존, 출력 JSON 스키마 유지.
+- **시스템 프롬프트 컴팩트화 및 운영 결함 보완:**
+  - 중복 근거 문구를 압축하여 프롬프트 길이를 1,130자(Codex 실제 소스 계수, 1,500자 미만)로 컴팩트하게 정돈하면서, 실운영 합성 결과(`.agy-work/286_speech_live.json`)에서 발견된 실결함 교정 지침 반영.
+  - 채택된 후보(selected candidate) 기준으로만 문법/완성도 및 피드백을 평가하도록 명시 (원문 index 0의 STT 대안 어휘를 학습자의 어휘 실수로 지적하거나 'couple 대신 coffee' 등으로 탓하지 않음).
+  - 온전한 문장이 채택된 경우 `sentenceComplete=true` 부여 및 한국어 피드백에서 대안 어휘를 탓하지 않는 올바른 칭찬/교정을 지시.
+  - 어휘 의도 엄격 보존: 발화에 없는 구체적 음료명(coffee 등)이나 인명을 모범답안(`modelAnswerEn`)에 임의 날조/추가 금지 ('I would like a cup.'은 그대로 보존, 모호할 경우 한국어로 음료 되묻기).
+  - `uncertain` 시 미발화된 예시 인명/문장('My name is John' 등) 날조 금지, 채택/원문 텍스트 유지 및 한국어로 재발화만 요청.
 - Gemini 반환 JSON 파싱 시 `recognizedCandidateIndex`의 유효 범위 검증(502 방어).
 
 ---
 
 ## 3. 한계 및 미검증 사항 (Preserved Limitations)
 
+- **운영 1차 실측 발견 결함 및 재검증 대기 (Live Discovery Unresolved):**
+  - 운영 배포 후 수집된 실측 합성 결과(`.agy-work/286_speech_live.json`)에서 1) 후보 채택 후 원문 STT 어휘 탓 및 `sentenceComplete=false` 오판, 2) 'a cup' 발화에 'a cup of coffee' 모범답안 날조, 3) 불확실 발화에 'My name is John' 모범답안 날조 현상이 발견되었습니다.
+  - 본 프롬프트 보강을 통해 지침을 명확화하였으나, Codex 재시험 및 실제 모델 재평가 검증이 완료될 때까지 해당 결함은 **해결 대기(not yet resolved until Codex retest)** 상태로 문서화하여 관리합니다.
 - **후보군 부재 시의 한계:**
   - 브라우저 네이티브 STT가 제공한 1~3순위 후보군 어디에도 올바른 단어나 이름이 들어있지 않은 경우(예: 완전히 엉뚱한 영어 단어들만 생성된 경우), 인위적으로 교재 예문을 주입하거나 단어를 추측하지 않으므로 여전히 `uncertain`으로 처리됩니다.
 - **실물 단말 미검증 상태 유지:**
@@ -78,8 +84,8 @@
   - 실물 S25, PWA/iOS, 강사 검토, 외부 검토, `BOARD-01`, `BOARD-12A` 항목은 계속 미검증 상태로 유지됩니다.
 
 ## 4. Codex 독립 검증 (배포 전)
-- `scripts/verify.ps1`: 77개 파일 / 759개 시험 PASS. 타입·린트·빌드·보호 경로·공백 검사 PASS.
-- 신규 27개 후보 연동 시험과 화면 원문/문맥 표시 시험 포함. 잘못된 후보 인덱스·텍스트 혼입·타이머 누수·변경 가능한 배열·과소 예산 예약·왜곡 원문 캐시를 검증.
+- `scripts/verify.ps1`: 77개 파일 / 760개 시험 PASS. 타입·린트·빌드·보호 경로·공백 검사 PASS.
+- 신규 28개 후보 연동 시험과 화면 원문/문맥 표시 시험 포함. 잘못된 후보 인덱스·텍스트 혼입·타이머 누수·변경 가능한 배열·과소 예산 예약·왜곡 원문 캐시를 검증.
 - 민감값 검사 289파일 일치 0. 단어 DB와 저장소 변경 없음.
 - 운영 모델의 합성 문장 응답과 D1 차감은 배포 후 별도 확인한다. 실제 S25 발음 인식률 PASS로 해석하지 않는다.
 - 근거: [Web Speech API 명세](https://webaudio.github.io/web-speech-api/#dom-speechrecognition-maxalternatives). maxAlternatives는 반환 후보의 상한이며 후보 3개를 보장하지 않는다.
