@@ -14,6 +14,7 @@
 import {
   type CoachEvaluation,
   type CoachQuestion,
+  type CoachInputContext,
   CoachBudgetError,
 } from './coachProtocol';
 import type { BrowserSpeechInputOptions } from '../services/browserSpeechInput';
@@ -35,6 +36,7 @@ export interface CoachSnapshot {
   phase: CoachPhase;
   question?: CoachQuestion;
   recognizedText: string;
+  understoodText?: string;
   feedbackKo: string;
   modelAnswerEn: string;
   practiceDone: number;
@@ -46,7 +48,11 @@ export interface CoachTutorControllerDeps {
   speak: (text: string, lang: string) => Promise<boolean>;
   listen: (lang: string, options?: BrowserSpeechInputOptions) => Promise<string>;
   cancel: () => void;
-  evaluate: (questionId: string, answer: string) => Promise<CoachEvaluation>;
+  evaluate: (
+    questionId: string,
+    answer: string,
+    context?: CoachInputContext
+  ) => Promise<CoachEvaluation>;
   emit: (state: CoachSnapshot) => void;
   isTextMode?: () => boolean;
 }
@@ -89,6 +95,7 @@ export class CoachTutorController {
   private currentQuestion?: CoachQuestion;
   private currentPhase: CoachPhase = 'ready';
   private recognizedText = '';
+  private understoodText?: string = undefined;
   private feedbackKo = '';
   private modelAnswerEn = '';
   private practiceDone = 0;
@@ -213,6 +220,7 @@ export class CoachTutorController {
       phase: partial.phase,
       question: this.currentQuestion,
       recognizedText: partial.recognizedText ?? this.recognizedText,
+      understoodText: partial.understoodText !== undefined ? partial.understoodText : this.understoodText,
       feedbackKo: partial.feedbackKo ?? this.feedbackKo,
       modelAnswerEn: partial.modelAnswerEn ?? this.modelAnswerEn,
       practiceDone: partial.practiceDone ?? this.practiceDone,
@@ -258,7 +266,8 @@ export class CoachTutorController {
   private async safeEvaluate(
     questionId: string,
     answer: string,
-    signal: AbortSignal
+    signal: AbortSignal,
+    context?: CoachInputContext
   ): Promise<CoachEvaluation | null> {
     if (signal.aborted) return null;
 
@@ -266,8 +275,11 @@ export class CoachTutorController {
     let spokenWaitNotice = false;
 
     while (!signal.aborted && retryCount <= 2) {
+      const evalPromise = context
+        ? this.deps.evaluate(questionId, answer, context)
+        : this.deps.evaluate(questionId, answer);
       const res = await this.raceStep(
-        this.deps.evaluate(questionId, answer),
+        evalPromise,
         25000,
         signal
       );
@@ -277,10 +289,42 @@ export class CoachTutorController {
       }
 
       if (res.status === 'ok' && res.value) {
+        const val = res.value;
+        // 후보군 검증: 후보군이 제공된 경우 recognizedCandidateIndex는 반드시 정수이자 candidates 범위 내여야 함
+        if (context?.candidates && context.candidates.length > 0) {
+          if (
+            typeof val.recognizedCandidateIndex !== 'number' ||
+            !Number.isInteger(val.recognizedCandidateIndex) ||
+            val.recognizedCandidateIndex < 0 ||
+            val.recognizedCandidateIndex >= context.candidates.length
+          ) {
+            this.emitSnapshot({
+              phase: 'error',
+              message: '유효하지 않은 평가 후보 인덱스 응답입니다.',
+            });
+            return null;
+          }
+        } else if (
+          val.recognizedCandidateIndex !== undefined &&
+          val.recognizedCandidateIndex !== 0
+        ) {
+          this.emitSnapshot({
+            phase: 'error',
+            message: '후보군이 없을 때 유효하지 않은 인덱스 응답입니다.',
+          });
+          return null;
+        }
+
+        // non-top 후보 선택 시에는 원본 발화(raw answer)로 캐시를 시딩하지 않음
+        const isNonTopRecovery =
+          typeof val.recognizedCandidateIndex === 'number' &&
+          val.recognizedCandidateIndex > 0;
+
         if (
           !signal.aborted &&
-          res.value.meaning === 'relevant' &&
-          res.value.sentenceComplete === true
+          val.meaning === 'relevant' &&
+          val.sentenceComplete === true &&
+          !isNonTopRecovery
         ) {
           const normKey = normalizeRepeatAnswerKey(answer);
           if (normKey.length > 0) {
@@ -288,11 +332,11 @@ export class CoachTutorController {
               questionId,
               answer: answer.trim(),
               normalizedKey: normKey,
-              evaluation: { ...res.value },
+              evaluation: { ...val },
             };
           }
         }
-        return res.value;
+        return val;
       }
 
       if (res.status === 'timeout') {
@@ -435,7 +479,7 @@ export class CoachTutorController {
   private async listenEnglishWithSilenceRetry(
     signal: AbortSignal
   ): Promise<
-    | { status: 'ok'; text: string }
+    | { status: 'ok'; text: string; candidates?: string[] }
     | { status: 'fatal_error' }
     | { status: 'timeout' }
     | { status: 'aborted' }
@@ -452,13 +496,16 @@ export class CoachTutorController {
     const windowSec = Math.round(windowMs / 1000);
     const listeningMsg = `${windowSec}초 동안 듣는 중`;
     this.recognizedText = '';
+    this.understoodText = undefined;
     this.emitSnapshot({
       phase: 'preparing',
       recognizedText: '',
+      understoodText: undefined,
       message: '마이크 준비 중',
     });
 
     let active = true;
+    let localCandidates: string[] = [];
     let res: Awaited<ReturnType<typeof this.raceStep<string>>>;
     try {
       res = await this.raceStep(
@@ -475,11 +522,18 @@ export class CoachTutorController {
           onPartial: (partial: string) => {
             if (!signal.aborted && active) {
               this.recognizedText = partial;
+              this.understoodText = undefined;
               this.emitSnapshot({
                 phase: 'listening',
                 recognizedText: partial,
+                understoodText: undefined,
                 message: listeningMsg,
               });
+            }
+          },
+          onAlternatives: (alts: string[]) => {
+            if (!signal.aborted && active && Array.isArray(alts)) {
+              localCandidates = alts.slice(0, 3);
             }
           },
         }),
@@ -501,7 +555,30 @@ export class CoachTutorController {
     if (res.status === 'ok') {
       const text = (res.value || '').trim();
       if (text.length > 0) {
-        return { status: 'ok', text };
+        // N-best 후보군 유효성 검증 및 스냅샷 구성
+        let validatedCandidates: string[] | undefined = undefined;
+        if (localCandidates.length > 1) {
+          const rawTop = text;
+          const sanitized: string[] = [];
+          for (const item of localCandidates) {
+            if (typeof item === 'string') {
+              const trimmed = item.trim();
+              if (
+                trimmed.length > 0 &&
+                trimmed.length <= 500 &&
+                !sanitized.includes(trimmed)
+              ) {
+                sanitized.push(trimmed);
+              }
+            }
+            if (sanitized.length >= 3) break;
+          }
+          // 반드시 실제 rawTop으로 시작해야 함
+          if (sanitized.length > 1 && sanitized[0] === rawTop) {
+            validatedCandidates = sanitized;
+          }
+        }
+        return { status: 'ok', text, candidates: validatedCandidates };
       }
       return { status: 'timeout' };
     }
@@ -540,6 +617,7 @@ export class CoachTutorController {
 
     this.currentQuestion = question;
     this.recognizedText = '';
+    this.understoodText = undefined;
     this.feedbackKo = '';
     this.modelAnswerEn = '';
     this.practiceDone = 0;
@@ -594,28 +672,49 @@ export class CoachTutorController {
 
     const transcript = listenRes.text;
     this.recognizedText = transcript;
+    this.understoodText = undefined;
 
     // 4. 초기 평가 및 피드백 직접 진행
-    await this.processEvaluationAndContinue(transcript, signal);
+    const context: CoachInputContext | undefined =
+      listenRes.candidates && listenRes.candidates.length > 1
+        ? { inputSource: 'voice', candidates: listenRes.candidates }
+        : undefined;
+    await this.processEvaluationAndContinue(transcript, signal, context);
   }
 
   /**
    * 평가 실행 및 이후 반복 연습 진행
    */
-  private async processEvaluationAndContinue(answer: string, signal: AbortSignal): Promise<void> {
+  private async processEvaluationAndContinue(
+    answer: string,
+    signal: AbortSignal,
+    context?: CoachInputContext
+  ): Promise<void> {
     if (!this.currentQuestion || signal.aborted) return;
 
     this.emitSnapshot({ phase: 'evaluating', message: '답변을 분석하고 있습니다.' });
-    const evaluation = await this.safeEvaluate(this.currentQuestion.id, answer, signal);
+    const evaluation = await this.safeEvaluate(this.currentQuestion.id, answer, signal, context);
     if (signal.aborted || !evaluation) return;
 
     this.feedbackKo = evaluation.feedbackKo;
     this.modelAnswerEn = evaluation.modelAnswerEn;
 
+    if (
+      evaluation.meaning === 'relevant' &&
+      context?.candidates &&
+      typeof evaluation.recognizedCandidateIndex === 'number' &&
+      evaluation.recognizedCandidateIndex > 0
+    ) {
+      this.understoodText = context.candidates[evaluation.recognizedCandidateIndex];
+    } else {
+      this.understoodText = undefined;
+    }
+
     this.emitSnapshot({
       phase: 'speaking',
       feedbackKo: this.feedbackKo,
       modelAnswerEn: this.modelAnswerEn,
+      understoodText: this.understoodText,
       message: this.feedbackKo,
     });
     if (!(await this.safeSpeak(this.feedbackKo, 'ko-KR', signal))) return;
@@ -670,6 +769,7 @@ export class CoachTutorController {
 
         const repeatTranscript = listenRes.text;
         this.recognizedText = repeatTranscript;
+        this.understoodText = undefined;
 
         // 반복 발화 평가
         const trimmedRepeat = repeatTranscript.trim();
@@ -687,7 +787,27 @@ export class CoachTutorController {
           repeatEval = { ...this.lastValidatedEntry.evaluation };
         } else {
           this.emitSnapshot({ phase: 'evaluating', message: '반복 발화를 평가하고 있습니다.' });
-          repeatEval = await this.safeEvaluate(this.currentQuestion.id, repeatTranscript, signal);
+          const repeatContext: CoachInputContext | undefined =
+            listenRes.candidates && listenRes.candidates.length > 1
+              ? { inputSource: 'voice', candidates: listenRes.candidates }
+              : undefined;
+          repeatEval = await this.safeEvaluate(
+            this.currentQuestion.id,
+            repeatTranscript,
+            signal,
+            repeatContext
+          );
+          if (
+            repeatEval &&
+            repeatEval.meaning === 'relevant' &&
+            repeatContext?.candidates &&
+            typeof repeatEval.recognizedCandidateIndex === 'number' &&
+            repeatEval.recognizedCandidateIndex > 0
+          ) {
+            this.understoodText = repeatContext.candidates[repeatEval.recognizedCandidateIndex];
+          } else {
+            this.understoodText = undefined;
+          }
         }
 
         if (signal.aborted || !repeatEval) return;
@@ -699,6 +819,7 @@ export class CoachTutorController {
           phase: 'speaking',
           feedbackKo: this.feedbackKo,
           modelAnswerEn: this.modelAnswerEn,
+          understoodText: this.understoodText,
           message: repeatEval.feedbackKo,
         });
         if (!(await this.safeSpeak(repeatEval.feedbackKo, 'ko-KR', signal))) return;
@@ -747,6 +868,7 @@ export class CoachTutorController {
   public pause(): void {
     this.pendingTextResolver = null;
     this.lastValidatedEntry = null;
+    this.understoodText = undefined;
     this.currentAbortController?.abort();
     this.currentAbortController = null;
     try {
@@ -794,6 +916,7 @@ export class CoachTutorController {
     }
 
     this.recognizedText = trimmed;
+    this.understoodText = undefined;
 
     if (this.currentMode === 'initial') {
       await this.processEvaluationAndContinue(trimmed, signal);

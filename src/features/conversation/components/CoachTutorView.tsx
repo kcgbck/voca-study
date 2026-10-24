@@ -14,6 +14,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   COACH_POLICY_VERSION,
   COACH_QUESTIONS,
+  type CoachInputContext,
 } from '../coach/coachProtocol';
 import {
   CoachTutorController,
@@ -133,7 +134,10 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
         }
         return await input.start(lang, options);
       },
-      evaluate: async (questionId: string, answer: string) => {
+      evaluate: async (questionId: string, answer: string, context?: CoachInputContext) => {
+        if (context) {
+          return await api.evaluate(questionId, answer, adultRef.current, context);
+        }
         return await api.evaluate(questionId, answer, adultRef.current);
       },
       cancel: () => {
@@ -299,7 +303,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
 
   // 진단 페이로드 (진단 모드 시 화면 표시 및 클립보드 복사용 동일 규격)
   const traceEnvelope = {
-    diagnosticVersion: 'paced-coach-10s-v8',
+    diagnosticVersion: 'paced-coach-10s-v9',
     events: speechTraces,
   };
 
@@ -516,6 +520,24 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
             >
               &ldquo;{snapshot.recognizedText}&rdquo;
             </p>
+            {snapshot.understoodText && snapshot.understoodText !== snapshot.recognizedText && (
+              <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px dashed rgba(56, 189, 248, 0.3)' }}>
+                <span style={{ fontSize: '11px', color: '#34d399', fontWeight: 600 }}>
+                  문맥으로 이해한 답변:
+                </span>
+                <p
+                  style={{
+                    margin: '2px 0 0 0',
+                    fontSize: '14px',
+                    color: '#6ee7b7',
+                    fontWeight: 500,
+                    overflowWrap: 'break-word',
+                  }}
+                >
+                  &ldquo;{snapshot.understoodText}&rdquo;
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -737,7 +759,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
             음성 진단 결과 (이 화면에서만 표시)
           </summary>
           <div style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 600, marginTop: '8px' }}>
-            진단 버전: paced-coach-10s-v8
+            진단 버전: paced-coach-10s-v9
           </div>
           <p style={{ margin: '8px 0 4px 0', fontSize: '12px', color: '#64748b' }}>
             음성인식 원본과 앱 결과 비교용입니다. 서버에 저장하지 않습니다.

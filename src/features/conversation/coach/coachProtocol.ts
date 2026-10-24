@@ -11,11 +11,17 @@ export interface CoachQuestion {
   objectiveKo: string;
 }
 
+export interface CoachInputContext {
+  inputSource: 'voice' | 'text';
+  candidates?: string[];
+}
+
 export interface CoachEvaluation {
   meaning: 'relevant' | 'needs_help' | 'uncertain';
   sentenceComplete: boolean;
   feedbackKo: string;
   modelAnswerEn: string;
+  recognizedCandidateIndex?: number;
 }
 
 export class CoachBudgetError extends Error {
@@ -40,6 +46,8 @@ export interface CoachRequest {
   policyVersion: string;
   questionId: string;
   answer: string;
+  inputSource?: 'voice' | 'text';
+  candidates?: string[];
 }
 
 /**

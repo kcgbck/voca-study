@@ -49,13 +49,10 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: 단일 메인 운영 및 새로고침 경계 보완
-이전 전체 개발 결과 커밋 17fd4a8은 main 푸시와 기본 주소 운영 배포까지 완료했으며 과거 배포 45개를 정리했다. 사용자는 설치 앱을 확인 중이고, 남은 코드 검증은 Gemini 구현·Codex 독립 검증으로 계속 진행하도록 지시했다.
-이번 잔여 검증에서 수동 새로고침 및 SW CLEAR_CACHE가 앱과 무관한 동일 출처 캐시까지 지우고 다른 하위 스코프 SW까지 갱신하는 문제를 시험 2개로 재현했다. Gemini가 정리 범위를 앱 캐시 접두사와 정확한 루트 SW 등록으로 한정하고 SW v9로 갱신했다. 단어 데이터와 저장소 코드는 변경하지 않았다.
-검증: 76파일 731시험, 타입·린트·빌드·보호 경로·공백 검사 통과. 민감값 검사 285파일 일치 0. 이번 실제 회화 API 호출 0회. 현재 검증 완료 후 저장·커밋·main 푸시·동일 코드 운영 배포 직전이다. 기본 주소 하나로 시험 운영한다.
-남은 관문: S25 실제 마이크 최신 동작, PWA/iOS 실기기 장기 동작, 사람 교사 검수, 외부 독립 리뷰, 보드 원본 대조/직접 파일 렌더링. 상세 docs/FOLLOWUP-27_PWA_BOUNDARIES_VALIDATION.md.
+## 현재: 초보 발음의 복수 인식 후보 연동
+깨끗한 main b04cbce에서 시작. Gemini 구현, Codex 독립 검증으로 브라우저의 실제 복수 인식 후보를 같은 회화 평가 한 번에 전달했다. 원문과 문맥 해석을 구분하고 애매한 이름·음료·숫자·부정의 강제 보정을 막는다. 왜곡된 원문은 정답 반복 캐시에 저장하지 않는다. 추가 음성 API나 음성 업로드 없이 기존 90% 상한 유지. 77파일 759시험, 타입·린트·빌드·보호 경로·공백 검사 PASS. 민감값 289파일 일치 0. 단어 DB/저장소 변경 없음. 저장 후 커밋·main 푸시·운영 배포 및 합성 문장/D1 검증을 진행한다. 실물 S25·PWA/iOS·사람 검수·외부 검토·보드 원본 관문은 미검증 유지. 상세 docs/FOLLOWUP-29_GEMINI_SPEECH_CONTEXT.md.
 
-Operation: followup27-pwa-boundaries-20261024
-Parent HEAD: 17fd4a87c6976fe3313bf5f52966686ad496a4f9
+Operation: followup29-speech-context-20261024
+Parent HEAD: b04cbcef92cca2534ed09819201f893d07e023e9
 Attribution: baseline-compared
 <!-- CODING_PARTNER_V2_STATE_END -->

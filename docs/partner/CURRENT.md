@@ -155,10 +155,10 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: PWA 새로고침 범위 보완
-main 17fd4a8 운영 전환 완료. 후속 검증에서 수동 새로고침의 전체 캐시 삭제와 다른 SW 등록 갱신을 재현하여 Gemini가 앱 소유 캐시/루트 SW로 한정했다. SW v9, 76파일 731시험 PASS. 사용자 단어 데이터 보존, 실제 회화 호출 0. 저장·커밋·main 푸시·운영 배포를 이어간다. 실기기/사람 검수 관문은 유지. 상세 docs/FOLLOWUP-27_PWA_BOUNDARIES_VALIDATION.md.
+## 현재: 복수 음성 후보 문맥 평가
+Gemini 제품 구현, Codex 독립 검증. 실제 후보만 같은 AI 평가에 포함, 애매한 단어 강제 보정 금지, 원문 표시 보존, 구제된 원문의 정답 캐시 금지. 77파일 759시험 PASS. 기존 무료 90% 상한 유지. 커밋·main 푸시·운영 배포 후 실제 합성 평가 및 D1 확인 진행. 실물 인식률 미측정.
 
-Operation: followup27-pwa-boundaries-20261024
-Parent HEAD: 17fd4a87c6976fe3313bf5f52966686ad496a4f9
+Operation: followup29-speech-context-20261024
+Parent HEAD: b04cbcef92cca2534ed09819201f893d07e023e9
 Attribution: baseline-compared
 <!-- CODING_PARTNER_V2_STATE_END -->

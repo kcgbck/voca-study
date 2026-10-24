@@ -14,6 +14,7 @@ import {
   COACH_POLICY_VERSION,
   CoachBudgetError,
   type CoachEvaluation,
+  type CoachInputContext,
 } from './coachProtocol';
 
 /**
@@ -124,7 +125,8 @@ export class PublicCoachApiClient {
   public async evaluate(
     questionId: string,
     answer: string,
-    adultConfirmed: boolean
+    adultConfirmed: boolean,
+    context?: CoachInputContext
   ): Promise<CoachEvaluation> {
     // 1. 사전 유효성 검사 (타이머/fetch 호출 전 즉시 검증)
     if (adultConfirmed !== true) {
@@ -142,6 +144,40 @@ export class PublicCoachApiClient {
     const trimmedAnswer = answer.trim();
     if (trimmedAnswer.length < 1 || trimmedAnswer.length > 500) {
       throw new Error('답변 내용은 공백을 제외하고 1자 이상 500자 이하여야 합니다.');
+    }
+
+    // 1-1. context 사전 유효성 검사 및 방어적 복사 (crypto, cancel, timer 생성 전에 수행)
+    let validatedCandidates: string[] | undefined = undefined;
+    let validatedInputSource: 'voice' | 'text' | undefined = undefined;
+    if (context) {
+      if (context.inputSource !== 'voice' && context.inputSource !== 'text') {
+        throw new Error('유효하지 않은 입력 방식(inputSource)입니다.');
+      }
+      validatedInputSource = context.inputSource;
+      if (context.inputSource === 'text' && context.candidates) {
+        throw new Error('텍스트 입력 방식에는 후보군을 전달할 수 없습니다.');
+      }
+      if (context.candidates !== undefined) {
+        if (!Array.isArray(context.candidates) || context.candidates.length < 2 || context.candidates.length > 3) {
+          throw new Error('후보군은 2개 이상 3개 이하의 배열이어야 합니다.');
+        }
+        const seen = new Set<string>();
+        const clonedCandidates: string[] = [];
+        for (const c of context.candidates) {
+          if (typeof c !== 'string' || c.trim().length === 0 || c.length > 500) {
+            throw new Error('후보군 항목은 공백이 아닌 1자 이상 500자 이하의 문자열이어야 합니다.');
+          }
+          if (seen.has(c)) {
+            throw new Error('후보군에 중복된 항목이 존재합니다.');
+          }
+          seen.add(c);
+          clonedCandidates.push(c);
+        }
+        if (clonedCandidates[0] !== trimmedAnswer) {
+          throw new Error('후보군의 첫 번째 항목은 제출 답변과 정확히 일치해야 합니다.');
+        }
+        validatedCandidates = clonedCandidates;
+      }
     }
 
     // crypto.randomUUID 필수 검증 (임의 고정 fallback 금지)
@@ -181,13 +217,19 @@ export class PublicCoachApiClient {
       controller.signal.addEventListener('abort', abortListener, { once: true });
     });
 
-    const payload = {
+    const payload: Record<string, unknown> = {
       requestId,
       adultConfirmed: true,
       policyVersion: COACH_POLICY_VERSION,
       questionId,
       answer: trimmedAnswer,
     };
+    if (validatedInputSource) {
+      payload.inputSource = validatedInputSource;
+    }
+    if (validatedCandidates) {
+      payload.candidates = validatedCandidates;
+    }
 
     const fetchFn = this.customFetch || fetch;
 
@@ -287,11 +329,30 @@ export class PublicCoachApiClient {
         throw new Error('요청이 취소되었습니다.');
       }
 
+      let recognizedCandidateIndex: number | undefined = undefined;
+      if (validatedCandidates && validatedCandidates.length > 0) {
+        if (
+          typeof ev.recognizedCandidateIndex !== 'number' ||
+          !Number.isInteger(ev.recognizedCandidateIndex) ||
+          ev.recognizedCandidateIndex < 0 ||
+          ev.recognizedCandidateIndex >= validatedCandidates.length
+        ) {
+          throw new Error('평가 결과의 후보 인덱스(recognizedCandidateIndex)가 유효하지 않습니다.');
+        }
+        recognizedCandidateIndex = ev.recognizedCandidateIndex;
+      } else if (
+        ev.recognizedCandidateIndex !== undefined &&
+        ev.recognizedCandidateIndex !== 0
+      ) {
+        throw new Error('후보군이 없을 때 유효하지 않은 인덱스 응답입니다.');
+      }
+
       return {
         meaning: ev.meaning,
         sentenceComplete: ev.sentenceComplete,
         feedbackKo: ev.feedbackKo.trim(),
         modelAnswerEn: ev.modelAnswerEn.trim(),
+        recognizedCandidateIndex,
       };
     })();
 
