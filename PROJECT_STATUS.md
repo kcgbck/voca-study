@@ -49,9 +49,9 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-비교 기능 acdd746 배포 후 Codex 실제 PC WebGPU q8 실행에서 공개 영어 음성이 다국어 반복으로 깨짐을 확인했다. 준비14666ms/추론11041ms이나 정확도 실패. 공식 라이브러리 이슈1317과 일치하며 성공으로 취급하지 않는다. Gemini가 비교 패널만 WASM 명시 준비로 수정, 같은 가중치/다운로드범위 유지. Codex WASM 준비 경로 회귀 시험 및 전체84파일872시험/타입/린트/빌드/보호경로/diff PASS. WASM 실제 추론/캐시와 S25 비교는 재배포 후 대기. 기본 학습 Web Speech 유지, 단어장/서버/90%예산 보존. 사용자 승인대로 main 커밋·푸시·운영 배포 진행. parentHEAD acdd746. 상세 FOLLOWUP-33.
+무료 기기내 Whisper 비교 기능을 Gemini가 구현하고 Codex가 독립 검증하여 main/운영에 전달했다. 제품HEAD cc7ea19. 전체84파일872시험/타입/린트/빌드/보호경로/diff PASS. 실제 PC WebGPU q8 공개영어전사 실패 발견 후 WASM 호환 모드로 수정. 실제 WASM 공개11초음성2회 정상전사1747/1761ms, 재시작 캐시준비1084/1114ms. PC 수치를 S25 또는 초보자 발음 증거로 취급하지 않는다. 운영 정규주소 HTTP200 최신번들 확인. 실행 전후 D1 회화73건/보수단위1207464 동일, STT/TTS0건, 추가차감0. 기밀문자열 부재327파일PASS. S25 이름·커피·컵·잼·부정어·숫자6문항 리포트 사용자에게 요청해 대기. 실제 우위전 기본 학습 Web Speech 유지, 단어장/사용자저장소/서버/90%보존. 사용자승인대로 기록 커밋·main푸시 및 현재운영만남기는배포정리 마무리. 상세 FOLLOWUP-33.
 
-Operation: followup33-whisper-wasm-fix-20261024
-Parent HEAD: acdd74661935a61b16d3c5e10ff9e653cff6d098
+Operation: followup33-whisper-live-evidence-20261024
+Parent HEAD: cc7ea19edc1f1223839fbbaec11e25ff1fd51dd4
 Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->
