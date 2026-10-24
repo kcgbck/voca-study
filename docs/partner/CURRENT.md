@@ -155,10 +155,10 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: 음성 후보 보존 장치 검증
-지시문만으로 남은 실제 모델 오류를 확인해 Gemini가 후보 선택 예시·완전한 문장 보존·한국어 안전 피드백을 보완. 77파일767시험 PASS. 저장·커밋·main 푸시·운영 배포 후 예시에 없는 단어까지 실제 재시험한다. 무료90% 상한과 단어 데이터 보존.
+## 현재: 음성 후보 개선 운영·잔여 한계
+Gemini 제품 구현, Codex 검증. 77파일767시험 PASS. 실제28호출=D1 28소비/463427단위, STT/TTS0. jam·tennis·bread 후보 구제와 한국식 가명 등 보존 확인. coffee는 간헐 재질문, 1회20초 시간 초과가 있어 완전 해결 아님. Gemini 구독 한도로 추가 구현 중단, Codex 직접 최소 수정 허용 여부 질문 대기. 실물 인식률 미측정. 정규 주소 하나, 단어 데이터/무료90% 상한 보존.
 
-Operation: followup29-speech-guards-20261024
-Parent HEAD: 457ff5193d6a33f91338546d619d551f7a0248f7
+Operation: followup29-speech-evidence-20261024
+Parent HEAD: c07d77c308855201af047fac4a1ce2ef0451987c
 Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->

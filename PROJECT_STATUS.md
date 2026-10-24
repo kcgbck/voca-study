@@ -49,10 +49,10 @@
 - `npx wrangler pages deploy`: PASS (`https://voca-study-akf.pages.dev` 실시간 배포 및 정상 응답 검증 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: 실제 후보 보존과 한국어 안전 피드백
-457ff51까지 main 푸시·운영 배포 완료. 2차 합성9평가에서도 후보 선택 오판과 버린 인식 단어를 사용자 탓하는 응답이 남아 통과 처리하지 않았다. Gemini가 후보 우선 선택 예시와 서버 출력 보존을 구현했다. 올바른 완전한 영문으로 판정한 200자 이하 실제 문장은 그대로 보존하고, 대안 채택 피드백은 한국어 안전 문구로 제공한다. AI의 의미·완성도·후보 선택은 그대로 유지하며 추가 호출 없음. 독립 시험에서 한국어 출력 검증 우회를 잡아 수정. 최종 프롬프트1388자. 77파일767시험 및 전체 검증 PASS, 민감값291파일 일치0. 실제 최종 합성 평가와 D1 재대조를 이어간다. 실물 인식률과 수동 관문 미검증.
+## 현재: 음성 후보 개선 운영 및 검증 한계
+Gemini 구현·Codex 독립 검증으로 실제 음성 후보를 같은 AI 평가에 전달하고 원문/문맥 표시, 구제된 오인식 원문 캐시 금지, 온전한 채택 영문 보존, 한국어 안전 피드백을 반영했다. main c07d77c까지 푸시·운영 배포 완료. 전체77파일767시험 및 타입·린트·빌드·보호 경로·공백 PASS. 실제 합성28호출은 D1 28소비/보수적 예산 단위463427과 정확히 일치, STT/TTS0. 최신 모델에서 jam·tennis·bread 구제와 cup·한국식 가명·숫자·부정 보존 확인. coffee는 간헐 uncertain으로 정지해 완전 해결 아님. 불명확 발화1회20초504, 성공으로 세지 않음. Gemini 구독 개별 한도429로 후속 응답 순서 개선 구현은 막혔으며 직접 구현 역할 변경을 사용자에게 질문한 상태다. 미구현 검증안은 운영 코드에 포함하지 않았다. 최종 증거 기록을 커밋·main 푸시·같은 코드 운영 배포한다. 실물 S25와 수동 관문 유지. 상세 docs/FOLLOWUP-29_GEMINI_SPEECH_CONTEXT.md.
 
-Operation: followup29-speech-guards-20261024
-Parent HEAD: 457ff5193d6a33f91338546d619d551f7a0248f7
+Operation: followup29-speech-evidence-20261024
+Parent HEAD: c07d77c308855201af047fac4a1ce2ef0451987c
 Attribution: session-attribution-unavailable
 <!-- CODING_PARTNER_V2_STATE_END -->
