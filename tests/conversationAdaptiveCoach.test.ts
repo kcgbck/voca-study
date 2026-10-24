@@ -114,6 +114,8 @@ describe('Adaptive Coach - Server & Protocol & API Integration', () => {
       // System instruction includes nextQuestionId requirement and advice for iced tea
       expect(parsedBody.system_instruction.parts[0].text).toContain('nextQuestionId');
       expect(parsedBody.system_instruction.parts[0].text).toContain('allowedNextCandidates');
+      expect(parsedBody.system_instruction.parts[0].text).toContain('carrier만 거절하면 carrier만 언급');
+      expect(parsedBody.system_instruction.parts[0].text).toContain('영어 예문/문장을 feedbackKo에 중복 포함하지 마세요');
 
       // generationConfig responseSchema requires nextQuestionId with allowed enums
       const schema = parsedBody.generationConfig.responseSchema;

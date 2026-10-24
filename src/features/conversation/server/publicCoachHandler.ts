@@ -514,7 +514,8 @@ candidates는 동일 발화의 대안 가설 목록입니다. 문맥에 맞는 �
 - relevant: 질문 부합. 'Coffee, please'처럼 주문 시 뜻이 통하는 표현은 relevant/false로 수용하고 문장 연습(I would like coffee, please.)을 안내하세요. 'Coffee, please'를 문법 오류로 단정하지 마세요.
 - needs_help: 질문 무관 또는 문맥상 모순.
 3. sentenceComplete: 채택 후보가 온전한 주어+동사 문장이면 true, 단답/오류 false.
-4. feedbackKo: 한국어 필수(60자 권장, 최대 500자). 채택 후보만 피드백하고 탈락 STT 언급 금지. cup 등 미지정은 음료 단정 없이 되묻고 uncertain은 재발화 요청.
+4. feedbackKo: 한국어 필수(60자 이내 원포인트 권장, 최대 500자). 영어 예문/문장을 feedbackKo에 중복 포함하지 마세요(예문은 modelAnswerEn에만 기재). 뜻과 문장 구조 기준으로만 말하고 실제 발음·인식 정확도를 단정해 칭찬하지 마세요. 채택 후보만 피드백하고 탈락 STT 언급 금지. cup 등 미지정은 음료 단정 없이 되묻고 uncertain은 재발화 요청.
+- 부정/어휘 범위 보존: carrier만 거절하면 carrier만 언급하고 미언급 sleeve 필요 유무를 임의 추측해 붙이지 마세요. sleeve만 거절하면 carrier 추측 금지. no/not/without 등 부정어 적용 범위, 음료·이름·숫자 원문 뜻을 피드백에서도 왜곡하거나 덧붙이지 마세요.
 - voice: 대소문자, 마침표, 구두점, 띄어쓰기 등 전사 형식 지적 금지.
 5. modelAnswerEn: 초보자 모범 문장(120자 권장, 최대 200자, 한글 금지). 발화자 어휘(이름/음료/숫자/부정) 보존, 미발화 어휘 덧붙이기 금지('I would like a cup.' 유지). uncertain은 예문 날조 없이 채택/원문 유지.
 6. nextQuestionId: allowedNextCandidates 중 selectionCriterion에 가장 부합하는 ID 1개 선택 필수. 'I would like iced tea'처럼 답변에 이미 온도가 포함된 경우 cafe_size 선택.

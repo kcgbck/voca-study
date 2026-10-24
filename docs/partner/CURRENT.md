@@ -155,9 +155,9 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-카페 상황 회화 5~6문항을 사용자 승인대로 Gemini 구독 CLI가 구현하고 Codex가 검증했다. 기준 HEAD 60c7475/main. 고정5문항 API 호환 유지, 새 UI는 카페 음료→온도→크기→매장/포장→옵션→결제이며 iced 선제답변은 온도를 건너뛴다. 평가·한국어 교정·영어 예문·후속 ID를 단일 API에 통합하고 서버 공인 간선만 허용한다. 최근2턴/1024UTF8/본문4KiB, 16384기본+동적프롬프트 계량,13RPM/225000유닛/450RPD,현재무료모델/독립D1을 보존했다. 실제 승인 동일문장만 정규화 재사용,새답변/변경답변/새질문/후보복구는보수적으로평가. 18세1회/한국어진행/영어질문/10초듣기/확인대화없음/사용자Next유지. Gemini초안 중복문법/부정안전응답의nextID/타입/SSR제목누락을 독립검증으로발견해수정시켰다. RunCommand 시도는자동거부되었고권한확대없음. scripts/verify.ps1 전체86파일907시험/타입/린트/빌드/보호경로/diff PASS. 단어장1800개54000회감사결함0. 독립메모리SQLite 예산8검사 PASS(분당14번째차단/일일450/실패소모/잘못된입력0소모/UTF8통째drop/반복1회소모). 배포22자산 기밀리터럴0/APK없음. 운영D1기준 대화73건/1207464유닛,STT/TTS없음. 사용자Cloudflare재로그인완료. 사용자요청에따라 검증결과기록후커밋/main푸시/운영반영을진행한다. 실제Gemini카페분기·응답시간·D1전후비교는운영반영후기록예정. 실제S25마이크/Whisper우위는아직미검증,기본WebSpeech보존. 상세docs/FOLLOWUP-36_CAFE_ADAPTIVE_COACH.md. APK와인증자료/개인기록은커밋·전송제외.
+카페 실제운영 1차검증 완료: 제품9caa7f8/main/운영반영. 합성Controller+실제공개API+Google+D1으로5문항6호출(iced tea후coffee변경재평가),6문항7호출(단답교정+동일반복재사용),총11문항13평가 모두성공. consumed73→86(+13),유닛1207464→1428521(+221057),STT/TTS0유지. API왕복1245~2003ms/중앙1436ms; 실제S25마이크/TTS측정아님. 360px가로넘침없음. 실제피드백에서carrier만거절했는데sleeve도거절한것으로넓힌문제발견하여Gemini에부정범위보존/미언급항목추측금지/짧은한국어피드백/영문예문중복금지 최소프롬프트수정시킴. 수정후전체86파일907시험/타입/린트/빌드/보호경로/diff PASS. 13RPM/225000유닛/450RPD와기본16384계량/단일20초/noexternretry/무료모델/단어장/사용자저장소보존. 이번수정커밋/main푸시/운영반영후carrier와sleeve부정2건/단답coffee/iced분기와브라우저텍스트학습을재검증예정. 실제S25발음·Whisper비교는여전히미검증. 원본자료와인증자료커밋제외. 상세FOLLOWUP-36.
 
-Operation: followup36-cafe-adaptive-20261024
-Parent HEAD: 60c74754fe2d8d599619e3bfed4f4c813ff514ba
+Operation: followup36-cafe-feedback-scope-20261024
+Parent HEAD: 9caa7f87e6f02aac1557bfc625274d014684fc03
 Attribution: baseline-compared
 <!-- CODING_PARTNER_V2_STATE_END -->
