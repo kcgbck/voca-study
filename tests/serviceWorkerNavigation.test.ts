@@ -62,6 +62,12 @@ describe('PWA deployment freshness', () => {
     expect(remove).not.toHaveBeenCalledWith('unrelated-cache');
   });
 
+  it('manual CLEAR_CACHE messages delete only this app caches',async()=>{
+    const {listeners,remove}=worker(vi.fn());let pending!:Promise<unknown>;
+    listeners.message({data:{type:'CLEAR_CACHE'},waitUntil:(value:Promise<unknown>)=>{pending=value;}});
+    await pending;expect(remove).toHaveBeenCalledWith('voca-study-cache-v6');expect(remove).not.toHaveBeenCalledWith('unrelated-cache');
+  });
+
   it('a stalled network is aborted after five seconds and returns the offline shell', async () => {
     vi.useFakeTimers();
     let signal!: AbortSignal;

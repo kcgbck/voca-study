@@ -204,19 +204,26 @@ export const App: React.FC = () => {
     setUpdateToast('오프라인 캐시 정리 및 최신 버전 확인 중...');
 
     try {
-      // 1. Service Worker 캐시 스토리지 전체 삭제
+      // 1. Service Worker 캐시 스토리지 중 본 앱 캐시만 선택 삭제
       if ('caches' in window) {
         const cacheKeys = await caches.keys();
-        await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+        await Promise.all(
+          cacheKeys
+            .filter((key) => key.startsWith('voca-study-cache-'))
+            .map((key) => caches.delete(key))
+        );
       }
 
-      // 2. 등록된 Service Worker 업데이트 및 메시지 전송
+      // 2. 본 앱 루트 스코프(/)에 등록된 Service Worker만 업데이트 및 메시지 전송
       if ('serviceWorker' in navigator) {
+        const appRootScope = new URL('/', window.location.href).href;
         const registrations = await navigator.serviceWorker.getRegistrations();
         for (const reg of registrations) {
-          reg.active?.postMessage({ type: 'CLEAR_CACHE' });
-          reg.active?.postMessage({ type: 'SKIP_WAITING' });
-          await reg.update().catch(() => {});
+          if (reg.scope === appRootScope) {
+            reg.active?.postMessage({ type: 'CLEAR_CACHE' });
+            reg.active?.postMessage({ type: 'SKIP_WAITING' });
+            await reg.update().catch(() => {});
+          }
         }
       }
 

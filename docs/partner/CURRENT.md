@@ -155,10 +155,10 @@ PWA (Progressive Web App, 모바일 맞춤 설치형 오프라인 우선 웹앱,
 - `npx wrangler pages deploy`: 통과 (`https://fdf88220.voca-study-akf.pages.dev` 실시간 배포 완료)
 
 <!-- CODING_PARTNER_V2_STATE_START -->
-## 현재: 단일 메인 시험 운영
-기본 주소 하나로 홈 → AI 영어 회화. 별도 시험 진입점 폐지, SW v8 갱신 확인. 사용자 승인에 따라 기존 개발 결과 전체를 저장·커밋·main 푸시하고 같은 코드를 운영 배포한다. 75파일 729시험 및 타입/린트/빌드 통과. 내장 단어 DB 보존. 실제 기기·사람 검수 관문은 유지한다. 상세: docs/FOLLOWUP-26_MAIN_RELEASE_VALIDATION.md.
+## 현재: PWA 새로고침 범위 보완
+main 17fd4a8 운영 전환 완료. 후속 검증에서 수동 새로고침의 전체 캐시 삭제와 다른 SW 등록 갱신을 재현하여 Gemini가 앱 소유 캐시/루트 SW로 한정했다. SW v9, 76파일 731시험 PASS. 사용자 단어 데이터 보존, 실제 회화 호출 0. 저장·커밋·main 푸시·운영 배포를 이어간다. 실기기/사람 검수 관문은 유지. 상세 docs/FOLLOWUP-27_PWA_BOUNDARIES_VALIDATION.md.
 
-Operation: followup26-main-release-final-20261024
-Parent HEAD: 8248697cb4702719dfe7191195bccba5851a9cd4
+Operation: followup27-pwa-boundaries-20261024
+Parent HEAD: 17fd4a87c6976fe3313bf5f52966686ad496a4f9
 Attribution: baseline-compared
 <!-- CODING_PARTNER_V2_STATE_END -->

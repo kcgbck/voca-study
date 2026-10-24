@@ -1,5 +1,5 @@
-// 보카 스터디 PWA Service Worker (v8.0.0 - Canonical Main & Fresh Update)
-const CACHE_NAME = 'voca-study-cache-v8';
+// 보카 스터디 PWA Service Worker (v9.0.0 - App-Scoped Cache & Registration Boundary)
+const CACHE_NAME = 'voca-study-cache-v9';
 
 // 오프라인 실행을 위한 필수 앱 셸 에셋
 const PRECACHE_ASSETS = [
@@ -49,7 +49,13 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'CLEAR_CACHE') {
     event.waitUntil(
       caches.keys().then((keyList) => {
-        return Promise.all(keyList.map((key) => caches.delete(key)));
+        return Promise.all(
+          keyList.map((key) => {
+            if (key.startsWith('voca-study-cache-')) {
+              return caches.delete(key);
+            }
+          })
+        );
       })
     );
   }
