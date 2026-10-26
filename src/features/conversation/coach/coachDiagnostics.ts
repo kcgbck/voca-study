@@ -33,6 +33,8 @@ export interface CoachDiagnosticRecord {
   questionEn: string;
   stage: 'initial' | 'repeat';
   inputSource: 'voice' | 'text';
+  speechEngine?: string;
+  speechModel?: string;
   rawText: string;
   candidates: string[];
   evaluationSource: 'ai' | 'reuse' | 'none';
@@ -126,6 +128,14 @@ function validateAndSanitizeRecord(raw: unknown): CoachDiagnosticRecord | null {
     evaluationRequests,
     elapsedMs,
   };
+
+  if (typeof item.speechEngine === 'string' && item.speechEngine.trim().length > 0) {
+    sanitized.speechEngine = sanitizeString(item.speechEngine.trim(), 64);
+  }
+
+  if (typeof item.speechModel === 'string' && item.speechModel.trim().length > 0) {
+    sanitized.speechModel = sanitizeString(item.speechModel.trim(), 128);
+  }
 
   const cleanEval = sanitizeEvaluation(item.evaluation, candidates.length);
   if (cleanEval) {
@@ -315,6 +325,9 @@ export class CoachDiagnosticStore {
       lines.push(`- 시각: ${rec.timestamp} (입력·평가 소요: ${rec.elapsedMs}ms)`);
       lines.push(`- 질문: [${rec.questionId}] ${rec.questionEn}`);
       lines.push(`- 단계 및 입력: ${rec.stage === 'initial' ? '초기 답변' : '반복 연습'} / ${rec.inputSource === 'voice' ? '음성인식' : '텍스트 직접입력'}`);
+      if (rec.speechEngine) {
+        lines.push(`- 음성 엔진: ${rec.speechEngine}${rec.speechModel ? ` (${rec.speechModel})` : ''}`);
+      }
       lines.push(`- 사용자 의도: ${rec.intendedText ? rec.intendedText : '(사용자 미입력 - 확인 불가)'}`);
       lines.push(`- 원본 인식 문장(Raw): "${rec.rawText}"`);
 

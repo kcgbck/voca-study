@@ -28,6 +28,7 @@ export type CoachPhase =
   | 'speaking'
   | 'thinking'
   | 'listening'
+  | 'transcribing'
   | 'evaluating'
   | 'waiting'
   | 'practicing'
@@ -71,6 +72,7 @@ export interface CoachTutorControllerDeps {
 export interface CoachTutorControllerOptions {
   thinkingMs?: number;
   answerWindowMs?: number;
+  listenTimeoutMs?: number;
 }
 
 /**
@@ -640,6 +642,7 @@ export class CoachTutorController {
     let active = true;
     let localCandidates: string[] = [];
     let res: Awaited<ReturnType<typeof this.raceStep<string>>>;
+    const listenTimeout = this.options?.listenTimeoutMs ?? (windowMs + 6500);
     try {
       res = await this.raceStep(
         this.deps.listen('en-US', {
@@ -649,6 +652,14 @@ export class CoachTutorController {
               this.emitSnapshot({
                 phase: 'listening',
                 message: listeningMsg,
+              });
+            }
+          },
+          onProcessing: () => {
+            if (!signal.aborted && active) {
+              this.emitSnapshot({
+                phase: 'transcribing',
+                message: '기기에서 음성 변환 중',
               });
             }
           },
@@ -670,7 +681,7 @@ export class CoachTutorController {
             }
           },
         }),
-        windowMs + 6500,
+        listenTimeout,
         signal
       );
     } finally {
@@ -1191,6 +1202,7 @@ export class CoachTutorController {
     if (!this.currentQuestion || typeof text !== 'string') return;
     if (
       this.currentPhase === 'complete' ||
+      this.currentPhase === 'transcribing' ||
       this.currentPhase === 'evaluating' ||
       this.currentPhase === 'waiting' ||
       this.practiceDone >= this.practiceTarget

@@ -37,6 +37,7 @@ export interface BrowserSpeechTrace {
 export interface BrowserSpeechInputOptions {
   windowMs?: number;
   onReady?: () => void;
+  onProcessing?: () => void;
   onPartial?: (text: string) => void;
   onTrace?: (trace: BrowserSpeechTrace) => void;
   onAlternatives?: (alternatives: string[]) => void;

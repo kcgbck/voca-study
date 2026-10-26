@@ -1,12 +1,55 @@
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import React from 'react';
-const h=vi.hoisted(()=>({states:[] as any[],refs:[] as any[],s:0,r:0,effect:false,cleanup:undefined as any,listeners:{} as Record<string,()=>void>,speak:vi.fn(),listen:vi.fn(),eval:vi.fn(),cancelInput:vi.fn(),cancelOutput:vi.fn(),cancelApi:vi.fn(),supported:true}));
+const h=vi.hoisted(()=>({
+  states:[] as any[],
+  refs:[] as any[],
+  s:0,
+  r:0,
+  effect:false,
+  cleanup:undefined as any,
+  listeners:{} as Record<string,()=>void>,
+  speak:vi.fn(),
+  listen:vi.fn(),
+  eval:vi.fn(),
+  cancelInput:vi.fn(),
+  cancelOutput:vi.fn(),
+  cancelApi:vi.fn(),
+  supported:true,
+  moonshineReady:false,
+  moonshinePrepare:vi.fn(),
+  moonshineDispose:vi.fn(),
+}));
 vi.mock('react',async original=>({...await original<any>(),
  useState:(initial:any)=>{const i=h.s++;if(!(i in h.states)) h.states[i]=typeof initial==='function'?initial():initial;return [h.states[i],(v:any)=>{h.states[i]=typeof v==='function'?v(h.states[i]):v;}];},
  useRef:(initial:any)=>{const i=h.r++;return h.refs[i]??(h.refs[i]={current:initial});},useCallback:(fn:any)=>fn,
  useEffect:(fn:any)=>{if(!h.effect){h.effect=true;h.cleanup=fn();}},
 }));
-vi.mock('../src/features/conversation/services/browserSpeechInput',()=>({BrowserSpeechInputService:class{start=h.listen;cancel=h.cancelInput;isSupported(){return h.supported;}}}));
+vi.mock('../src/features/conversation/services/browserSpeechInput',()=>({
+  BrowserSpeechInputService:class{
+    start=h.listen;
+    cancel=h.cancelInput;
+    isSupported(){return h.supported;}
+  }
+}));
+vi.mock('../src/features/conversation/moonshine/moonshineSpeechInput',()=>({
+  MoonshineSpeechInputService:class{
+    static readonly ENGINE_NAME = 'Moonshine' as const;
+    static readonly MODEL_ARCH = 'SmallStreaming' as const;
+    static readonly SDK_VERSION = '0.1.5' as const;
+    static readonly CATALOG_REVISION = 'quantized_26_07_30' as const;
+    static readonly ESTIMATED_DOWNLOAD_BYTES = 165489086 as const;
+    engineName = 'Moonshine';
+    modelArch = 'SmallStreaming';
+    sdkVersion = '0.1.5';
+    catalogRevision = 'quantized_26_07_30';
+    start=h.listen;
+    cancel=h.cancelInput;
+    dispose=h.moonshineDispose;
+    prepare=h.moonshinePrepare;
+    isReady(){return h.moonshineReady;}
+    isSupported(){return h.supported;}
+  }
+}));
 vi.mock('../src/features/conversation/services/voiceOutput',()=>({VoiceOutputService:class{speak=h.speak;cancel=h.cancelOutput;}}));
 vi.mock('../src/features/conversation/coach/publicCoachApi',()=>({PublicCoachApiClient:class{evaluate=h.eval;cancel=h.cancelApi;}}));
 import {CoachBudgetError,CAFE_QUESTIONS} from '../src/features/conversation/coach/coachProtocol';
@@ -19,10 +62,11 @@ const button=(t:any,label:string)=>nodes(t).find(n=>n.type==='button'&&text(n).i
 const checkbox=()=>nodes(render()).find(n=>n.type==='input'&&n.props.type==='checkbox');
 const agree=()=>checkbox().props.onChange({target:{checked:true}});
 const flush=async()=>{for(let i=0;i<150;i++) await Promise.resolve();};
-beforeEach(()=>{vi.useFakeTimers();vi.resetAllMocks();h.states=[];h.refs=[];h.effect=false;h.listeners={};h.cleanup=undefined;h.supported=true;
+beforeEach(()=>{vi.useFakeTimers();vi.resetAllMocks();h.states=[];h.refs=[];h.effect=false;h.listeners={};h.cleanup=undefined;h.supported=true;h.moonshineReady=false;
  const target={location:{search:''},hidden:false,addEventListener:(name:string,fn:any)=>{h.listeners[name]=fn;},removeEventListener:vi.fn()};vi.stubGlobal('window',target);vi.stubGlobal('document',target);vi.stubGlobal('localStorage',{getItem:()=>null,setItem:vi.fn()});
  h.speak.mockResolvedValue({success:true});let answers=['I would like coffee, please.','I would like coffee, please.'];h.listen.mockImplementation(async()=>answers.shift()??'');
  h.eval.mockResolvedValue({meaning:'relevant',sentenceComplete:true,feedbackKo:'뜻을 정확히 전달했어요.',modelAnswerEn:'I would like coffee, please.',nextQuestionId:'cafe_temp'});
+ h.moonshinePrepare.mockImplementation(async()=>{h.moonshineReady=true;});
 });
 afterEach(()=>{h.cleanup?.();vi.useRealTimers();vi.unstubAllGlobals();});
 it('has only one adult checkbox and no login or legacy settings',()=>{
@@ -65,16 +109,8 @@ it('shows microphone readiness and live unconfirmed words without requesting AI 
 it('normal learning has no speech diagnostic collection or additional settings',async()=>{
  render();agree();h.listen.mockImplementation(()=>new Promise(()=>{}));button(render(),'코칭 시작').props.onClick();await flush();expect(h.listen.mock.calls[0][1]?.onTrace).toBeUndefined();expect(text(render())).not.toContain('음성 진단 결과');h.listeners.pagehide();await flush();
 });
-it('explicit diagnostic link shows transient native English records without evaluating an answer',async()=>{
- (window as any).location={search:'?speech-debug=1'};render();expect(text(render())).toContain('음성 진단 결과');agree();
- h.listen.mockImplementation((_lang:string,options:any)=>{options?.onReady?.();options?.onTrace?.({session:1,event:'result',results:[{index:0,text:'tea please.',final:true}]});options?.onPartial?.('tea please.');return new Promise(()=>{});});button(render(),'코칭 시작').props.onClick();await flush();const t=render();expect(text(t)).toContain('tea please.');expect(nodes(t).find(n=>n.type==='pre')?.props.children).toContain('result');expect(h.eval).not.toHaveBeenCalled();h.listeners.pagehide();await flush();
-});
-
-it('copies diagnostic JSON only after an explicit click, including mode version and captured events',async()=>{
- (window as any).location={search:'?speech-debug=1'};const writeText=vi.fn().mockResolvedValue(undefined);vi.stubGlobal('navigator',{clipboard:{writeText}});render();expect(button(render(),'진단 결과 복사').props.disabled).toBe(true);agree();h.listen.mockImplementation((_lang:string,options:any)=>{options?.onTrace?.({session:1,event:'start',continuous:false,interimResults:true});return new Promise(()=>{});});button(render(),'코칭 시작').props.onClick();await flush();expect(writeText).not.toHaveBeenCalled();await button(render(),'진단 결과 복사').props.onClick();await flush();expect(writeText).toHaveBeenCalledOnce();const payload=JSON.parse(writeText.mock.calls[0][0]);expect(payload.diagnosticVersion).toBe('paced-coach-10s-v9');expect(text(render())).toContain('진단 버전: paced-coach-10s-v9');expect(payload.events).toEqual([{session:1,event:'start',continuous:false,interimResults:true}]);expect(text(render())).toContain('복사했습니다');expect(h.eval).not.toHaveBeenCalled();h.listeners.pagehide();await flush();
-});
-it('clipboard failures stay on screen without a false success or an unhandled rejection',async()=>{
- (window as any).location={search:'?speech-debug=1'};vi.stubGlobal('navigator',{clipboard:{writeText:vi.fn().mockRejectedValue(new Error('denied'))}});render();agree();h.listen.mockImplementation((_lang:string,options:any)=>{options?.onTrace?.({session:1,event:'start'});return new Promise(()=>{});});button(render(),'코칭 시작').props.onClick();await flush();await button(render(),'진단 결과 복사').props.onClick();await flush();expect(text(render())).toContain('복사하지 못했습니다');expect(text(render())).not.toContain('복사했습니다');expect(nodes(render()).find(n=>n.type==='pre')?.props.children).toContain('start');h.listeners.pagehide();await flush();
+it('explicit speech-debug link no longer mounts legacy native trace UI in canonical Moonshine mode',async()=>{
+ (window as any).location={search:'?speech-debug=1'};render();expect(text(render())).not.toContain('음성 진단 결과');expect(text(render())).not.toContain('paced-coach-10s-v9');
 });
 
 it('hides adult confirmation immediately after saving and restores it on a fresh mount',()=>{
@@ -161,5 +197,132 @@ it('invalidates a stale manual report after the user annotates an utterance',asy
 it('never labels a candidate as AI-selected when evaluation returned an error',async()=>{
  diagnosticDisk();h.listen.mockImplementation(async(_l,o)=>{o?.onAlternatives?.(['couple please','I would like coffee, please.']);return 'couple please';});h.eval.mockRejectedValue(new Error('service unavailable'));render();agree();button(render(),'코칭 시작').props.onClick();await flush();expect(text(render())).toContain('couple please');expect(text(render())).not.toMatch(/← 채택/);expect(h.eval).toHaveBeenCalledOnce();
 });
-it('blocks coaching synchronously when the Whisper comparison claims the microphone',async()=>{render();agree();const n=render();const panel=nodes(n).find(x=>typeof x.props?.onBusyChange==='function'&&'coachingActive' in x.props);expect(panel).toBeTruthy();panel.props.onBusyChange(true);button(n,'코칭 시작').props.onClick();await flush();expect(h.speak).not.toHaveBeenCalled();expect(h.listen).not.toHaveBeenCalled();expect(h.eval).not.toHaveBeenCalled();expect(button(render(),'코칭 시작').props.disabled).toBe(true);});
+it('blocks coaching synchronously when the Whisper comparison claims the microphone',async()=>{
+ render();agree();
+ const n=render();
+ const startBtn=button(n,'코칭 시작');
+ const panel=nodes(n).find(x=>typeof x.props?.onBusyChange==='function'&&'coachingActive' in x.props);
+ expect(panel).toBeTruthy();
+ panel.props.onBusyChange(true);
+ startBtn.props.onClick();
+ await flush();
+ expect(h.speak).not.toHaveBeenCalled();
+ expect(h.listen).not.toHaveBeenCalled();
+ expect(h.eval).not.toHaveBeenCalled();
+ expect(button(render(),'코칭 시작')).toBeUndefined();
+});
 it('marks active coaching so the comparison cannot start a competing microphone',async()=>{h.listen.mockImplementation(()=>new Promise(()=>{}));render();agree();button(render(),'코칭 시작').props.onClick();await flush();const panel=nodes(render()).find(x=>typeof x.props?.onBusyChange==='function'&&'coachingActive' in x.props);expect(panel.props.coachingActive).toBe(true);});
+
+it('prepares Moonshine model before speaking and listening',async()=>{
+ render();agree();
+ expect(text(render())).toContain('Moonshine v2 / 영어 Small Streaming');
+ expect(h.moonshinePrepare).not.toHaveBeenCalled();
+ button(render(),'코칭 시작').props.onClick();
+ await flush();
+ expect(h.moonshinePrepare).toHaveBeenCalledOnce();
+ expect(h.speak).toHaveBeenCalled();
+ expect(h.listen).toHaveBeenCalled();
+});
+
+it('text mode skips Moonshine preparation entirely',async()=>{
+ render();agree();
+ button(render(),'텍스트 모드로 전환').props.onClick();
+ (button(render(),'코칭 시작')??button(render(),'다시 시작')).props.onClick();
+ await flush();
+ expect(h.moonshinePrepare).not.toHaveBeenCalled();
+});
+
+it('double click on start does not trigger duplicate prepare calls',async()=>{
+ render();agree();
+ let release: () => void = () => {};
+ h.moonshinePrepare.mockImplementation(()=>new Promise<void>(resolve=>{release=resolve;}));
+ const startBtn = button(render(),'코칭 시작');
+ startBtn.props.onClick();
+ startBtn.props.onClick();
+ await flush();
+ expect(h.moonshinePrepare).toHaveBeenCalledOnce();
+ release();
+ await flush();
+});
+
+it('pausing or pagehide during prepare cancels pending prepare without late start',async()=>{
+ render();agree();
+ let release: () => void = () => {};
+ h.moonshinePrepare.mockImplementation(()=>new Promise<void>(resolve=>{release=resolve;}));
+ button(render(),'코칭 시작').props.onClick();
+ await flush();
+ expect(button(render(),'다운로드 취소')).toBeDefined();
+ h.listeners.pagehide();
+ await flush();
+ expect(h.cancelInput).toHaveBeenCalled();
+ release();
+ await flush();
+ expect(h.speak).not.toHaveBeenCalled();
+ expect(h.listen).not.toHaveBeenCalled();
+});
+
+it('unmounting while prepare is pending cancels and prevents late start',async()=>{
+ render();agree();
+ let release: () => void = () => {};
+ h.moonshinePrepare.mockImplementation(()=>new Promise<void>(resolve=>{release=resolve;}));
+ button(render(),'코칭 시작').props.onClick();
+ await flush();
+ h.cleanup?.();
+ h.cleanup = undefined;
+ release();
+ await flush();
+ expect(h.moonshineDispose).toHaveBeenCalled();
+ expect(h.speak).not.toHaveBeenCalled();
+ expect(h.listen).not.toHaveBeenCalled();
+});
+
+it('failed prepare shows retry and text options and retry re-prepares',async()=>{
+ render();agree();
+ h.moonshinePrepare.mockRejectedValueOnce(new Error('Network download error'));
+ button(render(),'코칭 시작').props.onClick();
+ await flush();
+ expect(text(render())).toContain('음성 모델을 준비하지 못했습니다');
+ expect(text(render())).not.toContain('Network download error');
+ expect(button(render(),'다시 시도')).toBeDefined();
+ expect(button(render(),'텍스트 모드로 전환')).toBeDefined();
+ expect(h.speak).not.toHaveBeenCalled();
+
+ h.moonshinePrepare.mockImplementationOnce(async()=>{h.moonshineReady=true;});
+ button(render(),'다시 시도').props.onClick();
+ await flush();
+ expect(h.moonshinePrepare).toHaveBeenCalledTimes(2);
+ expect(h.speak).toHaveBeenCalled();
+});
+
+it('Next question routes through prepare gate and reuses idle prepared model',async()=>{
+ render();agree();
+ button(render(),'코칭 시작').props.onClick();
+ await flush();
+ expect(h.moonshinePrepare).toHaveBeenCalledOnce();
+ expect(button(render(),'다음 질문으로')).toBeDefined();
+
+ button(render(),'다음 질문으로').props.onClick();
+ await flush();
+ expect(h.moonshinePrepare).toHaveBeenCalledOnce(); // Reused without re-preparing
+});
+
+it('annotates diagnostics with Moonshine engine metadata on voice and text engine on text',async()=>{
+ render();agree();
+ button(render(),'코칭 시작').props.onClick();
+ await flush();
+ const voiceBtn = button(render(),'진단 기록 복사');
+ expect(voiceBtn.props.disabled).toBe(false);
+ const diagRecords = nodes(render()).filter(n=>n.type==='details'&&text(n).includes('원본 인식'));
+ expect(diagRecords.length).toBeGreaterThan(0);
+ expect(text(diagRecords[0])).toContain('Moonshine');
+ expect(text(diagRecords[0])).toContain('SmallStreaming');
+
+ // Switch to text mode and submit text answer
+ button(render(),'텍스트 모드로 전환').props.onClick();
+ (button(render(),'다시 시작')??button(render(),'코칭 시작')).props.onClick();
+ await flush();
+ await submitAnswer('I would like coffee, please.');
+ const updatedDiagRecords = nodes(render()).filter(n=>n.type==='details'&&text(n).includes('원본 인식'));
+ expect(updatedDiagRecords.length).toBeGreaterThan(1);
+ expect(text(updatedDiagRecords[0])).toContain('text');
+});

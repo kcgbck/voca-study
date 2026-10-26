@@ -56,3 +56,21 @@ it('preserves spaces during controlled incremental annotation typing',()=>{
 it('distinguishes a returned single native transcript from unavailable alternatives in the report',()=>{
  const store=new CoachDiagnosticStore(storage(),()=>baseTime);const r=sample();r.candidates=[r.rawText];r.evaluation!.recognizedCandidateIndex=0;store.append(r);const report=store.exportText();expect(report).toMatch(/단일.*1개|1개.*단일/);expect(report).toContain(r.rawText);expect(report).not.toContain('후보 미제공');
 });
+it('sanitizes optional speech engine and model metadata and preserves legacy records without it',()=>{
+ const store=new CoachDiagnosticStore(storage(),()=>baseTime);
+ const r=sample('one');
+ r.speechEngine='Moonshine';
+ r.speechModel='SmallStreaming SDK 0.1.5 rev quantized_26_07_30';
+ store.append(r);
+ store.append(sample('two')); // legacy record without metadata
+ const records=store.list();
+ const oneRecord = records.find(rec => rec.id === 'one');
+ const twoRecord = records.find(rec => rec.id === 'two');
+ expect(oneRecord?.speechEngine).toBe('Moonshine');
+ expect(oneRecord?.speechModel).toContain('SmallStreaming');
+ expect(twoRecord?.speechEngine).toBeUndefined();
+ expect(twoRecord?.speechModel).toBeUndefined();
+ const text=store.exportText();
+ expect(text).toContain('Moonshine');
+ expect(text).toContain('SmallStreaming SDK 0.1.5');
+});

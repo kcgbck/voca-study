@@ -23,11 +23,11 @@ import {
   type CoachSnapshot,
 } from '../coach/CoachTutorController';
 import { PublicCoachApiClient } from '../coach/publicCoachApi';
+import type { BrowserSpeechInputOptions } from '../services/browserSpeechInput';
 import {
-  BrowserSpeechInputService,
-  type BrowserSpeechInputOptions,
-  type BrowserSpeechTrace,
-} from '../services/browserSpeechInput';
+  MoonshineSpeechInputService,
+  type MoonshineProgressPayload,
+} from '../moonshine/moonshineSpeechInput';
 import { VoiceOutputService } from '../services/voiceOutput';
 import {
   CoachDiagnosticStore,
@@ -63,6 +63,11 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
   const [speechSupported, setSpeechSupported] = useState<boolean>(true);
   const [isTextMode, setIsTextMode] = useState<boolean>(false);
 
+  // Moonshine 모델 로딩/다운로드 상태
+  const [isModelLoading, setIsModelLoading] = useState<boolean>(false);
+  const [modelProgressText, setModelProgressText] = useState<string>('');
+  const [modelError, setModelError] = useState<string>('');
+
   // 텍스트 답하기 접기 상태 및 입력값
   const [showTextInput, setShowTextInput] = useState(false);
   const [typedAnswer, setTypedAnswer] = useState('');
@@ -81,13 +86,6 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
   // 전체 5개 세션 완료 여부
   const [allFinished, setAllFinished] = useState(false);
 
-  // 음성 진단 모드 (?speech-debug=1 쿼리 존재 시에만 활성화되는 휘발성 디버깅)
-  const isSpeechDebug =
-    typeof window !== 'undefined' &&
-    new URLSearchParams(window.location.search).get('speech-debug') === '1';
-  const [speechTraces, setSpeechTraces] = useState<BrowserSpeechTrace[]>([]);
-  const [copyStatus, setCopyStatus] = useState<string>('');
-
   // 상시 로컬 진단 기록 상태 (저장소 ref 1회 생성, 마운트 시 로드)
   const diagStoreRef = useRef<CoachDiagnosticStore | null>(null);
   if (!diagStoreRef.current) {
@@ -101,11 +99,6 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
   const [benchmarkBusy, setBenchmarkBusy] = useState(false);
   const benchmarkBusyRef = useRef(false);
 
-  const handleBenchmarkBusyChange = useCallback((busy: boolean) => {
-    benchmarkBusyRef.current = busy;
-    setBenchmarkBusy(busy);
-  }, []);
-
   // 참조값 보관
   const adultRef = useRef(adultConfirmed);
   adultRef.current = adultConfirmed;
@@ -115,16 +108,35 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
 
   const isMountedRef = useRef(true);
   const hasStartedRef = useRef(false);
+  const prepareGenerationRef = useRef(0);
+  const isModelLoadingRef = useRef(false);
 
   // 서비스 인스턴스
-  const speechInputRef = useRef<BrowserSpeechInputService | null>(null);
+  const speechInputRef = useRef<MoonshineSpeechInputService | null>(null);
   const voiceOutputRef = useRef<VoiceOutputService | null>(null);
   const apiClientRef = useRef<PublicCoachApiClient | null>(null);
   const controllerRef = useRef<CoachTutorController | null>(null);
 
+  const handleBenchmarkBusyChange = useCallback((busy: boolean) => {
+    benchmarkBusyRef.current = busy;
+    setBenchmarkBusy(busy);
+    if (busy) {
+      prepareGenerationRef.current++;
+      isModelLoadingRef.current = false;
+      setIsModelLoading(false);
+      setModelProgressText('');
+      if (speechInputRef.current) {
+        speechInputRef.current.dispose();
+      }
+      if (controllerRef.current) {
+        controllerRef.current.pause();
+      }
+    }
+  }, []);
+
   // 컨트롤러 초기화 (1회)
   if (!controllerRef.current) {
-    const input = new BrowserSpeechInputService();
+    const input = new MoonshineSpeechInputService();
     const output = new VoiceOutputService();
     const api = new PublicCoachApiClient();
 
@@ -132,61 +144,63 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
     voiceOutputRef.current = output;
     apiClientRef.current = api;
 
-    controllerRef.current = new CoachTutorController({
-      speak: async (text: string, lang: string) => {
-        if (isTextModeRef.current) {
-          // 텍스트 모드에서는 음성 출력을 실행하지 않고 정상 성공으로 반환하여 화면 텍스트 안내로 진행
-          return true;
-        }
-        const res = await output.speak(text, { lang });
-        return res.success;
-      },
-      listen: async (lang: string, options?: BrowserSpeechInputOptions) => {
-        if (isTextModeRef.current) {
-          // 텍스트 모드에서는 listen을 대기 상태로 두어 submitText만으로 진행
-          return new Promise<string>(() => {});
-        }
-        if (isSpeechDebug && lang === 'en-US') {
-          // 다음 영어 캡처 시작 시 이전 진단 기록 및 복사 상태 초기화
-          setSpeechTraces([]);
-          setCopyStatus('');
-          const debugOptions: BrowserSpeechInputOptions = {
-            ...options,
-            onTrace: (record) => {
-              options?.onTrace?.(record);
-              setSpeechTraces((prev) => (prev.length >= 40 ? prev : [...prev, record]));
-            },
+    controllerRef.current = new CoachTutorController(
+      {
+        speak: async (text: string, lang: string) => {
+          if (isTextModeRef.current) {
+            // 텍스트 모드에서는 음성 출력을 실행하지 않고 정상 성공으로 반환하여 화면 텍스트 안내로 진행
+            return true;
+          }
+          const res = await output.speak(text, { lang });
+          return res.success;
+        },
+        listen: async (lang: string, options?: BrowserSpeechInputOptions) => {
+          if (isTextModeRef.current) {
+            // 텍스트 모드에서는 listen을 대기 상태로 두어 submitText만으로 진행
+            return new Promise<string>(() => {});
+          }
+          return await input.start(lang, options);
+        },
+        evaluate: async (questionId: string, answer: string, context?: CoachInputContext) => {
+          if (context) {
+            return await api.evaluate(questionId, answer, adultRef.current, context);
+          }
+          return await api.evaluate(questionId, answer, adultRef.current);
+        },
+        cancel: () => {
+          output.cancel();
+          input.cancel();
+          api.cancel();
+        },
+        emit: (nextState: CoachSnapshot) => {
+          if (!isMountedRef.current) return;
+          setSnapshot(nextState);
+        },
+        isTextMode: () => isTextModeRef.current,
+        onDiagnostic: (record: CoachDiagnosticRecord) => {
+          if (!diagStoreRef.current) return;
+          const isVoiceAttempt = record.inputSource === 'voice';
+          const annotated: CoachDiagnosticRecord = {
+            ...record,
+            speechEngine: isVoiceAttempt ? MoonshineSpeechInputService.ENGINE_NAME : 'text',
+            ...(isVoiceAttempt
+              ? {
+                  speechModel: `${MoonshineSpeechInputService.MODEL_ARCH} SDK ${MoonshineSpeechInputService.SDK_VERSION} rev ${MoonshineSpeechInputService.CATALOG_REVISION}`,
+                }
+              : {}),
           };
-          return await input.start(lang, debugOptions);
-        }
-        return await input.start(lang, options);
+          diagStoreRef.current.append(annotated);
+          if (isMountedRef.current) {
+            setDiagRecords(diagStoreRef.current.list());
+            setDiagCopyStatus('');
+            setManualReportText('');
+          }
+        },
       },
-      evaluate: async (questionId: string, answer: string, context?: CoachInputContext) => {
-        if (context) {
-          return await api.evaluate(questionId, answer, adultRef.current, context);
-        }
-        return await api.evaluate(questionId, answer, adultRef.current);
-      },
-      cancel: () => {
-        output.cancel();
-        input.cancel();
-        api.cancel();
-      },
-      emit: (nextState: CoachSnapshot) => {
-        if (!isMountedRef.current) return;
-        setSnapshot(nextState);
-      },
-      isTextMode: () => isTextModeRef.current,
-      onDiagnostic: (record: CoachDiagnosticRecord) => {
-        if (!diagStoreRef.current) return;
-        diagStoreRef.current.append(record);
-        if (isMountedRef.current) {
-          setDiagRecords(diagStoreRef.current.list());
-          setDiagCopyStatus('');
-          setManualReportText('');
-        }
-      },
-    });
+      {
+        listenTimeoutMs: 60000,
+      }
+    );
   }
 
   // 마운트 시 브라우저 지원 여부 확인 및 생명주기 리스너 등록
@@ -206,12 +220,28 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
     }
 
     const handleVisibility = () => {
-      if (document.hidden && controllerRef.current) {
-        controllerRef.current.pause();
+      if (document.hidden) {
+        prepareGenerationRef.current++;
+        isModelLoadingRef.current = false;
+        setIsModelLoading(false);
+        setModelProgressText('');
+        if (speechInputRef.current) {
+          speechInputRef.current.cancel();
+        }
+        if (controllerRef.current) {
+          controllerRef.current.pause();
+        }
       }
     };
 
     const handlePageHide = () => {
+      prepareGenerationRef.current++;
+      isModelLoadingRef.current = false;
+      setIsModelLoading(false);
+      setModelProgressText('');
+      if (speechInputRef.current) {
+        speechInputRef.current.cancel();
+      }
       if (controllerRef.current) {
         controllerRef.current.pause();
       }
@@ -222,6 +252,8 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
 
     return () => {
       isMountedRef.current = false;
+      prepareGenerationRef.current++;
+      isModelLoadingRef.current = false;
       document.removeEventListener('visibilitychange', handleVisibility);
       window.removeEventListener('pagehide', handlePageHide);
       if (controllerRef.current) {
@@ -231,7 +263,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
         voiceOutputRef.current.cancel();
       }
       if (speechInputRef.current) {
-        speechInputRef.current.cancel();
+        speechInputRef.current.dispose();
       }
       if (apiClientRef.current) {
         apiClientRef.current.cancel();
@@ -257,6 +289,10 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
   // 텍스트 모드 전환
   const handleEnableTextMode = useCallback(() => {
     if (benchmarkBusyRef.current || benchmarkBusy) return;
+    prepareGenerationRef.current++;
+    isModelLoadingRef.current = false;
+    setIsModelLoading(false);
+    setModelProgressText('');
     isTextModeRef.current = true;
     setIsTextMode(true);
     setShowTextInput(true);
@@ -273,19 +309,95 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
     }
   }, [benchmarkBusy]);
 
+  // Gate to ensure Moonshine model is prepared before starting/re-starting/nexting controller
+  const ensurePreparedAndRun = useCallback(
+    async (task: () => void) => {
+      if (!adultRef.current || !controllerRef.current || benchmarkBusyRef.current || benchmarkBusy) return;
+      hasStartedRef.current = true;
+      setModelError('');
+
+      // If in text mode, bypass Moonshine model preparation and download entirely
+      if (isTextModeRef.current) {
+        task();
+        return;
+      }
+
+      if (speechInputRef.current?.isReady()) {
+        task();
+        return;
+      }
+
+      // Synchronous ref gate blocks double starts before React state update renders
+      if (isModelLoadingRef.current) {
+        return;
+      }
+
+      isModelLoadingRef.current = true;
+      const currentGen = ++prepareGenerationRef.current;
+      setIsModelLoading(true);
+      setModelProgressText('Moonshine v2 영어 음성 모델(약 165MB) 준비 중... (최초 1회 다운로드 후 브라우저 캐시 재사용)');
+
+      try {
+        await speechInputRef.current?.prepare((progress: MoonshineProgressPayload) => {
+          if (prepareGenerationRef.current !== currentGen || !isMountedRef.current) return;
+          if (progress.total && progress.total > 0) {
+            const percent = Math.min(100, Math.round((progress.loaded / progress.total) * 100));
+            setModelProgressText(`음성 모델 다운로드 중... ${percent}% (약 165MB, 캐시 재사용)`);
+          } else if (progress.loaded > 0) {
+            const mb = (progress.loaded / (1024 * 1024)).toFixed(1);
+            setModelProgressText(`음성 모델 다운로드 중... ${mb}MB (캐시 재사용)`);
+          }
+        });
+      } catch {
+        if (prepareGenerationRef.current !== currentGen || !isMountedRef.current) return;
+        isModelLoadingRef.current = false;
+        setIsModelLoading(false);
+        setModelProgressText('');
+        setModelError('음성 모델을 준비하지 못했습니다. 다시 시도하거나 텍스트 모드를 이용해 주세요.');
+        return;
+      }
+
+      if (prepareGenerationRef.current !== currentGen || !isMountedRef.current) return;
+      isModelLoadingRef.current = false;
+      setIsModelLoading(false);
+      setModelProgressText('');
+
+      task();
+    },
+    [benchmarkBusy]
+  );
+
+  // 모델 준비 취소
+  const handleCancelPreparation = useCallback(() => {
+    prepareGenerationRef.current++;
+    isModelLoadingRef.current = false;
+    setIsModelLoading(false);
+    setModelProgressText('');
+    if (speechInputRef.current) {
+      speechInputRef.current.cancel();
+    }
+  }, []);
+
   // 코칭 시작
   const handleStart = useCallback(() => {
-    if (!adultRef.current || !controllerRef.current || benchmarkBusyRef.current || benchmarkBusy) return;
-    hasStartedRef.current = true;
-    const currentQ = CAFE_QUESTIONS.find((q) => q.id === currentNodeId) || CAFE_QUESTIONS[0];
-    controllerRef.current.start(currentQ, {
-      scenarioId: CAFE_SCENARIO_ID,
-      recentContext: recentHistory,
+    ensurePreparedAndRun(() => {
+      const currentQ = CAFE_QUESTIONS.find((q) => q.id === currentNodeId) || CAFE_QUESTIONS[0];
+      controllerRef.current?.start(currentQ, {
+        scenarioId: CAFE_SCENARIO_ID,
+        recentContext: recentHistory,
+      });
     });
-  }, [currentNodeId, recentHistory, benchmarkBusy]);
+  }, [currentNodeId, recentHistory, ensurePreparedAndRun]);
 
   // 일시정지
   const handlePause = useCallback(() => {
+    prepareGenerationRef.current++;
+    isModelLoadingRef.current = false;
+    setIsModelLoading(false);
+    setModelProgressText('');
+    if (speechInputRef.current) {
+      speechInputRef.current.cancel();
+    }
     if (controllerRef.current) {
       controllerRef.current.pause();
     }
@@ -294,6 +406,8 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
   // 다음 질문 이동 (완료 상태에서 사용자가 명시적으로 클릭할 때만)
   const handleNextQuestion = useCallback(() => {
     if (
+      isModelLoadingRef.current ||
+      isModelLoading ||
       benchmarkBusyRef.current ||
       benchmarkBusy ||
       !adultRef.current ||
@@ -327,31 +441,32 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
       return;
     }
 
-    setCurrentNodeId(nextNode.id);
-    setRecentHistory(updatedHistory);
-    setVisitedCount((prev) => prev + 1);
+    // Gate BEFORE mutating node/history to avoid corrupting node on double click or canceled preparation
+    ensurePreparedAndRun(() => {
+      setCurrentNodeId(nextNode.id);
+      setRecentHistory(updatedHistory);
+      setVisitedCount((prev) => prev + 1);
 
-    setSnapshot((prev) => ({
-      ...prev,
-      phase: 'ready',
-      recognizedText: '',
-      understoodText: undefined,
-      feedbackKo: '',
-      modelAnswerEn: '',
-      practiceDone: 0,
-      practiceTarget: 1,
-      message: '',
-      pendingNextQuestionId: undefined,
-      approvedAnswer: undefined,
-    }));
+      setSnapshot((prev) => ({
+        ...prev,
+        phase: 'ready',
+        recognizedText: '',
+        understoodText: undefined,
+        feedbackKo: '',
+        modelAnswerEn: '',
+        practiceDone: 0,
+        practiceTarget: 1,
+        message: '',
+        pendingNextQuestionId: undefined,
+        approvedAnswer: undefined,
+      }));
 
-    if (controllerRef.current && adultRef.current) {
-      controllerRef.current.start(nextNode, {
+      controllerRef.current?.start(nextNode, {
         scenarioId: CAFE_SCENARIO_ID,
         recentContext: updatedHistory,
       });
-    }
-  }, [currentNodeId, recentHistory, snapshot, benchmarkBusy]);
+    });
+  }, [currentNodeId, recentHistory, snapshot, benchmarkBusy, isModelLoading, ensurePreparedAndRun]);
 
   // 텍스트 직접 제출
   const handleSubmitText = useCallback(
@@ -384,30 +499,6 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
 
   const currentQ = CAFE_QUESTIONS.find((q) => q.id === currentNodeId) || CAFE_QUESTIONS[0];
   const phase = snapshot.phase;
-
-  // 진단 페이로드 (진단 모드 시 화면 표시 및 클립보드 복사용 동일 규격)
-  const traceEnvelope = {
-    diagnosticVersion: 'paced-coach-10s-v9',
-    events: speechTraces,
-  };
-
-  const handleCopyTrace = useCallback(async () => {
-    const payload = JSON.stringify(traceEnvelope, null, 2);
-    if (
-      typeof navigator !== 'undefined' &&
-      navigator.clipboard &&
-      typeof navigator.clipboard.writeText === 'function'
-    ) {
-      try {
-        await navigator.clipboard.writeText(payload);
-        setCopyStatus('클립보드에 복사했습니다.');
-      } catch {
-        setCopyStatus('클립보드에 복사하지 못했습니다. 아래 내용을 직접 복사해 주세요.');
-      }
-    } else {
-      setCopyStatus('클립보드를 지원하지 않는 환경입니다. 복사하지 못했습니다. 아래 내용을 직접 복사해 주세요.');
-    }
-  }, [traceEnvelope]);
 
   // 상시 로컬 진단 기록 핸들러
   const handleCopyDiagReport = useCallback(async () => {
@@ -639,6 +730,9 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
                     <div><span style={{ color: '#64748b' }}>시각 / 입력·평가 소요:</span> {rec.timestamp} ({rec.elapsedMs}ms)</div>
                     <div><span style={{ color: '#64748b' }}>질문:</span> [{rec.questionId}] {rec.questionEn}</div>
                     <div><span style={{ color: '#64748b' }}>입력 방식:</span> {rec.inputSource === 'voice' ? '음성인식' : '텍스트 직접입력'} ({rec.stage === 'initial' ? '초기 답변' : '반복 연습'})</div>
+                    {rec.speechEngine && (
+                      <div><span style={{ color: '#64748b' }}>음성 엔진:</span> {rec.speechEngine}{rec.speechModel ? ` (${rec.speechModel})` : ''}</div>
+                    )}
                     <div><span style={{ color: '#64748b' }}>원본 인식(Raw):</span> <strong style={{ color: '#f8fafc' }}>&ldquo;{rec.rawText}&rdquo;</strong></div>
 
                     {rec.candidates && rec.candidates.length > 0 && (
@@ -765,6 +859,8 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
         return <span style={badgeStyle('#eab308')}>{isTextMode ? '답변 입력 대기 중' : '답변 준비 중'}</span>;
       case 'listening':
         return <span style={badgeStyle('#ef4444')}>{snapshot.message.includes('초 동안 듣는 중') ? snapshot.message : '10초 동안 듣는 중'}</span>;
+      case 'transcribing':
+        return <span style={badgeStyle('#8b5cf6')}>기기에서 음성 변환 중</span>;
       case 'evaluating':
         return <span style={badgeStyle('#ec4899')}>AI 코칭 분석 중</span>;
       case 'waiting':
@@ -785,8 +881,10 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
   const isTextSubmitAllowed =
     adultConfirmed &&
     hasStartedRef.current &&
+    !isModelLoading &&
     phase !== 'ready' &&
     phase !== 'complete' &&
+    phase !== 'transcribing' &&
     phase !== 'evaluating' &&
     phase !== 'waiting' &&
     Boolean(typedAnswer.trim());
@@ -836,6 +934,133 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
       {isTextMode && (
         <div style={infoNoticeStyle}>
           <span>⌨️ 텍스트 전용 학습 모드로 진행 중입니다 (음성/마이크 비활성)</span>
+        </div>
+      )}
+
+      {/* 모델 안내 라벨 및 라이선스 링크 */}
+      {!isTextMode && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: 'rgba(99, 102, 241, 0.08)',
+            border: '1px solid rgba(99, 102, 241, 0.25)',
+            borderRadius: '8px',
+            padding: '8px 12px',
+            marginBottom: '12px',
+            fontSize: '12px',
+            color: '#a5b4fc',
+            flexWrap: 'wrap',
+            gap: '6px',
+          }}
+        >
+          <span>
+            🎙️ 기본 음성인식:{' '}
+            <strong>Moonshine v2 / 영어 Small Streaming</strong> (기기 내 무료 처리)
+          </span>
+          <a
+            href="/licenses/moonshine-voice-0.1.5.txt"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: '#818cf8',
+              textDecoration: 'underline',
+              fontSize: '11px',
+            }}
+          >
+            라이선스 확인
+          </a>
+        </div>
+      )}
+
+      {/* 모델 다운로드/준비 프로그레스 및 오류 알림 */}
+      {isModelLoading && (
+        <div
+          style={{
+            background: '#0f172a',
+            border: '1px solid #6366f1',
+            borderRadius: '10px',
+            padding: '12px 14px',
+            marginBottom: '14px',
+            minWidth: 0,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+            <span style={{ fontSize: '16px' }}>⏳</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#e0e7ff' }}>
+              {modelProgressText || '음성 모델을 준비하고 있습니다...'}
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+            <button
+              type="button"
+              onClick={handleCancelPreparation}
+              style={{
+                ...secondaryButtonStyle,
+                minHeight: '44px',
+                padding: '0 14px',
+                color: '#f87171',
+              }}
+            >
+              다운로드 취소
+            </button>
+            <button
+              type="button"
+              onClick={handleEnableTextMode}
+              style={{
+                ...secondaryButtonStyle,
+                minHeight: '44px',
+                padding: '0 14px',
+                color: '#38bdf8',
+              }}
+            >
+              텍스트 모드로 전환
+            </button>
+          </div>
+        </div>
+      )}
+
+      {modelError && (
+        <div
+          style={{
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            borderRadius: '10px',
+            padding: '12px 14px',
+            marginBottom: '14px',
+            minWidth: 0,
+          }}
+        >
+          <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#f87171', lineHeight: 1.5 }}>
+            ⚠️ {modelError}
+          </p>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={handleStart}
+              style={{
+                ...secondaryButtonStyle,
+                minHeight: '44px',
+                padding: '0 14px',
+                color: '#34d399',
+              }}
+            >
+              다시 시도
+            </button>
+            <button
+              type="button"
+              onClick={handleEnableTextMode}
+              style={{
+                ...secondaryButtonStyle,
+                minHeight: '44px',
+                padding: '0 14px',
+                color: '#38bdf8',
+              }}
+            >
+              텍스트 모드로 전환
+            </button>
+          </div>
         </div>
       )}
 
@@ -1007,7 +1232,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
             </span>
           </label>
           <p style={{ fontSize: '11px', color: '#64748b', margin: '8px 0 0 28px', lineHeight: 1.4, overflowWrap: 'break-word' }}>
-            브라우저 음성 서비스가 음성을 서버에서 처리할 수 있습니다. 인식 또는 제출된 영어 답변은 Google AI로 전송되며 서비스 개선과 사람 검토에 사용될 수 있습니다. 가상의 이름·나이로 연습하고 민감정보는 말하지 마세요.
+            기기 내 Moonshine 음성인식을 통해 음성이 기기 로컬에서 변환되며, 이 과정에서 음성 오디오는 외부 서버로 전송되지 않습니다. 인식되거나 제출된 영어 텍스트 답변은 맞춤 코칭을 위해 Google AI로 전송되며 서비스 개선과 사람 검토에 사용될 수 있습니다. 가상의 이름·나이로 연습하고 민감정보는 말하지 마세요.
           </p>
         </div>
       )}
@@ -1052,8 +1277,10 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
               disabled={
                 !adultConfirmed ||
                 !hasStartedRef.current ||
+                isModelLoading ||
                 phase === 'ready' ||
                 phase === 'complete' ||
+                phase === 'transcribing' ||
                 phase === 'evaluating' ||
                 phase === 'waiting'
               }
@@ -1062,8 +1289,10 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
                 opacity:
                   !adultConfirmed ||
                   !hasStartedRef.current ||
+                  isModelLoading ||
                   phase === 'ready' ||
                   phase === 'complete' ||
+                  phase === 'transcribing' ||
                   phase === 'evaluating' ||
                   phase === 'waiting'
                     ? 0.6
@@ -1092,14 +1321,14 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
         {phase === 'ready' && (
           <button
             onClick={handleStart}
-            disabled={!adultConfirmed || benchmarkBusy}
+            disabled={!adultConfirmed || benchmarkBusy || isModelLoading}
             style={{
               ...primaryButtonStyle,
-              opacity: adultConfirmed && !benchmarkBusy ? 1 : 0.4,
-              cursor: adultConfirmed && !benchmarkBusy ? 'pointer' : 'not-allowed',
+              opacity: adultConfirmed && !benchmarkBusy && !isModelLoading ? 1 : 0.4,
+              cursor: adultConfirmed && !benchmarkBusy && !isModelLoading ? 'pointer' : 'not-allowed',
             }}
           >
-            {adultConfirmed ? '코칭 시작' : '만 18세 이상 확인 후 시작'}
+            {isModelLoading ? '음성 모델 준비 중...' : adultConfirmed ? '코칭 시작' : '만 18세 이상 확인 후 시작'}
           </button>
         )}
 
@@ -1107,6 +1336,7 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
           phase === 'speaking' ||
           phase === 'thinking' ||
           phase === 'listening' ||
+          phase === 'transcribing' ||
           phase === 'evaluating' ||
           phase === 'waiting' ||
           phase === 'practicing') && (
@@ -1118,40 +1348,40 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
         {phase === 'paused' && (
           <button
             onClick={handleStart}
-            disabled={!adultConfirmed || benchmarkBusy}
+            disabled={!adultConfirmed || benchmarkBusy || isModelLoading}
             style={{
               ...primaryButtonStyle,
-              opacity: adultConfirmed && !benchmarkBusy ? 1 : 0.4,
-              cursor: adultConfirmed && !benchmarkBusy ? 'pointer' : 'not-allowed',
+              opacity: adultConfirmed && !benchmarkBusy && !isModelLoading ? 1 : 0.4,
+              cursor: adultConfirmed && !benchmarkBusy && !isModelLoading ? 'pointer' : 'not-allowed',
             }}
           >
-            다시 시작
+            {isModelLoading ? '음성 모델 준비 중...' : '다시 시작'}
           </button>
         )}
 
         {phase === 'error' && (
           <button
             onClick={handleStart}
-            disabled={!adultConfirmed || benchmarkBusy}
+            disabled={!adultConfirmed || benchmarkBusy || isModelLoading}
             style={{
               ...primaryButtonStyle,
               background: '#ef4444',
-              opacity: adultConfirmed && !benchmarkBusy ? 1 : 0.4,
-              cursor: adultConfirmed && !benchmarkBusy ? 'pointer' : 'not-allowed',
+              opacity: adultConfirmed && !benchmarkBusy && !isModelLoading ? 1 : 0.4,
+              cursor: adultConfirmed && !benchmarkBusy && !isModelLoading ? 'pointer' : 'not-allowed',
             }}
           >
-            다시 시도
+            {isModelLoading ? '음성 모델 준비 중...' : '다시 시도'}
           </button>
         )}
 
         {phase === 'complete' && (
           <button
             onClick={handleNextQuestion}
-            disabled={benchmarkBusy}
+            disabled={benchmarkBusy || isModelLoading}
             style={{
               ...primaryButtonStyle,
-              opacity: !benchmarkBusy ? 1 : 0.4,
-              cursor: !benchmarkBusy ? 'pointer' : 'not-allowed',
+              opacity: !benchmarkBusy && !isModelLoading ? 1 : 0.4,
+              cursor: !benchmarkBusy && !isModelLoading ? 'pointer' : 'not-allowed',
             }}
           >
             {snapshot.pendingNextQuestionId === SCENARIO_COMPLETE_SENTINEL ? '주문 마치기' : '다음 질문으로 →'}
@@ -1166,79 +1396,17 @@ export const CoachTutorView: React.FC<CoachTutorViewProps> = ({ onBack }) => {
       <WhisperBenchmarkPanel
         adultConfirmed={adultConfirmed}
         coachingActive={
+          isModelLoading ||
           phase === 'preparing' ||
           phase === 'speaking' ||
           phase === 'listening' ||
+          phase === 'transcribing' ||
           phase === 'evaluating' ||
           phase === 'waiting' ||
           phase === 'practicing'
         }
         onBusyChange={handleBenchmarkBusyChange}
       />
-
-      {/* URL 쿼리 speech-debug=1 일 때만 활성화되는 휘발성 음성 진단 UI */}
-      {isSpeechDebug && (
-        <details
-          style={{
-            marginTop: '16px',
-            background: '#0f172a',
-            border: '1px solid #334155',
-            borderRadius: '8px',
-            padding: '8px 12px',
-          }}
-        >
-          <summary style={{ cursor: 'pointer', fontSize: '13px', color: '#94a3b8', fontWeight: 600 }}>
-            음성 진단 결과 (이 화면에서만 표시)
-          </summary>
-          <div style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 600, marginTop: '8px' }}>
-            진단 버전: paced-coach-10s-v9
-          </div>
-          <p style={{ margin: '8px 0 4px 0', fontSize: '12px', color: '#64748b' }}>
-            음성인식 원본과 앱 결과 비교용입니다. 서버에 저장하지 않습니다.
-          </p>
-          <button
-            type="button"
-            onClick={handleCopyTrace}
-            disabled={speechTraces.length === 0}
-            style={{
-              ...secondaryButtonStyle,
-              minHeight: '44px',
-              marginTop: '8px',
-              width: 'auto',
-              opacity: speechTraces.length === 0 ? 0.5 : 1,
-              cursor: speechTraces.length === 0 ? 'not-allowed' : 'pointer',
-            }}
-          >
-            진단 결과 복사
-          </button>
-          {copyStatus && (
-            <p
-              style={{
-                margin: '6px 0 0 0',
-                fontSize: '12px',
-                color: copyStatus.includes('못했습니다') ? '#f87171' : '#34d399',
-              }}
-            >
-              {copyStatus}
-            </p>
-          )}
-          <pre
-            style={{
-              margin: '8px 0 0 0',
-              padding: '8px',
-              background: '#020617',
-              borderRadius: '4px',
-              maxWidth: '100%',
-              overflow: 'auto',
-              fontSize: '11px',
-              color: '#38bdf8',
-              lineHeight: 1.4,
-            }}
-          >
-            {JSON.stringify(traceEnvelope, null, 2)}
-          </pre>
-        </details>
-      )}
     </div>
   );
 };
